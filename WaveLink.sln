@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{B58475A8-853B-48F0-961D-1769B6133931}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaveLinkSDK", "WaveLinkSDK\WaveLinkSDK.csproj", "{F8E10711-126A-407E-9084-0FFA1A42204A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing", "Testing\Testing.csproj", "{6F047C44-7963-42A2-99BE-876CDB6AAF03}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B58475A8-853B-48F0-961D-1769B6133931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B58475A8-853B-48F0-961D-1769B6133931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B58475A8-853B-48F0-961D-1769B6133931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B58475A8-853B-48F0-961D-1769B6133931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8E10711-126A-407E-9084-0FFA1A42204A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8E10711-126A-407E-9084-0FFA1A42204A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8E10711-126A-407E-9084-0FFA1A42204A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8E10711-126A-407E-9084-0FFA1A42204A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F047C44-7963-42A2-99BE-876CDB6AAF03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F047C44-7963-42A2-99BE-876CDB6AAF03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F047C44-7963-42A2-99BE-876CDB6AAF03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F047C44-7963-42A2-99BE-876CDB6AAF03}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0AC6A476-D729-4C66-ABB3-425E9FFA2EFB}
+	EndGlobalSection
+EndGlobal
