@@ -1,4 +1,4 @@
-﻿namespace WaveLinkSDK.Enums
+﻿namespace WaveLink.SDK.Enums
 {
     public enum WaveDeviceType
     {

@@ -1,6 +1,6 @@
-﻿using WaveLinkSDK.Enums;
+﻿using WaveLink.SDK.Enums;
 
-namespace WaveLinkSDK.Models
+namespace WaveLink.SDK.Models
 {
     public class WaveDevice
     {
