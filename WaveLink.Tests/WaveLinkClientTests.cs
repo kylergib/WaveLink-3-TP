@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
 
-namespace WaveLink.Test;
+namespace WaveLink.Tests;
 
 public class WaveLinkClientTests : IAsyncLifetime
 {

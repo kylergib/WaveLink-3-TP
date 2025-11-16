@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WaveLinkSDK\WaveLink.SDK.csproj" />
+    <ProjectReference Include="..\WaveLink.SDK\WaveLink.SDK.csproj" />
   </ItemGroup>
 
   <ItemGroup>

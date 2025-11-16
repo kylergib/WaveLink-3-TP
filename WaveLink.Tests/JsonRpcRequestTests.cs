@@ -2,7 +2,7 @@
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
 
-namespace WaveLink.Test;
+namespace WaveLink.Tests;
 public class JsonRpcRequestTests
 {
     [Fact]
