@@ -3,6 +3,7 @@
     public enum WaveDeviceType
     {
         Unknown,
+        NoWaveDevice,
         WaveXLR,
         Wave
     }

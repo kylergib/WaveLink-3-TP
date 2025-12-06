@@ -75,7 +75,7 @@ public class WaveSocket : IWaveSocket
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to connect to WebSocket at {Url}", Url);
+            _logger.LogError("Failed to connect to WebSocket at {Url}", Url);
             throw;
         }
 
@@ -95,55 +95,54 @@ public class WaveSocket : IWaveSocket
 
     private async Task ReceiveMessages(CancellationToken cancellationToken)
     {
-        const int bufferSize = 4 * 1024;
+        const int bufferSize = 4096;
         var buffer = new byte[bufferSize];
 
         try
         {
-            while (!cancellationToken.IsCancellationRequested && _ws is not null && _ws.State == WebSocketState.Open)
+            while (!cancellationToken.IsCancellationRequested &&
+                   _ws is not null)
             {
-                var segment = new ArraySegment<byte>(buffer);
-                WebSocketReceiveResult? result = null;
-                using var ms = new System.IO.MemoryStream();
+                WebSocketReceiveResult result;
 
-                do
+                try
                 {
-                    result = await _ws.ReceiveAsync(segment, cancellationToken).ConfigureAwait(false);
+                    result = await _ws.ReceiveAsync(buffer, cancellationToken);
+                }
+                catch (WebSocketException)
+                {
+                    // remote closed TCP abruptly
+                    break;
+                }
+                catch (IOException)
+                {
+                    // underlying TCP closed
+                    break;
+                }
 
-                    if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        _logger.LogInformation("Server requested close: {Status} {Desc}", result.CloseStatus, result.CloseStatusDescription);
-                        await CloseAsync(result.CloseStatus ?? WebSocketCloseStatus.NormalClosure, result.CloseStatusDescription ?? "Closed by server", CancellationToken.None).ConfigureAwait(false);
-                        return;
-                    }
+                // Remote closed without handshake
+                if (result.MessageType == WebSocketMessageType.Close ||
+                    result.CloseStatus.HasValue ||
+                    result.Count == 0)
+                {
+                    break;
+                }
 
-                    ms.Write(segment.Array!, segment.Offset, result.Count);
-                } while (!result.EndOfMessage);
-
-                ms.Seek(0, System.IO.SeekOrigin.Begin);
-                var message = Encoding.UTF8.GetString(ms.ToArray());
-                _logger.LogDebug("Received message: {Message}", message);
-                OnMessage?.Invoke(this, message);
+                if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    var msg = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    _logger.LogDebug("Received: {Message}", msg);
+                    OnMessage?.Invoke(this, msg);
+                }
             }
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogDebug("ReceiveMessages cancelled.");
-        }
-        catch (ObjectDisposedException)
-        {
-            _logger.LogDebug("WebSocket disposed while receiving.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error receiving message.");
         }
         finally
         {
-            OnClose?.Invoke(this, EventArgs.Empty);
-            _logger.LogInformation("Receive loop has stopped.");
+            _logger.LogInformation("Receive loop stopped.");
+            OnClose?.Invoke(this, EventArgs.Empty);  // fire ONCE here
         }
     }
+
 
     public async Task SendMessageAsync(string message, CancellationToken cancellationToken = default)
     {
@@ -177,13 +176,25 @@ public class WaveSocket : IWaveSocket
         {
             if (_ws.State == WebSocketState.Open || _ws.State == WebSocketState.CloseReceived)
             {
-                _logger.LogInformation("Closing WebSocket: {Status} {Desc}", closeStatus, statusDescription);
+                _logger.LogDebug("Closing WebSocket: {Status} {Desc}", closeStatus, statusDescription);
                 await _ws.CloseAsync(closeStatus, statusDescription, cancellationToken).ConfigureAwait(false);
             }
+        }
+        catch (WebSocketException)
+        {
+            // Expected: server closed without handshake
+            _logger.LogWarning("WebSocketException while closing WebSocket.");
+
+        }
+        catch (IOException)
+        {
+            // Expected: server dropped TCP
+            _logger.LogWarning("IOException while closing WebSocket.");
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Exception while closing WebSocket.");
+            //_logger.LogDebug(ex, "Exception while closing WebSocket.");
         }
         finally
         {
@@ -216,13 +227,13 @@ public class WaveSocket : IWaveSocket
         {
             _receiveCts?.Cancel();
         }
-        catch { /* swallow */ }
+        catch { OnClose?.Invoke(this, EventArgs.Empty); }
 
         try
         {
             _ws?.Dispose();
         }
-        catch { /* swallow */ }
+        catch { OnClose?.Invoke(this, EventArgs.Empty); }
 
         _receiveCts?.Dispose();
     }

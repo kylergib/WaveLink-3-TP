@@ -11,12 +11,10 @@ public interface IWaveLinkClient
     event EventHandler? OnConnection;
     event EventHandler<string>? OnMessage;
     event EventHandler? OnClose;
-
-    event EventHandler<ApplicationInfoResponse>? OnReceivedAppInfo;
     string Url { get; }
     int Port { get; }
     Task ConnectAsync(CancellationToken cancellationToken = default);
-    Task SendJsonRequestAsync(JsonRpcRequest request);
+    Task SendRequestAsync(string request);
     Task CloseAsync(WebSocketCloseStatus closeStatus = WebSocketCloseStatus.NormalClosure, string statusDescription = "Closing", CancellationToken cancellationToken = default);
     bool IsConnected { get; }
 }

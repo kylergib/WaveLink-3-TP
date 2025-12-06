@@ -1,9 +1,13 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
+using Serilog;
+using Serilog.Events;
+using Serilog.Expressions;
+using Serilog.Settings.Configuration;
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
+
 
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
@@ -11,61 +15,41 @@ var config = new ConfigurationBuilder()
     .Build();
 
 string host = config["WaveLink:Host"] ?? Statics.Localhost;
+
 int port = int.Parse(config["WaveLink:Port"] ?? Statics.DefaultPort.ToString());
 
-Console.WriteLine("Starting wave link plugin");
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(config)
+    .WriteTo.Conditional(
+        evt =>
+            evt.Level == LogEventLevel.Debug &&
+            evt.Properties.ContainsKey("SourceContext") &&
+            evt.Properties["SourceContext"].ToString().Contains("WaveLinkClient.Response"),
+        wt => wt.File(
+            "logs/response-debug-.txt",
+            rollingInterval: RollingInterval.Day,
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}"
+        )
+    )
+    .CreateLogger();
 
+// Create ILoggerFactory with ONLY Serilog
 ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
 {
-    builder.AddConfiguration(config.GetSection("Logging"));
-    builder.AddSimpleConsole(options =>
-    {
-        options.TimestampFormat = "HH:mm:ss ";
-        options.SingleLine = true;
-        options.ColorBehavior = LoggerColorBehavior.Enabled;
-    });
+    builder.ClearProviders();
+    builder.AddSerilog(dispose: true);
 });
+
 var _logger = loggerFactory.CreateLogger("WaveLinkConsoleApp");
-WaveLinkClient client;
-while (true)
-{
-    try
-    {
-        client = new(host, port, loggerFactory);
-        // on connection, request application info
-        client.OnConnection += async (s, e) =>
-        {
-            Console.WriteLine("Connected to Wave Link on port " + port);
-            JsonRpcRequest request = new(WaveRequestId.getApplicationInfo, null);
-            await client.SendJsonRequestAsync(request);
-        };
-        // print received application info
-        client.OnReceivedAppInfo += (s, response) =>
-        {
-            _logger.LogDebug("Received Application Info:");
-            _logger.LogDebug($"AppID: {response.Result.AppID}");
-            _logger.LogDebug($"OperatingSystem: {response.Result.OperatingSystem}");
-            _logger.LogDebug($"Name: {response.Result.Name}");
-            _logger.LogDebug($"Version: {response.Result.Version}");
-            _logger.LogDebug($"Build: {response.Result.Build}");
-            _logger.LogDebug($"InterfaceRevision: {response.Result.InterfaceRevision}");
-        };
+Helpers helper = new();
+Helpers.WriteHeader();
+await helper.Start(_logger, loggerFactory, host, port);
 
-        _logger.LogInformation($"Trying to connect: {host}:{port}");
-        await client.ConnectAsync();
+//while (clien)
+//client.OnClose += (e, s) =>
+//{
+//    _logger.LogInformation("Client closed");
 
-        break; // Exit the loop if connection is successful
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Connection failed: {ex.Message}");
-        Console.WriteLine("Retrying in 5 seconds...");
-        await Task.Delay(1000); // Wait for 5 seconds before retrying
-    }
-    port++;
-}
-
+//}
 
 Console.ReadLine();
-
-await client.CloseAsync();

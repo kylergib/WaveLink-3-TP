@@ -42,13 +42,13 @@ public class WaveLinkClientTests : IAsyncLifetime
                 AppID = "EWL",
                 OperatingSystem = "windows", // TODO: make this dynamic based off current machine
                 Name = "Elgato Wave Link",
-                Version = "3.0.0.1635", // typically should not be necessary to match exact version
-                Build = 1635, // typically should not be necessary to match exact build
+                Version = "3.0.0.1755", // typically should not be necessary to match exact version
+                Build = 1755, // typically should not be necessary to match exact build
                 InterfaceRevision = 1
             }
         };
 
-        client.OnReceivedAppInfo += (s, response) =>
+        client.MessageRouter.OnReceivedAppInfo += (s, response) =>
         {
             try
             {
@@ -61,8 +61,47 @@ public class WaveLinkClientTests : IAsyncLifetime
             }
         };
 
-        JsonRpcRequest request = new(WaveRequestId.getApplicationInfo, null);
-        await client.SendJsonRequestAsync(request);
+        WaveLinkRequestMethod request = new(WaveRequestId.getApplicationInfo);
+        await client.SendRequestAsync(request);
+
+        // Wait for assert to run inside event
+        await tcs.Task;
+    }
+    [Fact]
+    public async Task Should_SendGetInput_WithResponse()
+    {
+        var tcs = new TaskCompletionSource();
+
+        var expectedInfoResponse = new ApplicationInfoResponse()
+        {
+            JsonRpc = Statics.JsonRpcVersion,
+            Id = (int)WaveRequestId.getApplicationInfo,
+            Result = new()
+            {
+                AppID = "EWL",
+                OperatingSystem = "windows", // TODO: make this dynamic based off current machine
+                Name = "Elgato Wave Link",
+                Version = "3.0.0.1755", // typically should not be necessary to match exact version
+                Build = 1755, // typically should not be necessary to match exact build
+                InterfaceRevision = 1
+            }
+        };
+
+        client.MessageRouter.OnReceivedGetInputDevices += async (s, response) =>
+        {
+            //_logger.LogDebug("Received Input Devices Info:");
+            //foreach (var inputDevice in response.Result.InputDevices)
+            //{
+            //    _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}, IsMuted: {inputDevice.IsMuted}");
+            //    foreach (var input in inputDevice.Inputs)
+            //    {
+            //        _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input.Gain.Value}, Min: {input.Gain.Min}, Max: {input.Gain.Max}\n");
+            //    }
+            //}
+        };
+
+        WaveLinkRequestMethod request = new(WaveRequestId.getApplicationInfo);
+        await client.SendRequestAsync(request);
 
         // Wait for assert to run inside event
         await tcs.Task;

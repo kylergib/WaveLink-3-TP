@@ -1,0 +1,231 @@
+{{"id":0,"jsonrpc":"2.0","method":"getApplicationInfo"},
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "appID": "EWL",
+    "operatingSystem": "windows",
+    "name": "Elgato Wave Link",
+    "version": "3.0.0.1755",
+    "build": 1755,
+    "interfaceRevision": 1
+  },
+  "id": 0
+},
+{"id":1,"jsonrpc":"2.0","method":"getInputDevices"},{"id":2,"jsonrpc":"2.0","method":"getOutputDevices"},
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "inputDevices": [
+      {
+        "id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+        "name": "Microphone (Wireless Microphone)",
+        "type": "NoWaveDevice",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+            "name": "Microphone (Wireless Microphone)",
+            "gain": {
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "lookUpTable": []
+            },
+            "isMuted": false
+          }
+        ]
+      },
+      {
+        "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+        "name": "Line (Sound Blaster G3)",
+        "type": "NoWaveDevice",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+            "name": "Line (Sound Blaster G3)",
+            "gain": {
+              "value": 0.8387316,
+              "min": 0,
+              "max": 1,
+              "lookUpTable": []
+            },
+            "isMuted": false
+          }
+        ]
+      },
+      {
+        "id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+        "name": "Digital Audio Interface (Sound Blaster G3)",
+        "type": "NoWaveDevice",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+            "name": "Digital Audio Interface (Sound Blaster G3)",
+            "gain": {
+              "value": 0.76168746,
+              "min": 0,
+              "max": 1,
+              "lookUpTable": []
+            },
+            "isMuted": false
+          }
+        ]
+      },
+      {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "name": "SPDIF Interface (Sound Blaster G3)",
+        "type": "NoWaveDevice",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "name": "SPDIF Interface (Sound Blaster G3)",
+            "gain": {
+              "value": 1,
+              "min": 0,
+              "max": 1,
+              "lookUpTable": []
+            },
+            "isMuted": false
+          }
+        ]
+      },
+      {
+        "id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+        "name": "Microphone (Sound Blaster G3)",
+        "type": "NoWaveDevice",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+            "name": "Microphone (Sound Blaster G3)",
+            "gain": {
+              "value": 0,
+              "min": 0,
+              "max": 1,
+              "lookUpTable": []
+            },
+            "isMuted": true
+          }
+        ]
+      }
+    ]
+  },
+  "id": 1
+},
+{"id":3,"jsonrpc":"2.0","method":"getChannels"},
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "mainOutput": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+    "outputDevices": [
+      {
+        "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+        "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+        "type": "NoWaveDevice",
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+            "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+            "isMuted": false,
+            "level": 0.77,
+            "mixId": ""
+          }
+        ]
+      },
+      {
+        "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+        "name": "Headset (Sound Blaster G3)",
+        "type": "NoWaveDevice",
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+            "name": "Headset (Sound Blaster G3)",
+            "isMuted": false,
+            "level": 1,
+            "mixId": ""
+          }
+        ]
+      },
+      {
+        "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "name": "Speakers (Sound Blaster G3)",
+        "type": "NoWaveDevice",
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "name": "Speakers (Sound Blaster G3)",
+            "isMuted": false,
+            "level": 1,
+            "mixId": ""
+          }
+        ]
+      }
+    ]
+  },
+  "id": 2
+},
+{"id":4,"jsonrpc":"2.0","method":"getMixes"},
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "mixes": [
+      {
+        "id": "PCM_IN_01_V_00_SD1",
+        "name": "Personal Mix",
+        "level": 1,
+        "isMuted": false,
+        "image": {
+          "name": "number1"
+        }
+      },
+      {
+        "id": "PCM_IN_01_V_02_SD2",
+        "name": "Chat Mix",
+        "level": 1,
+        "isMuted": false,
+        "image": {
+          "name": "number2"
+        }
+      }
+    ]
+  },
+  "id": 4
+},{
+  "jsonrpc": "2.0",
+  "result": {
+    "channels": [
+      {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "name": "Browser",
+        "type": "Software",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_00_SD1",
+            "level": 1,
+            "isMuted": true
+          },
+          {
+            "id": "PCM_IN_01_V_02_SD2",
+            "level": 1,
+            "isMuted": false
+          }
+        ],
+        "level": 0.57409996,
+        "isMuted": false,
+        "apps": [
+          {
+            "id": "Firefox",
+            "name": "Firefox"
+          },
+          {
+            "id": "Microsoft Edge",
+            "name": "Microsoft Edge"
+          }
+        ],
+        "effects": [],
+        "image": {
+          "imgData": ""
+        }
+      }
+    ]
+  },
+  "id": 3
+}}

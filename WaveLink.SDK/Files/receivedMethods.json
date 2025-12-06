@@ -1,0 +1,176 @@
+{
+  "items": [
+	{
+	  "jsonrpc": "2.0",
+	  "method": "channelChanged",
+	  "params": {
+		"id": "PCM_OUT_00_V_02_SD2",
+		"name": "Browser",
+		"type": "Software",
+		"mixes": [
+		  {
+			"id": "PCM_IN_01_V_00_SD1",
+			"level": 0.6852,
+			"isMuted": true
+		  },
+		  {
+			"id": "PCM_IN_01_V_02_SD2",
+			"level": 1,
+			"isMuted": false
+		  }
+		]
+	  }
+	},
+	{
+	  "jsonrpc": "2.0",
+	  "method": "channelsChanged",
+	  "params": {
+		"channels": [
+		  {
+			"id": "PCM_OUT_00_V_02_SD2",
+			"name": "Browser",
+			"type": "Software",
+			"mixes": [
+			  {
+				"id": "PCM_IN_01_V_00_SD1",
+				"level": 1,
+				"isMuted": true
+			  },
+			  {
+				"id": "PCM_IN_01_V_02_SD2",
+				"level": 1,
+				"isMuted": false
+			  }
+			],
+			"level": 0.6667,
+			"isMuted": false,
+			"apps": [
+			  {
+				"id": "Firefox",
+				"name": "Firefox"
+			  },
+			  {
+				"id": "Microsoft Edge",
+				"name": "Microsoft Edge"
+			  }
+			],
+			"effects": [],
+			"image": { "imgData": "" }
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+			"name": "Sound Blaster G3",
+			"type": "Hardware",
+			"mixes": [],
+			"level": 1,
+			"isMuted": false,
+			"effects": [],
+			"image": { "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAANHSURBVHhe7ZzPaxNREMdn01YSC/WgoCjWX0WRghdR9OZBqRQ9FKQnRRF/QFVUVGyl1FZbE9BaERQF0SJ4UlppehD9E8S7HkR6ED14tUljaj2s292Z7OYlzc5008zn8vKdVxb203kv2bBZC0pk//Xp5riVmKL1aiSXm9n\u002B/n78M637YdEC5VD33BytLSUmU1ZRB4GTS10MJUiUb7HW5Dj4SSoo1KocByoJhVqX4\u002BCVNP9C5WAcSeKCRs4DtKyjVTOHe2iFFyRIQk46SSsLQ1LUZMqyYrTIQVhyIORjlYLVdjGzsSER/0YnwsJ7QvlZgI5e72x5eI8l0UnZ6cyGGKccL5mZyuQAkTJxxzvDQ3x5Yop1iT265L7u7LfH8du4E8YHce7ch3NDnf\u002ByKvxIxwOroObVtAJQX09ynT02xu3xWJs9vhmwx7FBe3QkSSwtL6yCyuF3FucjN3GWFuNgcb7Fc22qkt0k3kFb1gIMd\u002BEa3WNMWRJxQQ8uAGxd72bn5J9ewfnZNZwXS5K4oCDODuN86i7OA6M4S6F7kAHxDmpqBLhxlFYxr/\u002B/xTu0bsJZEnFBr3oB9ra6OZ3EnZZOAsSXATy\u002B7ObUGd2DCugawXnqJ85S6B5kIBIdtLIJ51UrcN6xGWdJxAX57TmjPQC3Trr5RTdA33E3D53WPQj6nuM8\u002BBLn779wlkL3IAOR6aCoIi7Ibw/yy\u002B17cH475P6NJOKCSuUvWfgxoW8QKboHGYhsB0UFFWRAbIlxoEssAoh1UJj/bd2kI4QKMqCCDKggAyrIgAoyoIIMqCADrII4PshxX75QWAV5CePEznW4ryu9na9U2AV5uyidXPitc\u002BkkwMHdbs7Pemf5YL0Wc9i5DaD/BK0uHI6lGwR7BwEAfPoSzkk9mQjnOOUg0kGlwHXlXykiHVTNqCADKsiACjKgggyoIAMqyIAKMqCCDKggA7E/mewi3qYdbXJ1mWb2Xz2H8T2QHx8\u002BAjwco9VwYf/VM5ccAIADu2iFhxj4PK8iLKJ0VV4ui/bkhWqhQBCopHl8H27iUOuS6HZTIAhqWBKVA0GCoAYl\u002BcmBYoIclrqoIDEORSe9tF\u002BdWxOrhx\u002B0Xo3k89mWd/cSX2ndj3/0EQlNpDxGRAAAAABJRU5ErkJggg==" }
+		  }
+		]
+	  },
+	  {
+		"jsonrpc": "2.0",
+		"method": "outputDevicesChanged",
+		"params": {
+		  "mainOutput": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+		  "outputDevices": [
+			{
+			  "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+			  "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+			  "type": "NoWaveDevice",
+			  "outputs": [
+				{
+				  "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+				  "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+				  "isMuted": false,
+				  "level": 0.77,
+				  "mixId": ""
+				}
+			  ]
+			},
+			{
+			  "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+			  "name": "Headset (Sound Blaster G3)",
+			  "type": "NoWaveDevice",
+			  "outputs": [
+				{
+				  "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+				  "name": "Headset (Sound Blaster G3)",
+				  "isMuted": false,
+				  "level": 1,
+				  "mixId": ""
+				}
+			  ]
+			},
+			{
+			  "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+			  "name": "Speakers (Sound Blaster G3)",
+			  "type": "NoWaveDevice",
+			  "outputs": [
+				{
+				  "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+				  "name": "Speakers (Sound Blaster G3)",
+				  "isMuted": false,
+				  "level": 1,
+				  "mixId": ""
+				}
+			  ]
+			}
+		  ]
+		}
+	  },
+	  {
+		"jsonrpc": "2.0",
+		"method": "outputDevicesChanged",
+		"params": {
+		  "mainOutput": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+		  "outputDevices": [
+			{
+			  "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+			  "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+			  "type": "NoWaveDevice",
+			  "outputs": [
+				{
+				  "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+				  "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+				  "isMuted": false,
+				  "level": 0.77,
+				  "mixId": ""
+				}
+			  ]
+			},
+			{
+			  "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+			  "name": "Headset (Sound Blaster G3)",
+			  "type": "NoWaveDevice",
+			  "outputs": [
+				{
+				  "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+				  "name": "Headset (Sound Blaster G3)",
+				  "isMuted": false,
+				  "level": 1,
+				  "mixId": ""
+				}
+			  ]
+			},
+			{
+			  "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+			  "name": "Speakers (Sound Blaster G3)",
+			  "type": "NoWaveDevice",
+			  "outputs": [
+				{
+				  "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+				  "name": "Speakers (Sound Blaster G3)",
+				  "isMuted": false,
+				  "level": 1,
+				  "mixId": ""
+				}
+			  ]
+			}
+		  ]
+		}
+	  }
+	}
+  ]
+}
