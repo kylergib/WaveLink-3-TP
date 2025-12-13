@@ -64,14 +64,10 @@ jobs:
         # if: false
         run: dotnet build --no-restore
       
-      # Run tests (optional)
-      # - name: Test
-      #   run: dotnet test --no-build --verbosity normal
-      
       # Publish the x64
       - name: Publish win x64
         # if: false
-        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/winx64 -r win-x64 --self-contained
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/win_x64 -r win-x64 --self-contained
 
       - name: Publish mac x64
         # if: false
@@ -80,12 +76,33 @@ jobs:
       - name: Publish mac arm
         # if: false
         run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_arm64 -r osx-arm64 --self-contained
-
-     # generate a tag
-      - name: Generate tag
+      - name: Compute tag from entry
         id: tag
         run: |
-          echo "TAG=v$(date +%Y.%m.%d.%H%M)" >> $GITHUB_OUTPUT
+          VERSION=$(jq -r '.version' entry.tp)
+          TAG="v$VERSION"
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Create tag
+        run: |
+          git tag ${{ steps.tag.outputs.TAG }}
+          git push origin ${{ steps.tag.outputs.TAG }}
+
+      - name: Show tag
+        run: |
+          echo "TAG=${{ steps.tag.outputs.TAG }}"
+          git tag --list
+
+        # Copy publish files
+      - name: Copy to appdata
+        # if: false
+        # if: success()
+        run: |
+          zip -r WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.zip ./publish/win_x64 && \
+          zip -r WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.zip ./publish/osx_x64 && \
+          zip -r WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.zip ./publish/osx_arm64
+
+     
 
       # create the release
       - name: Create Gitea Release
@@ -96,9 +113,9 @@ jobs:
           body: "Automated release"
           token: ${{ secrets.GITEA_TOKEN }}
           files: |
-            ./publish/win_x64/**
-            ./publish/osx_x64/**
-            ./publish/osx_arm64/**
+            WaveLinkPlugin_win_x64.zip
+            WaveLinkPlugin_osx_x64.zip
+            WaveLinkPlugin_osx_arm64.zip
 
       - name: Handle Build Failure
         if: failure()
