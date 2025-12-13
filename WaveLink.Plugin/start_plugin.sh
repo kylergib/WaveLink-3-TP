@@ -13,4 +13,4 @@ then
 	sleep 1
 fi
 
-./$prog > ${prog}log.txt 2>&1 &
+./$prog > ${prog}log.txt 2>&1 &.sh
