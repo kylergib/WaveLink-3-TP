@@ -79,7 +79,7 @@ jobs:
       - name: Compute tag from entry
         id: tag
         run: |
-          VERSION=$(jq -r '.version' entry.tp)
+          VERSION=$(jq -r '.version' WaveLink.Plugin/entry.tp)
           TAG="v$VERSION"
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
