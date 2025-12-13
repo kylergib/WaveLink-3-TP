@@ -171,6 +171,650 @@
 		  ]
 		}
 	  }
+	},
+	{
+	  "jsonrpc": "2.0",
+	  "method": "inputDevicesChanged",
+	  "params": {
+		"inputDevices": [
+		  {
+			"id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+			"name": "Microphone (Wireless Microphone)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+				"name": "Microphone (Wireless Microphone)",
+				"gain": {
+				  "value": 1,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+			"name": "Line (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+				"name": "Line (Sound Blaster G3)",
+				"gain": {
+				  "value": 0.8387316,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+			"name": "Digital Audio Interface (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+				"name": "Digital Audio Interface (Sound Blaster G3)",
+				"gain": {
+				  "value": 0.76168746,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+			"name": "SPDIF Interface (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+				"name": "SPDIF Interface (Sound Blaster G3)",
+				"gain": {
+				  "value": 1,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+			"name": "Microphone (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+				"name": "Microphone (Sound Blaster G3)",
+				"gain": {
+				  "value": 0,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": true
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{248e9ea8-5f1f-4b41-b3e1-d51bc33f5ed0}",
+			"name": "Mic In (Elgato Wave:3)",
+			"type": "Wave3",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{248e9ea8-5f1f-4b41-b3e1-d51bc33f5ed0}",
+				"name": "Mic In (Elgato Wave:3)",
+				"gain": {
+				  "value": 0.78847593,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  }
+		]
+	  }
+	},
+	{
+	  "jsonrpc": "2.0",
+	  "method": "inputDevicesChanged",
+	  "params": {
+		"inputDevices": [
+		  {
+			"id": "BS43J1A10110\\\\PCM_IN_01_C_00_SD1",
+			"name": "Elgato Wave:3",
+			"type": "Wave3",
+			"inputs": [
+			  {
+				"id": "BS43J1A10110\\\\PCM_IN_01_C_00_SD1",
+				"name": "Elgato Wave:3",
+				"gain": {
+				  "value": 0,
+				  "min": 0,
+				  "max": 40,
+				  "lookUpTable": [
+					[
+					  0,
+					  0
+					],
+					[
+					  0.025,
+					  1
+					],
+					[
+					  0.05,
+					  2
+					],
+					[
+					  0.075,
+					  3
+					],
+					[
+					  0.1,
+					  4
+					],
+					[
+					  0.125,
+					  5
+					],
+					[
+					  0.15,
+					  6
+					],
+					[
+					  0.175,
+					  7
+					],
+					[
+					  0.2,
+					  8
+					],
+					[
+					  0.225,
+					  9
+					],
+					[
+					  0.25,
+					  10
+					],
+					[
+					  0.275,
+					  11
+					],
+					[
+					  0.3,
+					  12
+					],
+					[
+					  0.325,
+					  13
+					],
+					[
+					  0.35,
+					  14
+					],
+					[
+					  0.375,
+					  15
+					],
+					[
+					  0.4,
+					  16
+					],
+					[
+					  0.425,
+					  17
+					],
+					[
+					  0.45,
+					  18
+					],
+					[
+					  0.475,
+					  19
+					],
+					[
+					  0.5,
+					  20
+					],
+					[
+					  0.525,
+					  21
+					],
+					[
+					  0.55,
+					  22
+					],
+					[
+					  0.575,
+					  23
+					],
+					[
+					  0.6,
+					  24
+					],
+					[
+					  0.625,
+					  25
+					],
+					[
+					  0.65,
+					  26
+					],
+					[
+					  0.675,
+					  27
+					],
+					[
+					  0.7,
+					  28
+					],
+					[
+					  0.725,
+					  29
+					],
+					[
+					  0.75,
+					  30
+					],
+					[
+					  0.775,
+					  31
+					],
+					[
+					  0.8,
+					  32
+					],
+					[
+					  0.825,
+					  33
+					],
+					[
+					  0.85,
+					  34
+					],
+					[
+					  0.875,
+					  35
+					],
+					[
+					  0.9,
+					  36
+					],
+					[
+					  0.925,
+					  37
+					],
+					[
+					  0.95,
+					  38
+					],
+					[
+					  0.975,
+					  39
+					],
+					[
+					  1,
+					  40
+					]
+				  ]
+				},
+				"isMuted": false,
+				"isGainLockOn": true,
+				"micPcMix": 1,
+				"effects": [
+				  {
+					"id": "f27d5675-119f-4cdf-a7ad-514c0b588cc3",
+					"name": "Voice Focus",
+					"isEnabled": false
+				  }
+				],
+				"dspEffects": [
+				  {
+					"id": "clipguard",
+					"name": "Clipguard",
+					"isEnabled": true
+				  },
+				  {
+					"id": "lowcut",
+					"name": "Enhanced lowcut",
+					"isEnabled": true
+				  }
+				]
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+			"name": "Microphone (Wireless Microphone)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+				"name": "Microphone (Wireless Microphone)",
+				"gain": {
+				  "value": 1,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+			"name": "Line (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+				"name": "Line (Sound Blaster G3)",
+				"gain": {
+				  "value": 0.8387316,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+			"name": "Digital Audio Interface (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+				"name": "Digital Audio Interface (Sound Blaster G3)",
+				"gain": {
+				  "value": 0.76168746,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+			"name": "SPDIF Interface (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+				"name": "SPDIF Interface (Sound Blaster G3)",
+				"gain": {
+				  "value": 1,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+			"name": "Microphone (Sound Blaster G3)",
+			"type": "NoWaveDevice",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+				"name": "Microphone (Sound Blaster G3)",
+				"gain": {
+				  "value": 0,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": true
+			  }
+			]
+		  },
+		  {
+			"id": "{0.0.1.00000000}.{248e9ea8-5f1f-4b41-b3e1-d51bc33f5ed0}",
+			"name": "Mic In (Elgato Wave:3)",
+			"type": "Wave3",
+			"inputs": [
+			  {
+				"id": "{0.0.1.00000000}.{248e9ea8-5f1f-4b41-b3e1-d51bc33f5ed0}",
+				"name": "Mic In (Elgato Wave:3)",
+				"gain": {
+				  "value": 0.78847593,
+				  "min": 0,
+				  "max": 1,
+				  "lookUpTable": []
+				},
+				"isMuted": false
+			  }
+			]
+		  }
+		]
+	  }
+	},
+	{
+	  "jsonrpc": "2.0",
+	  "method": "inputDeviceChanged",
+	  "params": {
+		"id": "BS43J1A10110\\\\PCM_IN_01_C_00_SD1",
+		"name": "Elgato Wave:3",
+		"type": "Wave3",
+		"inputs": [
+		  {
+			"id": "BS43J1A10110\\\\PCM_IN_01_C_00_SD1",
+			"name": "Elgato Wave:3",
+			"effects": [
+			  {
+				"id": "f27d5675-119f-4cdf-a7ad-514c0b588cc3",
+				"name": "Voice Focus",
+				"isEnabled": true
+			  }
+			]
+		  }
+		]
+	  }
+	},
+	{
+	  "jsonrpc": "2.0",
+	  "method": "inputDeviceChanged",
+	  "params": {
+		"id": "BS43J1A10110\\\\PCM_IN_01_C_00_SD1",
+		"name": "Elgato Wave:3",
+		"type": "Wave3",
+		"inputs": [
+		  {
+			"id": "BS43J1A10110\\\\PCM_IN_01_C_00_SD1",
+			"name": "Elgato Wave:3",
+			"gain": {
+			  "value": 0.5,
+			  "min": 0,
+			  "max": 40,
+			  "lookUpTable": [
+				[
+				  0,
+				  0
+				],
+				[
+				  0.025,
+				  1
+				],
+				[
+				  0.05,
+				  2
+				],
+				[
+				  0.075,
+				  3
+				],
+				[
+				  0.1,
+				  4
+				],
+				[
+				  0.125,
+				  5
+				],
+				[
+				  0.15,
+				  6
+				],
+				[
+				  0.175,
+				  7
+				],
+				[
+				  0.2,
+				  8
+				],
+				[
+				  0.225,
+				  9
+				],
+				[
+				  0.25,
+				  10
+				],
+				[
+				  0.275,
+				  11
+				],
+				[
+				  0.3,
+				  12
+				],
+				[
+				  0.325,
+				  13
+				],
+				[
+				  0.35,
+				  14
+				],
+				[
+				  0.375,
+				  15
+				],
+				[
+				  0.4,
+				  16
+				],
+				[
+				  0.425,
+				  17
+				],
+				[
+				  0.45,
+				  18
+				],
+				[
+				  0.475,
+				  19
+				],
+				[
+				  0.5,
+				  20
+				],
+				[
+				  0.525,
+				  21
+				],
+				[
+				  0.55,
+				  22
+				],
+				[
+				  0.575,
+				  23
+				],
+				[
+				  0.6,
+				  24
+				],
+				[
+				  0.625,
+				  25
+				],
+				[
+				  0.65,
+				  26
+				],
+				[
+				  0.675,
+				  27
+				],
+				[
+				  0.7,
+				  28
+				],
+				[
+				  0.725,
+				  29
+				],
+				[
+				  0.75,
+				  30
+				],
+				[
+				  0.775,
+				  31
+				],
+				[
+				  0.8,
+				  32
+				],
+				[
+				  0.825,
+				  33
+				],
+				[
+				  0.85,
+				  34
+				],
+				[
+				  0.875,
+				  35
+				],
+				[
+				  0.9,
+				  36
+				],
+				[
+				  0.925,
+				  37
+				],
+				[
+				  0.95,
+				  38
+				],
+				[
+				  0.975,
+				  39
+				],
+				[
+				  1,
+				  40
+				]
+			  ]
+			}
+		  }
+		]
+	  }
 	}
   ]
 }

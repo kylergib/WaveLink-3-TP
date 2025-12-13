@@ -76,6 +76,7 @@ public class WaveSocket : IWaveSocket
         catch (Exception ex)
         {
             _logger.LogError("Failed to connect to WebSocket at {Url}", Url);
+            _logger.LogError(ex.Message);
             throw;
         }
 
@@ -100,50 +101,80 @@ public class WaveSocket : IWaveSocket
 
         try
         {
-            while (!cancellationToken.IsCancellationRequested &&
-                   _ws is not null)
+            while (!cancellationToken.IsCancellationRequested && _ws != null)
             {
+                var segment = new ArraySegment<byte>(buffer);
                 WebSocketReceiveResult result;
 
-                try
-                {
-                    result = await _ws.ReceiveAsync(buffer, cancellationToken);
-                }
-                catch (WebSocketException)
-                {
-                    // remote closed TCP abruptly
-                    break;
-                }
-                catch (IOException)
-                {
-                    // underlying TCP closed
-                    break;
-                }
+                using var ms = new MemoryStream();
 
-                // Remote closed without handshake
-                if (result.MessageType == WebSocketMessageType.Close ||
-                    result.CloseStatus.HasValue ||
-                    result.Count == 0)
+                do
                 {
-                    break;
-                }
+                    try
+                    {
+                        result = await _ws.ReceiveAsync(segment, cancellationToken);
+                    }
+                    catch (WebSocketException)
+                    {
+                        break; // abrupt close
+                    }
+                    catch (IOException)
+                    {
+                        break; // TCP closed
+                    }
 
-                if (result.MessageType == WebSocketMessageType.Text)
+                    if (result.MessageType == WebSocketMessageType.Close ||
+                        result.CloseStatus.HasValue ||
+                        result.Count == 0)
+                    {
+                        break;
+                    }
+
+                    ms.Write(buffer, 0, result.Count);
+
+                } while (!result.EndOfMessage);
+
+
+                if (_ws.State != WebSocketState.Open)
+                    break;
+
+                string fullMessage = Encoding.UTF8.GetString(ms.ToArray());
+
+                foreach (var json in SplitJsonMessages(fullMessage))
                 {
-                    var msg = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                    _logger.LogDebug("Received: {Message}", msg);
-                    OnMessage?.Invoke(this, msg);
+                    _logger.LogDebug("Received JSON: {Json}", json);
+                    OnMessage?.Invoke(this, json);
                 }
             }
         }
         finally
         {
             _logger.LogInformation("Receive loop stopped.");
-            OnClose?.Invoke(this, EventArgs.Empty);  // fire ONCE here
+            OnClose?.Invoke(this, EventArgs.Empty);
         }
     }
 
 
+    private static IEnumerable<string> SplitJsonMessages(string input)
+    {
+        int depth = 0;
+        int start = 0;
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            if (input[i] == '{') depth++;
+            if (input[i] == '}') depth--;
+
+            if (depth == 0 && i >= start)
+            {
+                var json = input.Substring(start, i - start + 1).Trim();
+                if (json.Length > 0)
+                    yield return json;
+
+                start = i + 1;
+            }
+        }
+    }
     public async Task SendMessageAsync(string message, CancellationToken cancellationToken = default)
     {
         if (_ws is null || _ws.State != WebSocketState.Open)

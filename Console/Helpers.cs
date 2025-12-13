@@ -17,10 +17,9 @@ public class Helpers
         Console.WriteLine("=====================================");
         Console.WriteLine();
     }
-    public async Task Start(ILogger _logger, ILoggerFactory loggerFactory, string host, int port)
+    public async Task Start(ILogger<Helpers> _logger, ILoggerFactory loggerFactory, string host, int port)
     {
         while (retry) {
-            _logger.LogInformation($"{client?.IsConnected}");
             try
             {
                 client = new(host, port, loggerFactory);
@@ -54,6 +53,9 @@ public class Helpers
                         _ = client.SendRequestAsync(channelRequest);
                         WaveLinkRequestMethod mixRequest = new(WaveRequestId.getMixes);
                         _ = client.SendRequestAsync(mixRequest);
+
+                        WaveLinkSendMethod<MethodSubscriptionInfo> subscribe = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = true } });
+                        _ = client?.SendRequestAsync<MethodSubscriptionInfo>(subscribe);
                     } else
                     {
                         _logger.LogWarning("Connected to an app that was not Wave Link. Closing and retrying...");
@@ -64,12 +66,12 @@ public class Helpers
                 client.MessageRouter.OnReceivedGetInputDevices += async (s, response) =>
                 {
                     _logger.LogDebug("Received Input Devices Info:");
-                    foreach (var inputDevice in response.Result.InputDevices)
+                    foreach (var inputDevice in response?.Result?.InputDevices ?? new())
                     {
-                        _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}, IsMuted: {inputDevice.IsMuted}");
+                        _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
                         foreach (var input in inputDevice.Inputs)
                         {
-                            _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input.Gain.Value}, Min: {input.Gain.Min}, Max: {input.Gain.Max}\n");
+                            _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
                         }
                     }
                 };
@@ -89,18 +91,18 @@ public class Helpers
                 client.MessageRouter.OnReceivedGetChannels += async (s, response) =>
               {
                   _logger.LogDebug("Received Channels Info:");
-                  foreach (var channel in response.Result.Channels)
+                  foreach (var channel in response.Result?.Channels ?? [])
                   {
                       _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image.ImgData)}");
-                      foreach (var app in channel.Apps)
+                      foreach (var app in channel.Apps ?? [])
                       {
                           _logger.LogDebug($"App ID: {app.Id}, Name: {app.Name}");
                       }
-                      foreach (var mix in channel.Mixes)
+                      foreach (var mix in channel.Mixes ?? [])
                       {
                           _logger.LogDebug($"Mix ID: {mix.Id}, Level: {mix.Level}, IsMuted: {mix.IsMuted}");
                       }
-                      foreach (var effect in channel.Effects)
+                      foreach (var effect in channel.Effects ?? [])
                       {
                           //_logger.LogDebug($"Effect ID: {effect.Id}, Name: {effect.Name}, Type: {effect.Type}");
                       }
@@ -125,8 +127,8 @@ public class Helpers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Connection failed on port: {port}");
-                Console.WriteLine("Retrying...");
+                _logger.LogWarning($"Connection failed on port: {port}");
+                _logger.LogWarning("Retrying...");
                 await Task.Delay(500);
                 port++;
             }

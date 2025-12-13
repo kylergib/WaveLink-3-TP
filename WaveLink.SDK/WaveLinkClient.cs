@@ -23,6 +23,8 @@ public class WaveLinkClient : IWaveLinkClient
 
     public WaveLinkMessageRouter MessageRouter { get; set; }
 
+    public WaveLinkStateManager StateManager { get; set; }
+
     public string Url => WaveSocket.Url;
     public int Port => WaveSocket.Port;
     // leave i want to try to add multiple wave link connections
@@ -42,6 +44,7 @@ public class WaveLinkClient : IWaveLinkClient
         //WaveSocket.OnClose += (s, e) => OnClose?.Invoke(this, e);
         MessageRouter = new WaveLinkMessageRouter(_loggerFactory.CreateLogger<WaveLinkMessageRouter>());
         WaveSocket.OnClose += (s, e) => HandleClose(e);
+        StateManager = new WaveLinkStateManager(_loggerFactory.CreateLogger<WaveLinkStateManager>(), MessageRouter);
     }
 
     public async Task ConnectAsync(CancellationToken cancellationToken = default) => await WaveSocket.ConnectAsync(cancellationToken);
@@ -53,35 +56,33 @@ public class WaveLinkClient : IWaveLinkClient
             var root = doc.RootElement;
             bool isResult = root.TryGetProperty("result", out var resultElement);
             bool isMethod = root.TryGetProperty("method", out var methodElement);
-            _logger.LogDebug("isResult: {isResult}", isResult);
-            _logger.LogDebug("isMethod: {isMethod}", isMethod);
 
-
-            // is part of setup i think?
             if (isResult)
             {
                 int id = root.GetProperty("id").GetInt32();
                 WaveRequestId idEnum = (WaveRequestId)id;
+                 _logger.LogDebug("Received Result: {result}", idEnum.ToString());
                 MessageRouter.Route(idEnum, message);
             }
             else if (isMethod)
             {
                 string method = root.GetProperty("method").GetString() ?? string.Empty;
                 ReceivedMethods methodEnum = Enum.Parse<ReceivedMethods>(method);
+                 _logger.LogDebug("Received Method: {method}", method);
                 MessageRouter.Route(methodEnum, message);
             }
             else
             {
-                _logger.LogWarning("Received message is neither a result nor a method call:");
-                _logger.LogWarning("{message}", message.Minify());
+                _logger.LogError("Received message is neither a result nor a method call:");
+                _logger.LogDebug("{message}", message.Minify());
             }
             OnMessage?.Invoke(this, message);
         }
         catch (Exception ex)
         {
             _logger.LogError("Error converting message");
-            _logger.LogError("{message}", message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogDebug("{message}", message);
+            _logger.LogDebug(ex.StackTrace);
         }
     }
     public async Task SendRequestAsync(string request)
@@ -101,6 +102,7 @@ public class WaveLinkClient : IWaveLinkClient
             _logger.LogWarning("Attempted to send empty JSON request.");
             throw new ArgumentException("JSON request is empty.");
         }
+       
         await SendRequestAsync(message);
     }
     public async Task SendRequestAsync(WaveLinkRequestMethod request)
@@ -113,6 +115,22 @@ public class WaveLinkClient : IWaveLinkClient
         }
         await SendRequestAsync(message);
     }
+    public async Task SendRequestAsync<T>(WaveLinkSendMethod<T> request)
+    {
+        // set send count as id and add to dictionary
+        request.Id = StateManager.SendCount;
+        StateManager.SendCount++;
+        StateManager.SendState.Add(request.Id, request);
+
+        var message = JsonSerializer.Serialize(request, Statics.JsonSerializerOptionsDefault);
+        if (string.IsNullOrEmpty(message))
+        {
+            _logger.LogWarning("Attempted to send empty JSON request.");
+            throw new ArgumentException("JSON request is empty.");
+        }
+        await SendRequestAsync(message);
+    }
+
     public async Task CloseAsync(WebSocketCloseStatus closeStatus = WebSocketCloseStatus.NormalClosure, string statusDescription = "Closing", CancellationToken cancellationToken = default)
     {
        try

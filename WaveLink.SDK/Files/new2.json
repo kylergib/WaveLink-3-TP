@@ -1,0 +1,1237 @@
+{
+  "test": [
+    {
+      "id": 72,
+      "jsonrpc": "2.0",
+      "method": "getApplicationInfo"
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "appID": "EWL",
+        "operatingSystem": "windows",
+        "name": "Elgato Wave Link",
+        "version": "3.0.0.1891",
+        "build": 1891,
+        "interfaceRevision": 1
+      },
+      "id": 72
+    },
+    {
+      "id": 73,
+      "jsonrpc": "2.0",
+      "method": "getInputDevices"
+    },
+    {
+      "id": 74,
+      "jsonrpc": "2.0",
+      "method": "getOutputDevices"
+    },
+    {
+      "id": 75,
+      "jsonrpc": "2.0",
+      "method": "getChannels"
+    },
+    {
+      "id": 76,
+      "jsonrpc": "2.0",
+      "method": "getMixes"
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "inputDevices": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "name": "SPDIF Interface (Sound Blaster G3)",
+            "isWaveDevice": false,
+            "inputs": [
+              {
+                "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+                "name": "SPDIF Interface (Sound Blaster G3)",
+                "gain": {
+                  "value": 1,
+                  "min": 0,
+                  "max": 1,
+                  "lookUpTable": []
+                },
+                "isMuted": false
+              }
+            ]
+          },
+          {
+            "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+            "name": "Line (Sound Blaster G3)",
+            "isWaveDevice": false,
+            "inputs": [
+              {
+                "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+                "name": "Line (Sound Blaster G3)",
+                "gain": {
+                  "value": 0.8387316,
+                  "min": 0,
+                  "max": 1,
+                  "lookUpTable": []
+                },
+                "isMuted": false
+              }
+            ]
+          },
+          {
+            "id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+            "name": "Microphone (Wireless Microphone)",
+            "isWaveDevice": false,
+            "inputs": [
+              {
+                "id": "{0.0.1.00000000}.{55875216-c4a3-4502-a400-66d5ea09e6d6}",
+                "name": "Microphone (Wireless Microphone)",
+                "gain": {
+                  "value": 1,
+                  "min": 0,
+                  "max": 1,
+                  "lookUpTable": []
+                },
+                "isMuted": false
+              }
+            ]
+          },
+          {
+            "id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+            "name": "Microphone (Sound Blaster G3)",
+            "isWaveDevice": false,
+            "inputs": [
+              {
+                "id": "{0.0.1.00000000}.{386ad993-08e6-4f84-8381-b20cb27a197f}",
+                "name": "Microphone (Sound Blaster G3)",
+                "gain": {
+                  "value": 0,
+                  "min": 0,
+                  "max": 1,
+                  "lookUpTable": []
+                },
+                "isMuted": true
+              }
+            ]
+          },
+          {
+            "id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+            "name": "Digital Audio Interface (Sound Blaster G3)",
+            "isWaveDevice": false,
+            "inputs": [
+              {
+                "id": "{0.0.1.00000000}.{f1995bc6-f960-4abc-9353-14a243aee5ca}",
+                "name": "Digital Audio Interface (Sound Blaster G3)",
+                "gain": {
+                  "value": 0.76168746,
+                  "min": 0,
+                  "max": 1,
+                  "lookUpTable": []
+                },
+                "isMuted": false
+              }
+            ]
+          }
+        ]
+      },
+      "id": 73
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_00_SD1",
+            "name": "Personal Mix",
+            "level": 1,
+            "isMuted": false,
+            "image": {
+              "name": "number1"
+            }
+          },
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "name": "Stream Mix",
+            "level": 0.76,
+            "isMuted": false,
+            "image": {
+              "name": "number3"
+            }
+          }
+        ]
+      },
+      "id": 76
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "mainOutput": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "outputDevices": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "name": "Speakers (Sound Blaster G3)",
+            "isWaveDevice": false,
+            "outputs": [
+              {
+                "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+                "name": "Speakers (Sound Blaster G3)",
+                "isMuted": false,
+                "level": 0.95826846,
+                "mixId": "PCM_IN_01_V_04_SD3"
+              }
+            ]
+          },
+          {
+            "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+            "name": "Headset (Sound Blaster G3)",
+            "isWaveDevice": false,
+            "outputs": [
+              {
+                "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+                "name": "Headset (Sound Blaster G3)",
+                "isMuted": false,
+                "level": 0.95826846,
+                "mixId": ""
+              }
+            ]
+          },
+          {
+            "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+            "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+            "isWaveDevice": false,
+            "outputs": [
+              {
+                "id": "{0.0.0.00000000}.{ab54fb31-dc1d-46d9-b908-ef3e7a5db5cf}",
+                "name": "1 - LG ULTRAGEAR\u002B (AMD High Definition Audio Device)",
+                "isMuted": false,
+                "level": 0.77,
+                "mixId": ""
+              }
+            ]
+          }
+        ]
+      },
+      "id": 74
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "channels": [
+          {
+            "id": "PCM_OUT_00_V_02_SD2",
+            "name": "Browser",
+            "type": "Software",
+            "mixes": [
+              {
+                "id": "PCM_IN_01_V_00_SD1",
+                "level": 1,
+                "isMuted": false
+              },
+              {
+                "id": "PCM_IN_01_V_04_SD3",
+                "level": 1,
+                "isMuted": false
+              }
+            ],
+            "level": 1,
+            "isMuted": false,
+            "apps": [
+              {
+                "id": "Microsoft Edge",
+                "name": "Microsoft Edge"
+              }
+            ],
+            "effects": [],
+            "image": {
+              "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABM7SURBVHhezZt/sF1Vdce/a\u002B9z370vJBAwkhqrFAISyy8hkEQQhLZjpyoOQ9F2BrV1HBkZO\u002BX3D5XKgDAdQGccpuWHQG2rOMqvyI8AEpPwq0hKEEgCgxIiBCgQA8lL8t7LvfecvfrHWmuffc69L3kvPzBr5rxz9j77/Nif\u002B11rr73vu4T32GYtWXOop/woEH\u002BfwNMYDOjGYIDkmHQPMMBFYOKFzOGa7kD3qVXz5m2s33dXGdUrdoUdvviNhaDiBDgeMCCyD2AEbTUWoAAiBuk5AoMogLnYzBTmrzj241\u002BuPW6n2i4DdNjitWd5F34gHQ8Cg4KCsbpyL8cYE5DVUSwHOBdAFOCoABCuXDbnk5fU32NHbacDmv3IOy8hhJmBmEQhWwNUlqsKwpiAgABHAjUF5Fwh8Fy\u002B\u002BcmjPjWl/l7bazsN0FGLN/y3c/wl6yir\u002B9gGMJgKBWJgTEV1QNUYVAJSMCRgbPOuEEhUgFwh51GMvJONTH/h0C9srr/rRGyHAR25ZPTAjPKX0k6XYFQpVK0rwVRVVAJCDUyppNLNgsBAgIuAApzLo6IEWP7W4kM\u002B/4Haa4/bdgjQMQ9vXkXAzLoqpKtFCYSS4z4g5S0CBI0pp3SzOiBzM3OrElAB73It56CkTFn3lF8e9A93V3uwbdsuQEcs4aktGl1fdY/ejveqp1c50sbqzPpBKmORuZijIolBOZwL8NSNgJzL4V0O7wQUuLNhwcFn7J08aJvm6hXbsnmPjJw\u002BSFvW1\u002Bu3btLZ8lhQIrpU/XxSikVKjqtGYBAAUtiSClidqg8B3mPq517\u002B97x\u002B/dZsQgqa8/DIdzzcZaVqyn2pilQtNnLV6mLQTlVV732qotpQT\u002BpiqiDvTDXqUpTD\u002B66Wu3AuR\u002BZyeNeNbtdl3vvu/c/ZUHtoj41bQXMXjdzj4S6r14vVO6fWg1/bEcZQTn2zegKz6CFtXT2ye5t6qhtI3F1gF2j57ri8YFyA5i7p/It3/mTq7XFivZDqSrNaO5OW5c51OEiglHuB1a9V/XrNvklcTEY/UR1RgdNf/y5/dtmlk5Lb9Ng2Ac1b2D7dA5cD1MMgxdUDT4fr8m8/SGV9r4v1N2Z9bo1jpd6UY1MUUxECCAwHTSopxz4zwnB5l17bKqAjlvBUn7mfpJ2vCh3Vt0S/Bul5i1f9gI1tUTG6l4K8VdQVle6lDWJwluAtcUsUlORNlOMrb50/5uR3q4CmoIh\u002BWr5OnYC\u002BfKXT/QCUx3ZFeS5t0x9WhMOmZNNGbJFcnt5LBoHoYol6LOF0jqd89e1znoi3SmxMQMct7q5CP9dR619bt/RFy610p/4wkp7WyoaWyrKeEoDpcxRh4mbpvSxwGzBHxce/8taZByQPBcYCNPehLQcR0cx6PQFR2r1KUhurz4CcrLjAtqwOqjSp5VJQyZAgNZJSpHmQwBA1AQUIhZ6TwD3gsar2mH49BI5fUjDiw8TSkchm5QxGe3gEbz75GNpDG5EPD4OcA8hJTAADzCDOke05Bc1pU7DXnFlwDbufZc\u002Bpqsa2OHxrLJF5l\u002BRB3nXhqIvMd\u002BGog8zn8K6DzHfgqQPvu8hcR9t24OI1kivZSIfQ\u002BcaN0//juvjM6isAxy8ufkyELyL57GwaYJ1Y//oavLr4l6BsQLcM5DKQI4CcRky9OQHgAOIAhBwcOkC3A87b2Ocvj0Rrxl7xKduyXkAypfCuq1OMHJnrwrk2MgXgvUDJXAeZb8O5rrbRa0imI3ZPQuAb3n9z9KweQCcsCRrtegG9\u002BMC9GF3/LqgxCPIZ4D3IecA5UQ4IRAQQ6aiSPoAFEssnxSEHd7aA2yNo7DMJ0/768NhyLCvnYpZBS8c8mTJEHbJJOfMdVVYH3rXlnM/1Gp3568TW7ltwOOumfX90LeqAPrEkrPLATFQ\u002BT8Ybz6/Am8ufg2s0Ad8AZR5wHkRO4NjeiXoEjsWqWhJoauIAcAEUXXC3Dd6yGZMP/VNMPmRGfHJq0WWBZJjWaYUTd/Ikiomu5jrqVrr32ia6mVwvgAS4vG/ADfv\u002BZ3SAaJ9cHEI6bIXAePrntwKNFsh7wGcg8qocp25lkEghpe6lN4udMxUVktlxAYQcFApw3gV3RhBGh/Anf3ccqDZ8GCALus4FuOgiFk86MQYZhMy3FVxXFES5KinXOFSqxxRECGi3Rz/2ow/d9lx8jRMWh7OISLtEWP/W21h25x1Ac0/QwKBAyppAownKWkBjEGg0wY0W0GgBA4NyPmuCtI7i\u002BWZyvV3bAjVaoMYg0BgENQfh9pgKv\u002Bd0vH3XMmz5v6EKoHRWX1aYKiGKBINZRi/Lf5h1ADDVoijrmRGCnLMyB9k3Go2HkQ7zjugHdvz26jV46YmlQHOyQPDScc5aQAopa4EaA0A2APgBcCZtORvQ9k05lzUBvQc19HoD22gBA\u002BUxtfaAnzINQ0\u002B\u002BgtFXN9krAZBch5NYZJusFCgEWJwrVKlSFgAQAEHKCGzNtV5hBQaYpiJ1sROXyGf0hzWvY/VvlgM\u002BExdxTlyKPCjLJPY4dTPygNPArHuyEUzjkDxEJkoWiyQPARCkE8QBXOSgkAOhCy5yoLsFPLIRk4/8ICbtl65xaXBGoS5mMaWti2Rb4F2OzJXB2ZEN8e044pEupkkMMveS6YclmMw8xwPACYvCQiI6IO/meP6xJ0UVzstI5RqAH9BRKwP5BuAbcAbJWcD2OsRr0CaNS6TB2\u002BKUnrN2lbbJSEjOgzKPLa\u002B8hT0O2le\u002BwUhGMMl\u002BJX4IrBxknbUyChAsCJcQCIXO28rEkVimHdF1mREoTHMA4AjHE4Cn7l8EZC0wZYDLwCQw4BpgBWMKYsoA8jpGEdjGdSAec5RNUgYBZOrzYC/Pgt2/Ia4ox4Nwe\u002ByNtb94Vt3JsuMChK4e5yDkEltinIl\u002BA0DdqRZjYtm2JC7ZRgVOcQBARM3ljz8tcLy8LOtLW5lcA6AMoAysn7oA0D0LAFvYYnIAXIwb4sBO66H38AB8UZD7t7XnHEZrz/0YrT1/Nq29aB5x1rqWXbOg5iTQpKl499FX4KijMLpxL1OGPIKTuFNoME7jUD0eBYlFCkzik7xnsDqA6LhF4ZCmo5WPL3hU3Iig7iAJoLmSuIoXAVgyqAqJQzuVmaE0sYIJiarxaO1rH1l3xYkvSaP\u002Bttd3H9l/IN\u002ByOmxejxmnfFBn4OZWMsw76sKTTh/I8huNTdRJUgGJU\u002BU3H934VZFOWMXNIEu8RACdtCh8ednipf/VySXQCgBL/DINvhKMJQkUBci0AiUkZdGvzsCZt7WXPpQP//TMRqQwDpt2yYIOdd9tzPjsdFmiQAGKgASIdF6CsuRFkjFL8E7qdL26GqBTQDKdgQ7z3293GezEJaCxAeQ1ltheXYcZIHEbSUEkD4l5SlInjXTHAIeA0duuxUThAMC6Kz4zUOSZxBzOAVgQtpikwbefO1leZLmSDun1mMPM0c1sc5uGhqfBNwSIcwrERiSvfUwWzUkhGZQapLSuLDPC5o3YMv96jGbND9U7P17jzO/XHeqA0AGhDeIuwF0QdwDOAe4C6CiMAqwgLWOXuCPwmIsYg4LCCQEIHLSd1LmXf/s62CkQGCQnkCIQOYwdBgSSBl/hJTe0uhRcsXkjOot\u002BCjQmt/HI1a\u002BnnZ6Irb/qC2s2voq2QxsOXYGEtgRt7oqqOAe4I3Di1gVzoceFHpvCFFLQwM1QOLJ3mzeOCJAYNJy4lPRNlGOQEqUggSQN9XQNUhjZhHzRz0DZJHCzdWXZ3e2zzavalxI6ohwdzYhzOeYuwFpOYMg7pW6UTC2EBBCPTfnSD8q\u002B/SxLspaORGkAlq0MuIjDUnKYXGPCIwCMfMFNcAOTAZ9h\u002BMFvWyjfIZvz6M2sazcAcQzQBF1Es0RRRzOni2s\u002BSRjj6EWafEITR/tejRhMvNpF9TDKnAbQvKa0UjUolWTnYiM91k\u002BgWHAT3MAkTTAza7XDZgoS17JYpAkjF5ofmXtV3alUi8WZNJCLqZCAIv9HWxsFW/AFSkhQ1\u002BK6a0mrWGeStHYA\u002BPfPgxqTYlZMfsID15gmriXB2bLoMmB3FYrBsZhjwVkCdBl/rE6DtcUfBm49\u002BO7HXBydUrlUINkp/dsPUnlYQnrxf2UmT1mcr\u002B00sziDolSKZc5x0\u002BE\u002BjmiFKkh6b3EJldHWTjNC4NUA4CSnsQCdTgv6X2jHiCx6IYXfLJQ1JNeQVQGn206wOUv\u002B9QoZvTpx1CoVZcpJoNm0Q/OjEpS6VlBgOpKFILnQzz5650xIZlhSBCBfzKUKSS0FEtv3QsK7bwqcOMuXNGLw1Btuqd5w4kbUvVgSvnKiGudgGoMoKqeaNFr8kTe2T90\u002BeAXFQAhFnP6ULgbEiaVxkXslStJzFUi6xbq1r8rimJdvOhCXQxw8ZZ\u002BxB2\u002BPHfXwJYc5BC/BuK4SgSFuF6rn6kE6FEAc6msTVma\u002B/bD5H7FnOmZ\u002BrgRQU0I8Fjp9IaVtmYEVD4MyUU/cbM3H0XR78PZYk7FcgrIqJ0Lq1mJS6VKyRKJuhTIgi2rSfEje/47D76yshjsO\u002BI4VeiCVxfFBAjQw6zceml9JTiTb4N/eMldbTsjmLf7WKMX5lK0tp3MsizVcrY9ulbhXZW/G4Jx7/indwWcrShrbC4nlfFGAvKxGWtyRKUyZfGYOT9ptJ2KOuCVvwRVliFvJJDTCMwVp\u002B3T0SvtQ2fJw6l2z7/pxz3Nx5azfGxOziUPS/ernZFi3zDyuGZVxDiBMPu2Hp2lh3MYyy5ScJ1FDLxwDkyjIQKlqzKXkvowtRX7g/KPnz68/E7rcAQSM7DgkBr3zWqmaBFIJR4wou71SMQ779V9clQE8pOuWusyRQimhlUpRZUeZpHdkFEV46p6j76AHj/nFy\u002BmZ1BwAcAi/gvEZC1IFRn9IKApZeCeSoKxxB7BdCWryabdMeFb/xElXTW274sMI1lt7eKmSan1ZTrqFgsO6fN3G1oK5d85JqvtafGP65kpZY\u002BztSzlBjccaVpIKIsA/cTtcawrgGvqtq6xIgpNZbEI0FOHvh\u002B/62s\u002B1YsJ2zKKzD2kiP5s8Pu0ozCiXY23iKSojFDkR/ypQcd3CY2\u002B7t36frVkVEJIOV85uC5L8yZbeqTN3A\u002BSl8RiAAGDT7V9NnrL7WRzzuSjOkAN1Hfuj/YnuhjTr1pp4rh5z9HgrCPY87WYe\u002BNz1f16v312sTIquPuImtsRAXTz6bQWSVMSYpxCZIcsa0bZCpWatgcbzk0\u002B9\u002BZR6/e5glawRTE8nhW1CKk\u002Bq\u002Be2fkDrH86eceuOiev0f23o/5otXll\u002BIAhUXScJQGYf0PAHwq5ch27S\u002BNwZF641BVPdXMDp598Nb7v7Ga3bVH9OqCgKAgOuq4qgpZQwlMYDiw4eXDXbABrLGmimnXv\u002BeAZr6N9c8gNln9F3R61UQVEWox9f\u002BSkJUk5xvPfug/JvLOEexfgqSouw5hNHANHf47q\u002Bv0IY7xaZ8\u002Bpq5GeHXQPkl3/r7L\u002Bjh0VMBADjv2f3RyFYDE4fUfOZeUGOPceVBGAcgqZdv/UMIyzfx8PG456LqPw6N12bf2Nhr\u002BvAL5HBg/bnD7c7BnUXf\u002Bl3tijEAAcBFy18AuY8CE4Pk1r2GgTd/B/IDqiCbrGrj7QbUe44Dr2UU88H0OEJ4Vy8Qo/A\u002BYn8SKHzeEU3e2nM58MsbHrjgwHhtYmMDQuJqmBik1vKFMqv3OnG1UEdlH/u96EQB9bQb7/1q7dYvOH9MDr1BOjUenFoeJ31LCuk7QN\u002BjGBgs12GYqw12Myu69L56XWpbB3TVzCEEPi6Wrb\u002B1QoSk5zoHfwIoclmxi\u002B1qn\u002BhuYDnjSxsfOq/qmjXbOiAAuPqwJ8C4NK2qdJGl4/Vud97/Z7X1mN3LmHHppvvP\u002B0m9vm7bBgQAVx16OZhujOWKkqyiqqT8AwcBeUdUlILaDVQUAu7bcP95l9fr\u002B9n4AAHAVYd8HRyqShoLkhZHDv0roOiWsWg3cLUQ6NKN9597cr1\u002BLBszeo9pF644Fo7\u002Bp1LXZ4SzshvZgNYrzwDORjQqpx\u002BU/DqqDq4yGu2cUawoipM3PXD\u002BfdpgXDZxQABw0ct7gUYrP6muTLlqkPymdWi\u002BtkIhkQhX8wNJY3X834WAOIzuM7Tgm\u002BP6pXNq2wfI7OKVLwCQZBL9laRH8ENvo/nGC/IlIpJFfeMD1m916xB2DBAz/3bovrNnxfYTtB0DBABnLz8ALVcueveBFMtFB5NefEyWZIl03VrbWecjBLto\u002BwGNDhcz24vOlSnTdtqOAzK7YOV18DgT6A9JjwACmi8the\u002BMyi\u002BGQGUbUxDVOm4/\u002BR4nIOZw69C9Z3\u002BxbLT9tvMAmV28chmYj4KL/yXdFxIADK5cDBd/jqCA7CLrN/VTkJ5DCihwCHhm073/PDs5u8O28wGZXbjya/D4YeUBiiyFRO0RtF55Bj7v1tazEzNANuRFKPafpThj6J5/uim5YqdZn7fZBXbh8nvI0adA1DQ1pZCg7ATWs6C8CyqCLJXUXIydB7KB0NzvwGf\u002B8L0Tjy7vsGvsvQGU2rnLZ2Egm0vE3yPCtDoke6XonwQgYF1wOD\u002BQW4rLZr1YXrHr7f8BKP9WxL5dWpQAAAAASUVORK5CYII="
+            }
+          },
+          {
+            "id": "BS43J1A10110\\\\PCM_IN_01_C_00_SD1",
+            "name": "Elgato Wave:3",
+            "type": "Hardware",
+            "mixes": [],
+            "level": 1,
+            "isMuted": false,
+            "image": {
+              "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAA8TSURBVHhe7ZxrbFR1n8c/58yZ\u002B7XT6fTeQkuRRipqlpsQwBQ1ikajQVc3xoBoQsREjWFj0Oi\u002BwcRLYvSFMfbFClEICYEXRI1BUoWoLRY0KJggFhBoO\u002B20nenM9Mycy39fPHNOSnf3ecymc7YhzzeZtD0z/V\u002B\u002B53f//c/AP/F3Ic2\u002BUGmsW7dOdHV1UVVVRaFQIJfL4fP5UFUVwzBIp9OMj48zMjKCqqo0NzfT1tZGLpcjk8nw9ddfO7pmRyfbuHGjWLNmDXV1dbz11ls0NDTQ1dVFS0sLpVIJ0zSRZRlVVRFCEAgESCQShEIh9u/fT1dXF99\u002B\u002By0//PCDY\u002Bt2bCKADz/8UNx5551s3bqV/v5\u002BQqEQ4XAYv9\u002BP3\u002B\u002BntraWdDqNaZqMjIyQzWbRNA3TNNE0DYCuri42bNiw6IMPPrgwe/xKQJ59oVL46KOPNpqmSXd3N3/\u002B\u002BSd33HEHa9eupbW1FcMwGB4e5tZbb8U0Ta5evcro6Cj5fJ5isWiT09HRQTab5dSpU7/PHr9ScEyCenp6Lo2MjLR8/vnnnD59GiEEQghisRjxeJyrV6\u002BSzWYRQgBQX19PIBCgoaGBBQsW0NDQgBCCTz/9lKamJvr6\u002BhxbuyN4\u002B\u002B23RV1dnXj55ZdFKBQSiURCtLe3i4ULF4rbb79dLF68WAACEJIkifr6euH3\u002BwUgfD6f/d6iRYvEqlWr/saiA3BMxcbHx8lkMvT391NXV0djYyPhcBjTNDl37hwDAwMMDQ2xYMECQqEQhmFQLBYBUFUVyiqmaRq5XG7W6JWDY2L6wgsviFgsxp49e7h69SqmaeJ2u4nFYmzdupWenh7y\u002BTw9PT1s2bIFXddpbW2ltbWVRCJBMpkknU4zMDBAJBKhv7/fkbU7MgnAli1bhKqqJBIJDh8\u002BjNvtpqGhgWKxSKFQ4Pjx49TW1uLz\u002BWhvb\u002Bfq1asA5HI5YrEYo6OjeL1eFEWhpaWFM2fOOLJ2x1Qsn88zMDDA8PAwHo8Hn8/H2NgYY2NjTE5Ocsstt1BVVYUkSfz\u002B\u002B\u002B9MTEwwNjbG9PQ0Q0ND6LpOJBJh\u002BfLlBAKB2cNXDI7cBYBt27aJbDbLiRMnGB0dxe12EwgESCaT1NTUMDY2RrFYZHp6Gr/fj6Io\u002BHw\u002BampqSCQSNDc309fXx6VLl4jFYvz000\u002BOrN2RSQCeeOIJEY1G0TSN3t5egsEg1dXVKIpCoVAgm82Sz\u002BfJ5XK4XC5kWcbj8aCqKtFolGAwiGmapFIpmpqaHIumHZkEYPPmzaJQKNDU1MSxY8colUrIskw2myUQCOB2uzFNk6mpKUqlEvl8HtM0kSTJjo2CwSBr164lm83y/fffO7J2RyYBeOihh0Qmk\u002BHMmTNMTEzg9XqJRqM0NTURDAYpFApMTk6iqioej4doNEosFsPn8xGNRlm1ahUHDx7k1KlTLFu2jBMnTjiydtfsC5VCa2vrG0uWLCESiSCEIJlMEo/HiUaj\u002BHw\u002BO50oFAqYpomqqkxNTVEoFCgWi6TTaeLxOKVSiUAgwKVLl/5j9hyVgCN3AeC\u002B\u002B\u002B4TiUQCn8/H0aNHEUJgmiYAsizbmXyxWCSXyzE1NWWrFoAkSXg8Hrq6uvD5fI5JkCOTAHR3d4tisci5c\u002BeYmpoiEAgQCoVobGwkEokwNjZGLpdjcnISv99PJBKhtrYWRVEIhUIsXLiQc\u002BfO0dfXx9KlS\u002Bnt7XVk7Y7FQZIksXr1apYuXUp9fT2JRIJAIIBpmng8Hrv2k0gkkCQJl8vF\u002BPg44\u002BPjmKaJaZosWrSI9vZ2ZNmxZTsnQevWrRPV1dX4/X76\u002B/txuVwIIdB1HZfLhaZpyLJMPp\u002B38y1N065TM8uwd3Z28s033ziydkcmAVi/fr1QVZVr164xMTFBJBJh8eLF6LpOOBy2C2RCCILBoC1FAC6Xi0WLFjE2Nsbw8DA1NTUcO3bMkbU7JqtCCNavX08ymbRr0BcvXiSTyWAYBnV1dXR2dtLY2Igsy5RKJXRdJxAIsGDBAtra2ujq6sLlctlZvhNw5C5QNtKWZPz22294vV5bzUzTtH9ahftcLmfXpi3Iskx1dTUdHR189913jqzdkUkA7rrrLuHxeDh//jzpdJpgMEhzczOJRAJZlkmn00xPT9u2yOfzATA8PIyqqrjdblpbW4nFYmSzWce8mGOBYnt7\u002Bxs333wzv/76KxMTE\u002BRyOfL5PKlUCoCGhgYSiQS1tbWUSiU0TUNVVWpqalixYgX3338/QgiOHz9OLBa78QLFDRs2CCEENTU1nD9/nnA4jMfjwTAMAHRdxzAMm7xMJoOqqui6bo8RCoWoqqqira3NMS/mmJH2eDzU19dz\u002BfJlu2uRzWZRFIVYLEYwGEQIQTgcpqmpiWXLlrF8\u002BXLa29vx\u002B/1IkkRHRwcrV65EkhzhBipJ0Jo1a/6WR8xAXV0dFy5cIJ1Oc/78eU6fPs3AwACDg4N4vV6am5tZsWIFNTU1uN1uABYuXMjWrVv5\u002BOOPaWxs5IsvvrBTFAu9vb3TR44cKVx3cY5QkVvxzDPPiAsXLtDb28urr75KOp1mcHCQQqFAVVUVExMTxGIxAoEAmqaRz\u002BcxDINMJkMmk7FLHpOTk5RKJXvceDxObW0tNTU1rFmzhoaGBr766itSqRThcJijR4/O\u002BX7mfEAARVGEz\u002Bcjl8sRj8fZuHEjk5OTFItFzp49i2maRKNRQqGQXdaoqakhGAwSDodJp9OkUilGRkYYGRlhfHycXC5HS0sLjz76KAMDA2SzWUqlEuPj47hcLpLJZEVqRHM\u002BIMA999wjrly5wr333suJEydIJBJ22qCqKleuXCEejwNgmqbdl7c6HbIsI8syfr\u002BfYDBIMpmkubmZU6dOcfnyZerr65Ekierqan788UdaWlooFosVqTJWxAY98MADCCHYvn07breb/v5\u002BFEVhdHQUXdeRZRm3243H47F/lyQJt9uNy\u002BWy0wwrVxNCIMsykiTZXu/kyZPkcjl27tz5p5X8VgIVIWjHjh3S2bNnpfb2dknTNFKplGRJis/nQ1EUvF4vbrfbjqi9Xq8tOR6Px37fMtaGYdgu3\u002BPxMDU1JU1PT7N9\u002B/aW/fv3S0eOHJlz6aFSBM2E1RWVJAld19F13VYjRVFwuVy21Pj9fpsQK8VQFOW6a4Zh2FI025tVAhUnyNqElWtJkoRpmiiKgiRJxONxW5IkSbpOuiwCLVjEeDweKAeXlUbFCbKCOl3X8Xg8dq5lSc7k5CSUE9FffvkFSZKQZRkhBFVVVQgh/hupFlHWz0qi4gRZdzsQCJDP522DS7nO09PTYxOyZMkS5HJ92uVyce3aNWRZttMQyxNapM/M9CuFihNkbcJSr1KpZG/SMAy2bdtmb9jr9dqSYhgGfr/fViPDMFAUxfZqzJDOSqLiBFkSZEmF5bUsdfF6vdd93nLtM9XKkiDDMJBl2W4ROYGKE2SlCpIkMT09jVlu71C2OwcPHuTNN9\u002Bkra3NViFLrQYHB\u002B3/NwzDtk\u002BWVN0QRtpy0ZRbx\u002B5yi5myDXr44Yd55ZVXuHjxIkIISqWSXVJtampClI/qCSHs64qiwI1ipC17oWkaXq8Xj8eDJEm2NFgGempqihdffJH333/fft9ST0viLOm7oYy0tRnLrZumaZdTXeVTHKOjo2QyGd555x127NjB2rVrbVWzCBRC2NLnBDEWKk6QEIJNmzZ1WEbX4/HYAaDl0k\u002BePHldzPPll1/a\u002BZlUDh4t401ZGpnhACqJihMkSRKDg4OdiqKglQ\u002BFWx7M8mKHDx\u002B2pcTyWpRtjWEYdo3aiq4tgizVqyQqPoMsy/zxxx9bLNdu3XUr/xJCsHfvXg4dOoRcfgzh5MmT\u002BP1\u002BVFW1DfrMCNwy0rNDhEqg4gS1tLQMq6p6VyKRQC\u002BXOixYm1cUhWeffZZoNEoymeSRRx6xk1qzXCeyDlypqkooFIIbJVCsra39t7a2tmAul/v3fD5PU1MT1jEY6xUKhYhEIsTjccLhMKFQiFAoRCAQIBwO24a6oaEBgJ9//hlmuPtKouIEvffee8dWrlzJZ5999pamafaZZ6/Xi9frJRQK4ff7CQQC172CwSDRaJRIJILP5yMcDtPY2Eg0GmVoaEi66aabPu/o6BiaPd9co/IyCjz\u002B\u002BONi37590lNPPbVkbGzsXCKRoK\u002Bvj3Q6fV00PDMZ9fl8GIaBKB9mWL16NRcvXiQUCmV7e3uj3d3dwolnxyo\u002BgYWnn35a7N27d6hUKjUcOHDANT4\u002Bnkyn02tSqdSD4XC4eWJiolVRlKgQwq1pmulyufKGYaR8Pt/lWCz2VWdn54ebN282JUkSDz74oFixYgW7du2q\u002BPorPsFMPPnkk4JyDuV2u9E0jWw2SyaTsc8FUfZwlkuvrq4mHA5fV5ncvXv3ws7OzovXj35jQXr99devs3/79u0beeyxx8SmTZvESy\u002B95Fyo/A/gqAT9PTz33HPf9PX1rbPSiIGBgXmxtop7sb8KWZYvuN1uhBCOpBB/FfOGoHg8/p9\u002Bvx95xtmg\u002BYB5Q5Cu68/puo6maRQKFTmH8H/CvCFIlmXDLB/Bm0\u002BYNwQpimKKGafv5wvmDUHBYNCcWZifL5g3K3G73aZa/noKJ7L0v4r5RJBuqZiTJdV/hHlDkCzLuqZpaJrmSDvnr2LeEOT1eg3rayjmkyebNwQJIYzp6Wn7ccz5gv83a/juu\u002B8um5iYuCmTyXTn8/l/iUajt\u002B7Zs0dWVZVgMEh3d/d4JBI5FQwGf4jFYt9XVVX99Pzzz1\u002BbPU6lURGCdu7c\u002Ba/79\u002B/fZ3UlrI6F9bI6GtbflB/FpPx8va7rNDY22qpmfXY2rHBAlmVWrVrFgQMH5nw/cz5gMpkUlBctz\u002BiCWqRYXsratHV9YmKCQCBANptF13Vqa2uvCxpnkmnhf2oApFKpOd3TnA4GsHv3blEoFBgaGmLXrl3cdtttBAIB\u002B9iKRQozuhKSJJHP54lGo6iqavfAZsMiyCJDLj9Wfvfdd9Pa2kpdXR1vvPHGnO5pTgez8Nprr4l0Os3k5CRTU1MUi0Xk8gO71veWWRVCq99FmQBL6uTyGUbrJKx1XSp3Wq1Oh8fjsTsin3zyyZzvZ84HnI2WlpbpVCrlA6iurraP6\u002BrlA52Wys1WH6v7atWGNE1jcnKSdDptR9uRSIT169c3HDp0qOLdjX/if8F/AdfFZnMxfGJBAAAAAElFTkSuQmCC"
+            }
+          }
+        ]
+      },
+      "id": 75
+    },
+    {
+      "id": 77,
+      "jsonrpc": "2.0",
+      "method": "setChannel",
+      "params": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1
+          }
+        ]
+      },
+      "id": 77
+    },
+    {
+      "id": 78,
+      "jsonrpc": "2.0",
+      "method": "setChannel",
+      "params": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1
+          }
+        ]
+      },
+      "id": 78
+    },
+    {
+      "id": 79,
+      "jsonrpc": "2.0",
+      "method": "addToChannel",
+      "params": {
+        "appId": "Microsoft® Visual Studio®",
+        "channelId": "PCM_OUT_00_V_02_SD2"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "name": "Browser",
+        "type": "Software",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_00_SD1",
+            "level": 1,
+            "isMuted": false
+          },
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1,
+            "isMuted": false
+          }
+        ],
+        "level": 1,
+        "isMuted": false,
+        "apps": [
+          {
+            "id": "Microsoft Edge",
+            "name": "Microsoft Edge"
+          },
+          {
+            "id": "Microsoft\u00AE Visual Studio\u00AE",
+            "name": "Microsoft\u00AE Visual Studio\u00AE"
+          }
+        ],
+        "effects": [],
+        "image": {
+          "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABM7SURBVHhezZt/sF1Vdce/a\u002B9z370vJBAwkhqrFAISyy8hkEQQhLZjpyoOQ9F2BrV1HBkZO\u002BX3D5XKgDAdQGccpuWHQG2rOMqvyI8AEpPwq0hKEEgCgxIiBCgQA8lL8t7LvfecvfrHWmuffc69L3kvPzBr5rxz9j77/Nif\u002B11rr73vu4T32GYtWXOop/woEH\u002BfwNMYDOjGYIDkmHQPMMBFYOKFzOGa7kD3qVXz5m2s33dXGdUrdoUdvviNhaDiBDgeMCCyD2AEbTUWoAAiBuk5AoMogLnYzBTmrzj241\u002BuPW6n2i4DdNjitWd5F34gHQ8Cg4KCsbpyL8cYE5DVUSwHOBdAFOCoABCuXDbnk5fU32NHbacDmv3IOy8hhJmBmEQhWwNUlqsKwpiAgABHAjUF5Fwh8Fy\u002B\u002BcmjPjWl/l7bazsN0FGLN/y3c/wl6yir\u002B9gGMJgKBWJgTEV1QNUYVAJSMCRgbPOuEEhUgFwh51GMvJONTH/h0C9srr/rRGyHAR25ZPTAjPKX0k6XYFQpVK0rwVRVVAJCDUyppNLNgsBAgIuAApzLo6IEWP7W4kM\u002B/4Haa4/bdgjQMQ9vXkXAzLoqpKtFCYSS4z4g5S0CBI0pp3SzOiBzM3OrElAB73It56CkTFn3lF8e9A93V3uwbdsuQEcs4aktGl1fdY/ejveqp1c50sbqzPpBKmORuZijIolBOZwL8NSNgJzL4V0O7wQUuLNhwcFn7J08aJvm6hXbsnmPjJw\u002BSFvW1\u002Bu3btLZ8lhQIrpU/XxSikVKjqtGYBAAUtiSClidqg8B3mPq517\u002B97x\u002B/dZsQgqa8/DIdzzcZaVqyn2pilQtNnLV6mLQTlVV732qotpQT\u002BpiqiDvTDXqUpTD\u002B66Wu3AuR\u002BZyeNeNbtdl3vvu/c/ZUHtoj41bQXMXjdzj4S6r14vVO6fWg1/bEcZQTn2zegKz6CFtXT2ye5t6qhtI3F1gF2j57ri8YFyA5i7p/It3/mTq7XFivZDqSrNaO5OW5c51OEiglHuB1a9V/XrNvklcTEY/UR1RgdNf/y5/dtmlk5Lb9Ng2Ac1b2D7dA5cD1MMgxdUDT4fr8m8/SGV9r4v1N2Z9bo1jpd6UY1MUUxECCAwHTSopxz4zwnB5l17bKqAjlvBUn7mfpJ2vCh3Vt0S/Bul5i1f9gI1tUTG6l4K8VdQVle6lDWJwluAtcUsUlORNlOMrb50/5uR3q4CmoIh\u002BWr5OnYC\u002BfKXT/QCUx3ZFeS5t0x9WhMOmZNNGbJFcnt5LBoHoYol6LOF0jqd89e1znoi3SmxMQMct7q5CP9dR619bt/RFy610p/4wkp7WyoaWyrKeEoDpcxRh4mbpvSxwGzBHxce/8taZByQPBcYCNPehLQcR0cx6PQFR2r1KUhurz4CcrLjAtqwOqjSp5VJQyZAgNZJSpHmQwBA1AQUIhZ6TwD3gsar2mH49BI5fUjDiw8TSkchm5QxGe3gEbz75GNpDG5EPD4OcA8hJTAADzCDOke05Bc1pU7DXnFlwDbufZc\u002Bpqsa2OHxrLJF5l\u002BRB3nXhqIvMd\u002BGog8zn8K6DzHfgqQPvu8hcR9t24OI1kivZSIfQ\u002BcaN0//juvjM6isAxy8ufkyELyL57GwaYJ1Y//oavLr4l6BsQLcM5DKQI4CcRky9OQHgAOIAhBwcOkC3A87b2Ocvj0Rrxl7xKduyXkAypfCuq1OMHJnrwrk2MgXgvUDJXAeZb8O5rrbRa0imI3ZPQuAb3n9z9KweQCcsCRrtegG9\u002BMC9GF3/LqgxCPIZ4D3IecA5UQ4IRAQQ6aiSPoAFEssnxSEHd7aA2yNo7DMJ0/768NhyLCvnYpZBS8c8mTJEHbJJOfMdVVYH3rXlnM/1Gp3568TW7ltwOOumfX90LeqAPrEkrPLATFQ\u002BT8Ybz6/Am8ufg2s0Ad8AZR5wHkRO4NjeiXoEjsWqWhJoauIAcAEUXXC3Dd6yGZMP/VNMPmRGfHJq0WWBZJjWaYUTd/Ikiomu5jrqVrr32ia6mVwvgAS4vG/ADfv\u002BZ3SAaJ9cHEI6bIXAePrntwKNFsh7wGcg8qocp25lkEghpe6lN4udMxUVktlxAYQcFApw3gV3RhBGh/Anf3ccqDZ8GCALus4FuOgiFk86MQYZhMy3FVxXFES5KinXOFSqxxRECGi3Rz/2ow/d9lx8jRMWh7OISLtEWP/W21h25x1Ac0/QwKBAyppAownKWkBjEGg0wY0W0GgBA4NyPmuCtI7i\u002BWZyvV3bAjVaoMYg0BgENQfh9pgKv\u002Bd0vH3XMmz5v6EKoHRWX1aYKiGKBINZRi/Lf5h1ADDVoijrmRGCnLMyB9k3Go2HkQ7zjugHdvz26jV46YmlQHOyQPDScc5aQAopa4EaA0A2APgBcCZtORvQ9k05lzUBvQc19HoD22gBA\u002BUxtfaAnzINQ0\u002B\u002BgtFXN9krAZBch5NYZJusFCgEWJwrVKlSFgAQAEHKCGzNtV5hBQaYpiJ1sROXyGf0hzWvY/VvlgM\u002BExdxTlyKPCjLJPY4dTPygNPArHuyEUzjkDxEJkoWiyQPARCkE8QBXOSgkAOhCy5yoLsFPLIRk4/8ICbtl65xaXBGoS5mMaWti2Rb4F2OzJXB2ZEN8e044pEupkkMMveS6YclmMw8xwPACYvCQiI6IO/meP6xJ0UVzstI5RqAH9BRKwP5BuAbcAbJWcD2OsRr0CaNS6TB2\u002BKUnrN2lbbJSEjOgzKPLa\u002B8hT0O2le\u002BwUhGMMl\u002BJX4IrBxknbUyChAsCJcQCIXO28rEkVimHdF1mREoTHMA4AjHE4Cn7l8EZC0wZYDLwCQw4BpgBWMKYsoA8jpGEdjGdSAec5RNUgYBZOrzYC/Pgt2/Ia4ox4Nwe\u002ByNtb94Vt3JsuMChK4e5yDkEltinIl\u002BA0DdqRZjYtm2JC7ZRgVOcQBARM3ljz8tcLy8LOtLW5lcA6AMoAysn7oA0D0LAFvYYnIAXIwb4sBO66H38AB8UZD7t7XnHEZrz/0YrT1/Nq29aB5x1rqWXbOg5iTQpKl499FX4KijMLpxL1OGPIKTuFNoME7jUD0eBYlFCkzik7xnsDqA6LhF4ZCmo5WPL3hU3Iig7iAJoLmSuIoXAVgyqAqJQzuVmaE0sYIJiarxaO1rH1l3xYkvSaP\u002Bttd3H9l/IN\u002ByOmxejxmnfFBn4OZWMsw76sKTTh/I8huNTdRJUgGJU\u002BU3H934VZFOWMXNIEu8RACdtCh8ednipf/VySXQCgBL/DINvhKMJQkUBci0AiUkZdGvzsCZt7WXPpQP//TMRqQwDpt2yYIOdd9tzPjsdFmiQAGKgASIdF6CsuRFkjFL8E7qdL26GqBTQDKdgQ7z3293GezEJaCxAeQ1ltheXYcZIHEbSUEkD4l5SlInjXTHAIeA0duuxUThAMC6Kz4zUOSZxBzOAVgQtpikwbefO1leZLmSDun1mMPM0c1sc5uGhqfBNwSIcwrERiSvfUwWzUkhGZQapLSuLDPC5o3YMv96jGbND9U7P17jzO/XHeqA0AGhDeIuwF0QdwDOAe4C6CiMAqwgLWOXuCPwmIsYg4LCCQEIHLSd1LmXf/s62CkQGCQnkCIQOYwdBgSSBl/hJTe0uhRcsXkjOot\u002BCjQmt/HI1a\u002BnnZ6Irb/qC2s2voq2QxsOXYGEtgRt7oqqOAe4I3Di1gVzoceFHpvCFFLQwM1QOLJ3mzeOCJAYNJy4lPRNlGOQEqUggSQN9XQNUhjZhHzRz0DZJHCzdWXZ3e2zzavalxI6ohwdzYhzOeYuwFpOYMg7pW6UTC2EBBCPTfnSD8q\u002B/SxLspaORGkAlq0MuIjDUnKYXGPCIwCMfMFNcAOTAZ9h\u002BMFvWyjfIZvz6M2sazcAcQzQBF1Es0RRRzOni2s\u002BSRjj6EWafEITR/tejRhMvNpF9TDKnAbQvKa0UjUolWTnYiM91k\u002BgWHAT3MAkTTAza7XDZgoS17JYpAkjF5ofmXtV3alUi8WZNJCLqZCAIv9HWxsFW/AFSkhQ1\u002BK6a0mrWGeStHYA\u002BPfPgxqTYlZMfsID15gmriXB2bLoMmB3FYrBsZhjwVkCdBl/rE6DtcUfBm49\u002BO7HXBydUrlUINkp/dsPUnlYQnrxf2UmT1mcr\u002B00sziDolSKZc5x0\u002BE\u002BjmiFKkh6b3EJldHWTjNC4NUA4CSnsQCdTgv6X2jHiCx6IYXfLJQ1JNeQVQGn206wOUv\u002B9QoZvTpx1CoVZcpJoNm0Q/OjEpS6VlBgOpKFILnQzz5650xIZlhSBCBfzKUKSS0FEtv3QsK7bwqcOMuXNGLw1Btuqd5w4kbUvVgSvnKiGudgGoMoKqeaNFr8kTe2T90\u002BeAXFQAhFnP6ULgbEiaVxkXslStJzFUi6xbq1r8rimJdvOhCXQxw8ZZ\u002BxB2\u002BPHfXwJYc5BC/BuK4SgSFuF6rn6kE6FEAc6msTVma\u002B/bD5H7FnOmZ\u002BrgRQU0I8Fjp9IaVtmYEVD4MyUU/cbM3H0XR78PZYk7FcgrIqJ0Lq1mJS6VKyRKJuhTIgi2rSfEje/47D76yshjsO\u002BI4VeiCVxfFBAjQw6zceml9JTiTb4N/eMldbTsjmLf7WKMX5lK0tp3MsizVcrY9ulbhXZW/G4Jx7/indwWcrShrbC4nlfFGAvKxGWtyRKUyZfGYOT9ptJ2KOuCVvwRVliFvJJDTCMwVp\u002B3T0SvtQ2fJw6l2z7/pxz3Nx5azfGxOziUPS/ernZFi3zDyuGZVxDiBMPu2Hp2lh3MYyy5ScJ1FDLxwDkyjIQKlqzKXkvowtRX7g/KPnz68/E7rcAQSM7DgkBr3zWqmaBFIJR4wou71SMQ779V9clQE8pOuWusyRQimhlUpRZUeZpHdkFEV46p6j76AHj/nFy\u002BmZ1BwAcAi/gvEZC1IFRn9IKApZeCeSoKxxB7BdCWryabdMeFb/xElXTW274sMI1lt7eKmSan1ZTrqFgsO6fN3G1oK5d85JqvtafGP65kpZY\u002BztSzlBjccaVpIKIsA/cTtcawrgGvqtq6xIgpNZbEI0FOHvh\u002B/62s\u002B1YsJ2zKKzD2kiP5s8Pu0ozCiXY23iKSojFDkR/ypQcd3CY2\u002B7t36frVkVEJIOV85uC5L8yZbeqTN3A\u002BSl8RiAAGDT7V9NnrL7WRzzuSjOkAN1Hfuj/YnuhjTr1pp4rh5z9HgrCPY87WYe\u002BNz1f16v312sTIquPuImtsRAXTz6bQWSVMSYpxCZIcsa0bZCpWatgcbzk0\u002B9\u002BZR6/e5glawRTE8nhW1CKk\u002Bq\u002Be2fkDrH86eceuOiev0f23o/5otXll\u002BIAhUXScJQGYf0PAHwq5ch27S\u002BNwZF641BVPdXMDp598Nb7v7Ga3bVH9OqCgKAgOuq4qgpZQwlMYDiw4eXDXbABrLGmimnXv\u002BeAZr6N9c8gNln9F3R61UQVEWox9f\u002BSkJUk5xvPfug/JvLOEexfgqSouw5hNHANHf47q\u002Bv0IY7xaZ8\u002Bpq5GeHXQPkl3/r7L\u002Bjh0VMBADjv2f3RyFYDE4fUfOZeUGOPceVBGAcgqZdv/UMIyzfx8PG456LqPw6N12bf2Nhr\u002BvAL5HBg/bnD7c7BnUXf\u002Bl3tijEAAcBFy18AuY8CE4Pk1r2GgTd/B/IDqiCbrGrj7QbUe44Dr2UU88H0OEJ4Vy8Qo/A\u002BYn8SKHzeEU3e2nM58MsbHrjgwHhtYmMDQuJqmBik1vKFMqv3OnG1UEdlH/u96EQB9bQb7/1q7dYvOH9MDr1BOjUenFoeJ31LCuk7QN\u002BjGBgs12GYqw12Myu69L56XWpbB3TVzCEEPi6Wrb\u002B1QoSk5zoHfwIoclmxi\u002B1qn\u002BhuYDnjSxsfOq/qmjXbOiAAuPqwJ8C4NK2qdJGl4/Vud97/Z7X1mN3LmHHppvvP\u002B0m9vm7bBgQAVx16OZhujOWKkqyiqqT8AwcBeUdUlILaDVQUAu7bcP95l9fr\u002B9n4AAHAVYd8HRyqShoLkhZHDv0roOiWsWg3cLUQ6NKN9597cr1\u002BLBszeo9pF644Fo7\u002Bp1LXZ4SzshvZgNYrzwDORjQqpx\u002BU/DqqDq4yGu2cUawoipM3PXD\u002BfdpgXDZxQABw0ct7gUYrP6muTLlqkPymdWi\u002BtkIhkQhX8wNJY3X834WAOIzuM7Tgm\u002BP6pXNq2wfI7OKVLwCQZBL9laRH8ENvo/nGC/IlIpJFfeMD1m916xB2DBAz/3bovrNnxfYTtB0DBABnLz8ALVcueveBFMtFB5NefEyWZIl03VrbWecjBLto\u002BwGNDhcz24vOlSnTdtqOAzK7YOV18DgT6A9JjwACmi8the\u002BMyi\u002BGQGUbUxDVOm4/\u002BR4nIOZw69C9Z3\u002BxbLT9tvMAmV28chmYj4KL/yXdFxIADK5cDBd/jqCA7CLrN/VTkJ5DCihwCHhm073/PDs5u8O28wGZXbjya/D4YeUBiiyFRO0RtF55Bj7v1tazEzNANuRFKPafpThj6J5/uim5YqdZn7fZBXbh8nvI0adA1DQ1pZCg7ATWs6C8CyqCLJXUXIydB7KB0NzvwGf\u002B8L0Tjy7vsGvsvQGU2rnLZ2Egm0vE3yPCtDoke6XonwQgYF1wOD\u002BQW4rLZr1YXrHr7f8BKP9WxL5dWpQAAAAASUVORK5CYII="
+        }
+      },
+      "id": 79
+    },
+    {
+      "id": 80,
+      "jsonrpc": "2.0",
+      "method": "addToChannel",
+      "params": {
+        "appId": "Microsoft® Visual Studio®",
+        "channelId": "PCM_OUT_00_V_02_SD2"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "name": "Browser",
+        "type": "Software",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_00_SD1",
+            "level": 1,
+            "isMuted": false
+          },
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1,
+            "isMuted": false
+          }
+        ],
+        "level": 1,
+        "isMuted": false,
+        "apps": [
+          {
+            "id": "Microsoft Edge",
+            "name": "Microsoft Edge"
+          },
+          {
+            "id": "Microsoft\u00AE Visual Studio\u00AE",
+            "name": "Microsoft\u00AE Visual Studio\u00AE"
+          }
+        ],
+        "effects": [],
+        "image": {
+          "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABM7SURBVHhezZt/sF1Vdce/a\u002B9z370vJBAwkhqrFAISyy8hkEQQhLZjpyoOQ9F2BrV1HBkZO\u002BX3D5XKgDAdQGccpuWHQG2rOMqvyI8AEpPwq0hKEEgCgxIiBCgQA8lL8t7LvfecvfrHWmuffc69L3kvPzBr5rxz9j77/Nif\u002B11rr73vu4T32GYtWXOop/woEH\u002BfwNMYDOjGYIDkmHQPMMBFYOKFzOGa7kD3qVXz5m2s33dXGdUrdoUdvviNhaDiBDgeMCCyD2AEbTUWoAAiBuk5AoMogLnYzBTmrzj241\u002BuPW6n2i4DdNjitWd5F34gHQ8Cg4KCsbpyL8cYE5DVUSwHOBdAFOCoABCuXDbnk5fU32NHbacDmv3IOy8hhJmBmEQhWwNUlqsKwpiAgABHAjUF5Fwh8Fy\u002B\u002BcmjPjWl/l7bazsN0FGLN/y3c/wl6yir\u002B9gGMJgKBWJgTEV1QNUYVAJSMCRgbPOuEEhUgFwh51GMvJONTH/h0C9srr/rRGyHAR25ZPTAjPKX0k6XYFQpVK0rwVRVVAJCDUyppNLNgsBAgIuAApzLo6IEWP7W4kM\u002B/4Haa4/bdgjQMQ9vXkXAzLoqpKtFCYSS4z4g5S0CBI0pp3SzOiBzM3OrElAB73It56CkTFn3lF8e9A93V3uwbdsuQEcs4aktGl1fdY/ejveqp1c50sbqzPpBKmORuZijIolBOZwL8NSNgJzL4V0O7wQUuLNhwcFn7J08aJvm6hXbsnmPjJw\u002BSFvW1\u002Bu3btLZ8lhQIrpU/XxSikVKjqtGYBAAUtiSClidqg8B3mPq517\u002B97x\u002B/dZsQgqa8/DIdzzcZaVqyn2pilQtNnLV6mLQTlVV732qotpQT\u002BpiqiDvTDXqUpTD\u002B66Wu3AuR\u002BZyeNeNbtdl3vvu/c/ZUHtoj41bQXMXjdzj4S6r14vVO6fWg1/bEcZQTn2zegKz6CFtXT2ye5t6qhtI3F1gF2j57ri8YFyA5i7p/It3/mTq7XFivZDqSrNaO5OW5c51OEiglHuB1a9V/XrNvklcTEY/UR1RgdNf/y5/dtmlk5Lb9Ng2Ac1b2D7dA5cD1MMgxdUDT4fr8m8/SGV9r4v1N2Z9bo1jpd6UY1MUUxECCAwHTSopxz4zwnB5l17bKqAjlvBUn7mfpJ2vCh3Vt0S/Bul5i1f9gI1tUTG6l4K8VdQVle6lDWJwluAtcUsUlORNlOMrb50/5uR3q4CmoIh\u002BWr5OnYC\u002BfKXT/QCUx3ZFeS5t0x9WhMOmZNNGbJFcnt5LBoHoYol6LOF0jqd89e1znoi3SmxMQMct7q5CP9dR619bt/RFy610p/4wkp7WyoaWyrKeEoDpcxRh4mbpvSxwGzBHxce/8taZByQPBcYCNPehLQcR0cx6PQFR2r1KUhurz4CcrLjAtqwOqjSp5VJQyZAgNZJSpHmQwBA1AQUIhZ6TwD3gsar2mH49BI5fUjDiw8TSkchm5QxGe3gEbz75GNpDG5EPD4OcA8hJTAADzCDOke05Bc1pU7DXnFlwDbufZc\u002Bpqsa2OHxrLJF5l\u002BRB3nXhqIvMd\u002BGog8zn8K6DzHfgqQPvu8hcR9t24OI1kivZSIfQ\u002BcaN0//juvjM6isAxy8ufkyELyL57GwaYJ1Y//oavLr4l6BsQLcM5DKQI4CcRky9OQHgAOIAhBwcOkC3A87b2Ocvj0Rrxl7xKduyXkAypfCuq1OMHJnrwrk2MgXgvUDJXAeZb8O5rrbRa0imI3ZPQuAb3n9z9KweQCcsCRrtegG9\u002BMC9GF3/LqgxCPIZ4D3IecA5UQ4IRAQQ6aiSPoAFEssnxSEHd7aA2yNo7DMJ0/768NhyLCvnYpZBS8c8mTJEHbJJOfMdVVYH3rXlnM/1Gp3568TW7ltwOOumfX90LeqAPrEkrPLATFQ\u002BT8Ybz6/Am8ufg2s0Ad8AZR5wHkRO4NjeiXoEjsWqWhJoauIAcAEUXXC3Dd6yGZMP/VNMPmRGfHJq0WWBZJjWaYUTd/Ikiomu5jrqVrr32ia6mVwvgAS4vG/ADfv\u002BZ3SAaJ9cHEI6bIXAePrntwKNFsh7wGcg8qocp25lkEghpe6lN4udMxUVktlxAYQcFApw3gV3RhBGh/Anf3ccqDZ8GCALus4FuOgiFk86MQYZhMy3FVxXFES5KinXOFSqxxRECGi3Rz/2ow/d9lx8jRMWh7OISLtEWP/W21h25x1Ac0/QwKBAyppAownKWkBjEGg0wY0W0GgBA4NyPmuCtI7i\u002BWZyvV3bAjVaoMYg0BgENQfh9pgKv\u002Bd0vH3XMmz5v6EKoHRWX1aYKiGKBINZRi/Lf5h1ADDVoijrmRGCnLMyB9k3Go2HkQ7zjugHdvz26jV46YmlQHOyQPDScc5aQAopa4EaA0A2APgBcCZtORvQ9k05lzUBvQc19HoD22gBA\u002BUxtfaAnzINQ0\u002B\u002BgtFXN9krAZBch5NYZJusFCgEWJwrVKlSFgAQAEHKCGzNtV5hBQaYpiJ1sROXyGf0hzWvY/VvlgM\u002BExdxTlyKPCjLJPY4dTPygNPArHuyEUzjkDxEJkoWiyQPARCkE8QBXOSgkAOhCy5yoLsFPLIRk4/8ICbtl65xaXBGoS5mMaWti2Rb4F2OzJXB2ZEN8e044pEupkkMMveS6YclmMw8xwPACYvCQiI6IO/meP6xJ0UVzstI5RqAH9BRKwP5BuAbcAbJWcD2OsRr0CaNS6TB2\u002BKUnrN2lbbJSEjOgzKPLa\u002B8hT0O2le\u002BwUhGMMl\u002BJX4IrBxknbUyChAsCJcQCIXO28rEkVimHdF1mREoTHMA4AjHE4Cn7l8EZC0wZYDLwCQw4BpgBWMKYsoA8jpGEdjGdSAec5RNUgYBZOrzYC/Pgt2/Ia4ox4Nwe\u002ByNtb94Vt3JsuMChK4e5yDkEltinIl\u002BA0DdqRZjYtm2JC7ZRgVOcQBARM3ljz8tcLy8LOtLW5lcA6AMoAysn7oA0D0LAFvYYnIAXIwb4sBO66H38AB8UZD7t7XnHEZrz/0YrT1/Nq29aB5x1rqWXbOg5iTQpKl499FX4KijMLpxL1OGPIKTuFNoME7jUD0eBYlFCkzik7xnsDqA6LhF4ZCmo5WPL3hU3Iig7iAJoLmSuIoXAVgyqAqJQzuVmaE0sYIJiarxaO1rH1l3xYkvSaP\u002Bttd3H9l/IN\u002ByOmxejxmnfFBn4OZWMsw76sKTTh/I8huNTdRJUgGJU\u002BU3H934VZFOWMXNIEu8RACdtCh8ednipf/VySXQCgBL/DINvhKMJQkUBci0AiUkZdGvzsCZt7WXPpQP//TMRqQwDpt2yYIOdd9tzPjsdFmiQAGKgASIdF6CsuRFkjFL8E7qdL26GqBTQDKdgQ7z3293GezEJaCxAeQ1ltheXYcZIHEbSUEkD4l5SlInjXTHAIeA0duuxUThAMC6Kz4zUOSZxBzOAVgQtpikwbefO1leZLmSDun1mMPM0c1sc5uGhqfBNwSIcwrERiSvfUwWzUkhGZQapLSuLDPC5o3YMv96jGbND9U7P17jzO/XHeqA0AGhDeIuwF0QdwDOAe4C6CiMAqwgLWOXuCPwmIsYg4LCCQEIHLSd1LmXf/s62CkQGCQnkCIQOYwdBgSSBl/hJTe0uhRcsXkjOot\u002BCjQmt/HI1a\u002BnnZ6Irb/qC2s2voq2QxsOXYGEtgRt7oqqOAe4I3Di1gVzoceFHpvCFFLQwM1QOLJ3mzeOCJAYNJy4lPRNlGOQEqUggSQN9XQNUhjZhHzRz0DZJHCzdWXZ3e2zzavalxI6ohwdzYhzOeYuwFpOYMg7pW6UTC2EBBCPTfnSD8q\u002B/SxLspaORGkAlq0MuIjDUnKYXGPCIwCMfMFNcAOTAZ9h\u002BMFvWyjfIZvz6M2sazcAcQzQBF1Es0RRRzOni2s\u002BSRjj6EWafEITR/tejRhMvNpF9TDKnAbQvKa0UjUolWTnYiM91k\u002BgWHAT3MAkTTAza7XDZgoS17JYpAkjF5ofmXtV3alUi8WZNJCLqZCAIv9HWxsFW/AFSkhQ1\u002BK6a0mrWGeStHYA\u002BPfPgxqTYlZMfsID15gmriXB2bLoMmB3FYrBsZhjwVkCdBl/rE6DtcUfBm49\u002BO7HXBydUrlUINkp/dsPUnlYQnrxf2UmT1mcr\u002B00sziDolSKZc5x0\u002BE\u002BjmiFKkh6b3EJldHWTjNC4NUA4CSnsQCdTgv6X2jHiCx6IYXfLJQ1JNeQVQGn206wOUv\u002B9QoZvTpx1CoVZcpJoNm0Q/OjEpS6VlBgOpKFILnQzz5650xIZlhSBCBfzKUKSS0FEtv3QsK7bwqcOMuXNGLw1Btuqd5w4kbUvVgSvnKiGudgGoMoKqeaNFr8kTe2T90\u002BeAXFQAhFnP6ULgbEiaVxkXslStJzFUi6xbq1r8rimJdvOhCXQxw8ZZ\u002BxB2\u002BPHfXwJYc5BC/BuK4SgSFuF6rn6kE6FEAc6msTVma\u002B/bD5H7FnOmZ\u002BrgRQU0I8Fjp9IaVtmYEVD4MyUU/cbM3H0XR78PZYk7FcgrIqJ0Lq1mJS6VKyRKJuhTIgi2rSfEje/47D76yshjsO\u002BI4VeiCVxfFBAjQw6zceml9JTiTb4N/eMldbTsjmLf7WKMX5lK0tp3MsizVcrY9ulbhXZW/G4Jx7/indwWcrShrbC4nlfFGAvKxGWtyRKUyZfGYOT9ptJ2KOuCVvwRVliFvJJDTCMwVp\u002B3T0SvtQ2fJw6l2z7/pxz3Nx5azfGxOziUPS/ernZFi3zDyuGZVxDiBMPu2Hp2lh3MYyy5ScJ1FDLxwDkyjIQKlqzKXkvowtRX7g/KPnz68/E7rcAQSM7DgkBr3zWqmaBFIJR4wou71SMQ779V9clQE8pOuWusyRQimhlUpRZUeZpHdkFEV46p6j76AHj/nFy\u002BmZ1BwAcAi/gvEZC1IFRn9IKApZeCeSoKxxB7BdCWryabdMeFb/xElXTW274sMI1lt7eKmSan1ZTrqFgsO6fN3G1oK5d85JqvtafGP65kpZY\u002BztSzlBjccaVpIKIsA/cTtcawrgGvqtq6xIgpNZbEI0FOHvh\u002B/62s\u002B1YsJ2zKKzD2kiP5s8Pu0ozCiXY23iKSojFDkR/ypQcd3CY2\u002B7t36frVkVEJIOV85uC5L8yZbeqTN3A\u002BSl8RiAAGDT7V9NnrL7WRzzuSjOkAN1Hfuj/YnuhjTr1pp4rh5z9HgrCPY87WYe\u002BNz1f16v312sTIquPuImtsRAXTz6bQWSVMSYpxCZIcsa0bZCpWatgcbzk0\u002B9\u002BZR6/e5glawRTE8nhW1CKk\u002Bq\u002Be2fkDrH86eceuOiev0f23o/5otXll\u002BIAhUXScJQGYf0PAHwq5ch27S\u002BNwZF641BVPdXMDp598Nb7v7Ga3bVH9OqCgKAgOuq4qgpZQwlMYDiw4eXDXbABrLGmimnXv\u002BeAZr6N9c8gNln9F3R61UQVEWox9f\u002BSkJUk5xvPfug/JvLOEexfgqSouw5hNHANHf47q\u002Bv0IY7xaZ8\u002Bpq5GeHXQPkl3/r7L\u002Bjh0VMBADjv2f3RyFYDE4fUfOZeUGOPceVBGAcgqZdv/UMIyzfx8PG456LqPw6N12bf2Nhr\u002BvAL5HBg/bnD7c7BnUXf\u002Bl3tijEAAcBFy18AuY8CE4Pk1r2GgTd/B/IDqiCbrGrj7QbUe44Dr2UU88H0OEJ4Vy8Qo/A\u002BYn8SKHzeEU3e2nM58MsbHrjgwHhtYmMDQuJqmBik1vKFMqv3OnG1UEdlH/u96EQB9bQb7/1q7dYvOH9MDr1BOjUenFoeJ31LCuk7QN\u002BjGBgs12GYqw12Myu69L56XWpbB3TVzCEEPi6Wrb\u002B1QoSk5zoHfwIoclmxi\u002B1qn\u002BhuYDnjSxsfOq/qmjXbOiAAuPqwJ8C4NK2qdJGl4/Vud97/Z7X1mN3LmHHppvvP\u002B0m9vm7bBgQAVx16OZhujOWKkqyiqqT8AwcBeUdUlILaDVQUAu7bcP95l9fr\u002B9n4AAHAVYd8HRyqShoLkhZHDv0roOiWsWg3cLUQ6NKN9597cr1\u002BLBszeo9pF644Fo7\u002Bp1LXZ4SzshvZgNYrzwDORjQqpx\u002BU/DqqDq4yGu2cUawoipM3PXD\u002BfdpgXDZxQABw0ct7gUYrP6muTLlqkPymdWi\u002BtkIhkQhX8wNJY3X834WAOIzuM7Tgm\u002BP6pXNq2wfI7OKVLwCQZBL9laRH8ENvo/nGC/IlIpJFfeMD1m916xB2DBAz/3bovrNnxfYTtB0DBABnLz8ALVcueveBFMtFB5NefEyWZIl03VrbWecjBLto\u002BwGNDhcz24vOlSnTdtqOAzK7YOV18DgT6A9JjwACmi8the\u002BMyi\u002BGQGUbUxDVOm4/\u002BR4nIOZw69C9Z3\u002BxbLT9tvMAmV28chmYj4KL/yXdFxIADK5cDBd/jqCA7CLrN/VTkJ5DCihwCHhm073/PDs5u8O28wGZXbjya/D4YeUBiiyFRO0RtF55Bj7v1tazEzNANuRFKPafpThj6J5/uim5YqdZn7fZBXbh8nvI0adA1DQ1pZCg7ATWs6C8CyqCLJXUXIydB7KB0NzvwGf\u002B8L0Tjy7vsGvsvQGU2rnLZ2Egm0vE3yPCtDoke6XonwQgYF1wOD\u002BQW4rLZr1YXrHr7f8BKP9WxL5dWpQAAAAASUVORK5CYII="
+        }
+      },
+      "id": 80
+    },
+    {
+      "id": 81,
+      "jsonrpc": "2.0",
+      "method": "addToChannel",
+      "params": {
+        "appId": "Microsoft® Visual Studio®",
+        "channelId": "PCM_OUT_00_V_02_SD2"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "name": "Browser",
+        "type": "Software",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_00_SD1",
+            "level": 1,
+            "isMuted": false
+          },
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1,
+            "isMuted": false
+          }
+        ],
+        "level": 1,
+        "isMuted": false,
+        "apps": [
+          {
+            "id": "Microsoft Edge",
+            "name": "Microsoft Edge"
+          },
+          {
+            "id": "Microsoft\u00AE Visual Studio\u00AE",
+            "name": "Microsoft\u00AE Visual Studio\u00AE"
+          }
+        ],
+        "effects": [],
+        "image": {
+          "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABM7SURBVHhezZt/sF1Vdce/a\u002B9z370vJBAwkhqrFAISyy8hkEQQhLZjpyoOQ9F2BrV1HBkZO\u002BX3D5XKgDAdQGccpuWHQG2rOMqvyI8AEpPwq0hKEEgCgxIiBCgQA8lL8t7LvfecvfrHWmuffc69L3kvPzBr5rxz9j77/Nif\u002B11rr73vu4T32GYtWXOop/woEH\u002BfwNMYDOjGYIDkmHQPMMBFYOKFzOGa7kD3qVXz5m2s33dXGdUrdoUdvviNhaDiBDgeMCCyD2AEbTUWoAAiBuk5AoMogLnYzBTmrzj241\u002BuPW6n2i4DdNjitWd5F34gHQ8Cg4KCsbpyL8cYE5DVUSwHOBdAFOCoABCuXDbnk5fU32NHbacDmv3IOy8hhJmBmEQhWwNUlqsKwpiAgABHAjUF5Fwh8Fy\u002B\u002BcmjPjWl/l7bazsN0FGLN/y3c/wl6yir\u002B9gGMJgKBWJgTEV1QNUYVAJSMCRgbPOuEEhUgFwh51GMvJONTH/h0C9srr/rRGyHAR25ZPTAjPKX0k6XYFQpVK0rwVRVVAJCDUyppNLNgsBAgIuAApzLo6IEWP7W4kM\u002B/4Haa4/bdgjQMQ9vXkXAzLoqpKtFCYSS4z4g5S0CBI0pp3SzOiBzM3OrElAB73It56CkTFn3lF8e9A93V3uwbdsuQEcs4aktGl1fdY/ejveqp1c50sbqzPpBKmORuZijIolBOZwL8NSNgJzL4V0O7wQUuLNhwcFn7J08aJvm6hXbsnmPjJw\u002BSFvW1\u002Bu3btLZ8lhQIrpU/XxSikVKjqtGYBAAUtiSClidqg8B3mPq517\u002B97x\u002B/dZsQgqa8/DIdzzcZaVqyn2pilQtNnLV6mLQTlVV732qotpQT\u002BpiqiDvTDXqUpTD\u002B66Wu3AuR\u002BZyeNeNbtdl3vvu/c/ZUHtoj41bQXMXjdzj4S6r14vVO6fWg1/bEcZQTn2zegKz6CFtXT2ye5t6qhtI3F1gF2j57ri8YFyA5i7p/It3/mTq7XFivZDqSrNaO5OW5c51OEiglHuB1a9V/XrNvklcTEY/UR1RgdNf/y5/dtmlk5Lb9Ng2Ac1b2D7dA5cD1MMgxdUDT4fr8m8/SGV9r4v1N2Z9bo1jpd6UY1MUUxECCAwHTSopxz4zwnB5l17bKqAjlvBUn7mfpJ2vCh3Vt0S/Bul5i1f9gI1tUTG6l4K8VdQVle6lDWJwluAtcUsUlORNlOMrb50/5uR3q4CmoIh\u002BWr5OnYC\u002BfKXT/QCUx3ZFeS5t0x9WhMOmZNNGbJFcnt5LBoHoYol6LOF0jqd89e1znoi3SmxMQMct7q5CP9dR619bt/RFy610p/4wkp7WyoaWyrKeEoDpcxRh4mbpvSxwGzBHxce/8taZByQPBcYCNPehLQcR0cx6PQFR2r1KUhurz4CcrLjAtqwOqjSp5VJQyZAgNZJSpHmQwBA1AQUIhZ6TwD3gsar2mH49BI5fUjDiw8TSkchm5QxGe3gEbz75GNpDG5EPD4OcA8hJTAADzCDOke05Bc1pU7DXnFlwDbufZc\u002Bpqsa2OHxrLJF5l\u002BRB3nXhqIvMd\u002BGog8zn8K6DzHfgqQPvu8hcR9t24OI1kivZSIfQ\u002BcaN0//juvjM6isAxy8ufkyELyL57GwaYJ1Y//oavLr4l6BsQLcM5DKQI4CcRky9OQHgAOIAhBwcOkC3A87b2Ocvj0Rrxl7xKduyXkAypfCuq1OMHJnrwrk2MgXgvUDJXAeZb8O5rrbRa0imI3ZPQuAb3n9z9KweQCcsCRrtegG9\u002BMC9GF3/LqgxCPIZ4D3IecA5UQ4IRAQQ6aiSPoAFEssnxSEHd7aA2yNo7DMJ0/768NhyLCvnYpZBS8c8mTJEHbJJOfMdVVYH3rXlnM/1Gp3568TW7ltwOOumfX90LeqAPrEkrPLATFQ\u002BT8Ybz6/Am8ufg2s0Ad8AZR5wHkRO4NjeiXoEjsWqWhJoauIAcAEUXXC3Dd6yGZMP/VNMPmRGfHJq0WWBZJjWaYUTd/Ikiomu5jrqVrr32ia6mVwvgAS4vG/ADfv\u002BZ3SAaJ9cHEI6bIXAePrntwKNFsh7wGcg8qocp25lkEghpe6lN4udMxUVktlxAYQcFApw3gV3RhBGh/Anf3ccqDZ8GCALus4FuOgiFk86MQYZhMy3FVxXFES5KinXOFSqxxRECGi3Rz/2ow/d9lx8jRMWh7OISLtEWP/W21h25x1Ac0/QwKBAyppAownKWkBjEGg0wY0W0GgBA4NyPmuCtI7i\u002BWZyvV3bAjVaoMYg0BgENQfh9pgKv\u002Bd0vH3XMmz5v6EKoHRWX1aYKiGKBINZRi/Lf5h1ADDVoijrmRGCnLMyB9k3Go2HkQ7zjugHdvz26jV46YmlQHOyQPDScc5aQAopa4EaA0A2APgBcCZtORvQ9k05lzUBvQc19HoD22gBA\u002BUxtfaAnzINQ0\u002B\u002BgtFXN9krAZBch5NYZJusFCgEWJwrVKlSFgAQAEHKCGzNtV5hBQaYpiJ1sROXyGf0hzWvY/VvlgM\u002BExdxTlyKPCjLJPY4dTPygNPArHuyEUzjkDxEJkoWiyQPARCkE8QBXOSgkAOhCy5yoLsFPLIRk4/8ICbtl65xaXBGoS5mMaWti2Rb4F2OzJXB2ZEN8e044pEupkkMMveS6YclmMw8xwPACYvCQiI6IO/meP6xJ0UVzstI5RqAH9BRKwP5BuAbcAbJWcD2OsRr0CaNS6TB2\u002BKUnrN2lbbJSEjOgzKPLa\u002B8hT0O2le\u002BwUhGMMl\u002BJX4IrBxknbUyChAsCJcQCIXO28rEkVimHdF1mREoTHMA4AjHE4Cn7l8EZC0wZYDLwCQw4BpgBWMKYsoA8jpGEdjGdSAec5RNUgYBZOrzYC/Pgt2/Ia4ox4Nwe\u002ByNtb94Vt3JsuMChK4e5yDkEltinIl\u002BA0DdqRZjYtm2JC7ZRgVOcQBARM3ljz8tcLy8LOtLW5lcA6AMoAysn7oA0D0LAFvYYnIAXIwb4sBO66H38AB8UZD7t7XnHEZrz/0YrT1/Nq29aB5x1rqWXbOg5iTQpKl499FX4KijMLpxL1OGPIKTuFNoME7jUD0eBYlFCkzik7xnsDqA6LhF4ZCmo5WPL3hU3Iig7iAJoLmSuIoXAVgyqAqJQzuVmaE0sYIJiarxaO1rH1l3xYkvSaP\u002Bttd3H9l/IN\u002ByOmxejxmnfFBn4OZWMsw76sKTTh/I8huNTdRJUgGJU\u002BU3H934VZFOWMXNIEu8RACdtCh8ednipf/VySXQCgBL/DINvhKMJQkUBci0AiUkZdGvzsCZt7WXPpQP//TMRqQwDpt2yYIOdd9tzPjsdFmiQAGKgASIdF6CsuRFkjFL8E7qdL26GqBTQDKdgQ7z3293GezEJaCxAeQ1ltheXYcZIHEbSUEkD4l5SlInjXTHAIeA0duuxUThAMC6Kz4zUOSZxBzOAVgQtpikwbefO1leZLmSDun1mMPM0c1sc5uGhqfBNwSIcwrERiSvfUwWzUkhGZQapLSuLDPC5o3YMv96jGbND9U7P17jzO/XHeqA0AGhDeIuwF0QdwDOAe4C6CiMAqwgLWOXuCPwmIsYg4LCCQEIHLSd1LmXf/s62CkQGCQnkCIQOYwdBgSSBl/hJTe0uhRcsXkjOot\u002BCjQmt/HI1a\u002BnnZ6Irb/qC2s2voq2QxsOXYGEtgRt7oqqOAe4I3Di1gVzoceFHpvCFFLQwM1QOLJ3mzeOCJAYNJy4lPRNlGOQEqUggSQN9XQNUhjZhHzRz0DZJHCzdWXZ3e2zzavalxI6ohwdzYhzOeYuwFpOYMg7pW6UTC2EBBCPTfnSD8q\u002B/SxLspaORGkAlq0MuIjDUnKYXGPCIwCMfMFNcAOTAZ9h\u002BMFvWyjfIZvz6M2sazcAcQzQBF1Es0RRRzOni2s\u002BSRjj6EWafEITR/tejRhMvNpF9TDKnAbQvKa0UjUolWTnYiM91k\u002BgWHAT3MAkTTAza7XDZgoS17JYpAkjF5ofmXtV3alUi8WZNJCLqZCAIv9HWxsFW/AFSkhQ1\u002BK6a0mrWGeStHYA\u002BPfPgxqTYlZMfsID15gmriXB2bLoMmB3FYrBsZhjwVkCdBl/rE6DtcUfBm49\u002BO7HXBydUrlUINkp/dsPUnlYQnrxf2UmT1mcr\u002B00sziDolSKZc5x0\u002BE\u002BjmiFKkh6b3EJldHWTjNC4NUA4CSnsQCdTgv6X2jHiCx6IYXfLJQ1JNeQVQGn206wOUv\u002B9QoZvTpx1CoVZcpJoNm0Q/OjEpS6VlBgOpKFILnQzz5650xIZlhSBCBfzKUKSS0FEtv3QsK7bwqcOMuXNGLw1Btuqd5w4kbUvVgSvnKiGudgGoMoKqeaNFr8kTe2T90\u002BeAXFQAhFnP6ULgbEiaVxkXslStJzFUi6xbq1r8rimJdvOhCXQxw8ZZ\u002BxB2\u002BPHfXwJYc5BC/BuK4SgSFuF6rn6kE6FEAc6msTVma\u002B/bD5H7FnOmZ\u002BrgRQU0I8Fjp9IaVtmYEVD4MyUU/cbM3H0XR78PZYk7FcgrIqJ0Lq1mJS6VKyRKJuhTIgi2rSfEje/47D76yshjsO\u002BI4VeiCVxfFBAjQw6zceml9JTiTb4N/eMldbTsjmLf7WKMX5lK0tp3MsizVcrY9ulbhXZW/G4Jx7/indwWcrShrbC4nlfFGAvKxGWtyRKUyZfGYOT9ptJ2KOuCVvwRVliFvJJDTCMwVp\u002B3T0SvtQ2fJw6l2z7/pxz3Nx5azfGxOziUPS/ernZFi3zDyuGZVxDiBMPu2Hp2lh3MYyy5ScJ1FDLxwDkyjIQKlqzKXkvowtRX7g/KPnz68/E7rcAQSM7DgkBr3zWqmaBFIJR4wou71SMQ779V9clQE8pOuWusyRQimhlUpRZUeZpHdkFEV46p6j76AHj/nFy\u002BmZ1BwAcAi/gvEZC1IFRn9IKApZeCeSoKxxB7BdCWryabdMeFb/xElXTW274sMI1lt7eKmSan1ZTrqFgsO6fN3G1oK5d85JqvtafGP65kpZY\u002BztSzlBjccaVpIKIsA/cTtcawrgGvqtq6xIgpNZbEI0FOHvh\u002B/62s\u002B1YsJ2zKKzD2kiP5s8Pu0ozCiXY23iKSojFDkR/ypQcd3CY2\u002B7t36frVkVEJIOV85uC5L8yZbeqTN3A\u002BSl8RiAAGDT7V9NnrL7WRzzuSjOkAN1Hfuj/YnuhjTr1pp4rh5z9HgrCPY87WYe\u002BNz1f16v312sTIquPuImtsRAXTz6bQWSVMSYpxCZIcsa0bZCpWatgcbzk0\u002B9\u002BZR6/e5glawRTE8nhW1CKk\u002Bq\u002Be2fkDrH86eceuOiev0f23o/5otXll\u002BIAhUXScJQGYf0PAHwq5ch27S\u002BNwZF641BVPdXMDp598Nb7v7Ga3bVH9OqCgKAgOuq4qgpZQwlMYDiw4eXDXbABrLGmimnXv\u002BeAZr6N9c8gNln9F3R61UQVEWox9f\u002BSkJUk5xvPfug/JvLOEexfgqSouw5hNHANHf47q\u002Bv0IY7xaZ8\u002Bpq5GeHXQPkl3/r7L\u002Bjh0VMBADjv2f3RyFYDE4fUfOZeUGOPceVBGAcgqZdv/UMIyzfx8PG456LqPw6N12bf2Nhr\u002BvAL5HBg/bnD7c7BnUXf\u002Bl3tijEAAcBFy18AuY8CE4Pk1r2GgTd/B/IDqiCbrGrj7QbUe44Dr2UU88H0OEJ4Vy8Qo/A\u002BYn8SKHzeEU3e2nM58MsbHrjgwHhtYmMDQuJqmBik1vKFMqv3OnG1UEdlH/u96EQB9bQb7/1q7dYvOH9MDr1BOjUenFoeJ31LCuk7QN\u002BjGBgs12GYqw12Myu69L56XWpbB3TVzCEEPi6Wrb\u002B1QoSk5zoHfwIoclmxi\u002B1qn\u002BhuYDnjSxsfOq/qmjXbOiAAuPqwJ8C4NK2qdJGl4/Vud97/Z7X1mN3LmHHppvvP\u002B0m9vm7bBgQAVx16OZhujOWKkqyiqqT8AwcBeUdUlILaDVQUAu7bcP95l9fr\u002B9n4AAHAVYd8HRyqShoLkhZHDv0roOiWsWg3cLUQ6NKN9597cr1\u002BLBszeo9pF644Fo7\u002Bp1LXZ4SzshvZgNYrzwDORjQqpx\u002BU/DqqDq4yGu2cUawoipM3PXD\u002BfdpgXDZxQABw0ct7gUYrP6muTLlqkPymdWi\u002BtkIhkQhX8wNJY3X834WAOIzuM7Tgm\u002BP6pXNq2wfI7OKVLwCQZBL9laRH8ENvo/nGC/IlIpJFfeMD1m916xB2DBAz/3bovrNnxfYTtB0DBABnLz8ALVcueveBFMtFB5NefEyWZIl03VrbWecjBLto\u002BwGNDhcz24vOlSnTdtqOAzK7YOV18DgT6A9JjwACmi8the\u002BMyi\u002BGQGUbUxDVOm4/\u002BR4nIOZw69C9Z3\u002BxbLT9tvMAmV28chmYj4KL/yXdFxIADK5cDBd/jqCA7CLrN/VTkJ5DCihwCHhm073/PDs5u8O28wGZXbjya/D4YeUBiiyFRO0RtF55Bj7v1tazEzNANuRFKPafpThj6J5/uim5YqdZn7fZBXbh8nvI0adA1DQ1pZCg7ATWs6C8CyqCLJXUXIydB7KB0NzvwGf\u002B8L0Tjy7vsGvsvQGU2rnLZ2Egm0vE3yPCtDoke6XonwQgYF1wOD\u002BQW4rLZr1YXrHr7f8BKP9WxL5dWpQAAAAASUVORK5CYII="
+        }
+      },
+      "id": 81
+    },
+    {
+      "id": 82,
+      "jsonrpc": "2.0",
+      "method": "addToChannel",
+      "params": {
+        "appId": "Microsoft® Visual Studio®",
+        "channelId": "PCM_OUT_00_V_02_SD2"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "name": "Browser",
+        "type": "Software",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_00_SD1",
+            "level": 1,
+            "isMuted": false
+          },
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1,
+            "isMuted": false
+          }
+        ],
+        "level": 1,
+        "isMuted": false,
+        "apps": [
+          {
+            "id": "Microsoft Edge",
+            "name": "Microsoft Edge"
+          },
+          {
+            "id": "Microsoft\u00AE Visual Studio\u00AE",
+            "name": "Microsoft\u00AE Visual Studio\u00AE"
+          }
+        ],
+        "effects": [],
+        "image": {
+          "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABM7SURBVHhezZt/sF1Vdce/a\u002B9z370vJBAwkhqrFAISyy8hkEQQhLZjpyoOQ9F2BrV1HBkZO\u002BX3D5XKgDAdQGccpuWHQG2rOMqvyI8AEpPwq0hKEEgCgxIiBCgQA8lL8t7LvfecvfrHWmuffc69L3kvPzBr5rxz9j77/Nif\u002B11rr73vu4T32GYtWXOop/woEH\u002BfwNMYDOjGYIDkmHQPMMBFYOKFzOGa7kD3qVXz5m2s33dXGdUrdoUdvviNhaDiBDgeMCCyD2AEbTUWoAAiBuk5AoMogLnYzBTmrzj241\u002BuPW6n2i4DdNjitWd5F34gHQ8Cg4KCsbpyL8cYE5DVUSwHOBdAFOCoABCuXDbnk5fU32NHbacDmv3IOy8hhJmBmEQhWwNUlqsKwpiAgABHAjUF5Fwh8Fy\u002B\u002BcmjPjWl/l7bazsN0FGLN/y3c/wl6yir\u002B9gGMJgKBWJgTEV1QNUYVAJSMCRgbPOuEEhUgFwh51GMvJONTH/h0C9srr/rRGyHAR25ZPTAjPKX0k6XYFQpVK0rwVRVVAJCDUyppNLNgsBAgIuAApzLo6IEWP7W4kM\u002B/4Haa4/bdgjQMQ9vXkXAzLoqpKtFCYSS4z4g5S0CBI0pp3SzOiBzM3OrElAB73It56CkTFn3lF8e9A93V3uwbdsuQEcs4aktGl1fdY/ejveqp1c50sbqzPpBKmORuZijIolBOZwL8NSNgJzL4V0O7wQUuLNhwcFn7J08aJvm6hXbsnmPjJw\u002BSFvW1\u002Bu3btLZ8lhQIrpU/XxSikVKjqtGYBAAUtiSClidqg8B3mPq517\u002B97x\u002B/dZsQgqa8/DIdzzcZaVqyn2pilQtNnLV6mLQTlVV732qotpQT\u002BpiqiDvTDXqUpTD\u002B66Wu3AuR\u002BZyeNeNbtdl3vvu/c/ZUHtoj41bQXMXjdzj4S6r14vVO6fWg1/bEcZQTn2zegKz6CFtXT2ye5t6qhtI3F1gF2j57ri8YFyA5i7p/It3/mTq7XFivZDqSrNaO5OW5c51OEiglHuB1a9V/XrNvklcTEY/UR1RgdNf/y5/dtmlk5Lb9Ng2Ac1b2D7dA5cD1MMgxdUDT4fr8m8/SGV9r4v1N2Z9bo1jpd6UY1MUUxECCAwHTSopxz4zwnB5l17bKqAjlvBUn7mfpJ2vCh3Vt0S/Bul5i1f9gI1tUTG6l4K8VdQVle6lDWJwluAtcUsUlORNlOMrb50/5uR3q4CmoIh\u002BWr5OnYC\u002BfKXT/QCUx3ZFeS5t0x9WhMOmZNNGbJFcnt5LBoHoYol6LOF0jqd89e1znoi3SmxMQMct7q5CP9dR619bt/RFy610p/4wkp7WyoaWyrKeEoDpcxRh4mbpvSxwGzBHxce/8taZByQPBcYCNPehLQcR0cx6PQFR2r1KUhurz4CcrLjAtqwOqjSp5VJQyZAgNZJSpHmQwBA1AQUIhZ6TwD3gsar2mH49BI5fUjDiw8TSkchm5QxGe3gEbz75GNpDG5EPD4OcA8hJTAADzCDOke05Bc1pU7DXnFlwDbufZc\u002Bpqsa2OHxrLJF5l\u002BRB3nXhqIvMd\u002BGog8zn8K6DzHfgqQPvu8hcR9t24OI1kivZSIfQ\u002BcaN0//juvjM6isAxy8ufkyELyL57GwaYJ1Y//oavLr4l6BsQLcM5DKQI4CcRky9OQHgAOIAhBwcOkC3A87b2Ocvj0Rrxl7xKduyXkAypfCuq1OMHJnrwrk2MgXgvUDJXAeZb8O5rrbRa0imI3ZPQuAb3n9z9KweQCcsCRrtegG9\u002BMC9GF3/LqgxCPIZ4D3IecA5UQ4IRAQQ6aiSPoAFEssnxSEHd7aA2yNo7DMJ0/768NhyLCvnYpZBS8c8mTJEHbJJOfMdVVYH3rXlnM/1Gp3568TW7ltwOOumfX90LeqAPrEkrPLATFQ\u002BT8Ybz6/Am8ufg2s0Ad8AZR5wHkRO4NjeiXoEjsWqWhJoauIAcAEUXXC3Dd6yGZMP/VNMPmRGfHJq0WWBZJjWaYUTd/Ikiomu5jrqVrr32ia6mVwvgAS4vG/ADfv\u002BZ3SAaJ9cHEI6bIXAePrntwKNFsh7wGcg8qocp25lkEghpe6lN4udMxUVktlxAYQcFApw3gV3RhBGh/Anf3ccqDZ8GCALus4FuOgiFk86MQYZhMy3FVxXFES5KinXOFSqxxRECGi3Rz/2ow/d9lx8jRMWh7OISLtEWP/W21h25x1Ac0/QwKBAyppAownKWkBjEGg0wY0W0GgBA4NyPmuCtI7i\u002BWZyvV3bAjVaoMYg0BgENQfh9pgKv\u002Bd0vH3XMmz5v6EKoHRWX1aYKiGKBINZRi/Lf5h1ADDVoijrmRGCnLMyB9k3Go2HkQ7zjugHdvz26jV46YmlQHOyQPDScc5aQAopa4EaA0A2APgBcCZtORvQ9k05lzUBvQc19HoD22gBA\u002BUxtfaAnzINQ0\u002B\u002BgtFXN9krAZBch5NYZJusFCgEWJwrVKlSFgAQAEHKCGzNtV5hBQaYpiJ1sROXyGf0hzWvY/VvlgM\u002BExdxTlyKPCjLJPY4dTPygNPArHuyEUzjkDxEJkoWiyQPARCkE8QBXOSgkAOhCy5yoLsFPLIRk4/8ICbtl65xaXBGoS5mMaWti2Rb4F2OzJXB2ZEN8e044pEupkkMMveS6YclmMw8xwPACYvCQiI6IO/meP6xJ0UVzstI5RqAH9BRKwP5BuAbcAbJWcD2OsRr0CaNS6TB2\u002BKUnrN2lbbJSEjOgzKPLa\u002B8hT0O2le\u002BwUhGMMl\u002BJX4IrBxknbUyChAsCJcQCIXO28rEkVimHdF1mREoTHMA4AjHE4Cn7l8EZC0wZYDLwCQw4BpgBWMKYsoA8jpGEdjGdSAec5RNUgYBZOrzYC/Pgt2/Ia4ox4Nwe\u002ByNtb94Vt3JsuMChK4e5yDkEltinIl\u002BA0DdqRZjYtm2JC7ZRgVOcQBARM3ljz8tcLy8LOtLW5lcA6AMoAysn7oA0D0LAFvYYnIAXIwb4sBO66H38AB8UZD7t7XnHEZrz/0YrT1/Nq29aB5x1rqWXbOg5iTQpKl499FX4KijMLpxL1OGPIKTuFNoME7jUD0eBYlFCkzik7xnsDqA6LhF4ZCmo5WPL3hU3Iig7iAJoLmSuIoXAVgyqAqJQzuVmaE0sYIJiarxaO1rH1l3xYkvSaP\u002Bttd3H9l/IN\u002ByOmxejxmnfFBn4OZWMsw76sKTTh/I8huNTdRJUgGJU\u002BU3H934VZFOWMXNIEu8RACdtCh8ednipf/VySXQCgBL/DINvhKMJQkUBci0AiUkZdGvzsCZt7WXPpQP//TMRqQwDpt2yYIOdd9tzPjsdFmiQAGKgASIdF6CsuRFkjFL8E7qdL26GqBTQDKdgQ7z3293GezEJaCxAeQ1ltheXYcZIHEbSUEkD4l5SlInjXTHAIeA0duuxUThAMC6Kz4zUOSZxBzOAVgQtpikwbefO1leZLmSDun1mMPM0c1sc5uGhqfBNwSIcwrERiSvfUwWzUkhGZQapLSuLDPC5o3YMv96jGbND9U7P17jzO/XHeqA0AGhDeIuwF0QdwDOAe4C6CiMAqwgLWOXuCPwmIsYg4LCCQEIHLSd1LmXf/s62CkQGCQnkCIQOYwdBgSSBl/hJTe0uhRcsXkjOot\u002BCjQmt/HI1a\u002BnnZ6Irb/qC2s2voq2QxsOXYGEtgRt7oqqOAe4I3Di1gVzoceFHpvCFFLQwM1QOLJ3mzeOCJAYNJy4lPRNlGOQEqUggSQN9XQNUhjZhHzRz0DZJHCzdWXZ3e2zzavalxI6ohwdzYhzOeYuwFpOYMg7pW6UTC2EBBCPTfnSD8q\u002B/SxLspaORGkAlq0MuIjDUnKYXGPCIwCMfMFNcAOTAZ9h\u002BMFvWyjfIZvz6M2sazcAcQzQBF1Es0RRRzOni2s\u002BSRjj6EWafEITR/tejRhMvNpF9TDKnAbQvKa0UjUolWTnYiM91k\u002BgWHAT3MAkTTAza7XDZgoS17JYpAkjF5ofmXtV3alUi8WZNJCLqZCAIv9HWxsFW/AFSkhQ1\u002BK6a0mrWGeStHYA\u002BPfPgxqTYlZMfsID15gmriXB2bLoMmB3FYrBsZhjwVkCdBl/rE6DtcUfBm49\u002BO7HXBydUrlUINkp/dsPUnlYQnrxf2UmT1mcr\u002B00sziDolSKZc5x0\u002BE\u002BjmiFKkh6b3EJldHWTjNC4NUA4CSnsQCdTgv6X2jHiCx6IYXfLJQ1JNeQVQGn206wOUv\u002B9QoZvTpx1CoVZcpJoNm0Q/OjEpS6VlBgOpKFILnQzz5650xIZlhSBCBfzKUKSS0FEtv3QsK7bwqcOMuXNGLw1Btuqd5w4kbUvVgSvnKiGudgGoMoKqeaNFr8kTe2T90\u002BeAXFQAhFnP6ULgbEiaVxkXslStJzFUi6xbq1r8rimJdvOhCXQxw8ZZ\u002BxB2\u002BPHfXwJYc5BC/BuK4SgSFuF6rn6kE6FEAc6msTVma\u002B/bD5H7FnOmZ\u002BrgRQU0I8Fjp9IaVtmYEVD4MyUU/cbM3H0XR78PZYk7FcgrIqJ0Lq1mJS6VKyRKJuhTIgi2rSfEje/47D76yshjsO\u002BI4VeiCVxfFBAjQw6zceml9JTiTb4N/eMldbTsjmLf7WKMX5lK0tp3MsizVcrY9ulbhXZW/G4Jx7/indwWcrShrbC4nlfFGAvKxGWtyRKUyZfGYOT9ptJ2KOuCVvwRVliFvJJDTCMwVp\u002B3T0SvtQ2fJw6l2z7/pxz3Nx5azfGxOziUPS/ernZFi3zDyuGZVxDiBMPu2Hp2lh3MYyy5ScJ1FDLxwDkyjIQKlqzKXkvowtRX7g/KPnz68/E7rcAQSM7DgkBr3zWqmaBFIJR4wou71SMQ779V9clQE8pOuWusyRQimhlUpRZUeZpHdkFEV46p6j76AHj/nFy\u002BmZ1BwAcAi/gvEZC1IFRn9IKApZeCeSoKxxB7BdCWryabdMeFb/xElXTW274sMI1lt7eKmSan1ZTrqFgsO6fN3G1oK5d85JqvtafGP65kpZY\u002BztSzlBjccaVpIKIsA/cTtcawrgGvqtq6xIgpNZbEI0FOHvh\u002B/62s\u002B1YsJ2zKKzD2kiP5s8Pu0ozCiXY23iKSojFDkR/ypQcd3CY2\u002B7t36frVkVEJIOV85uC5L8yZbeqTN3A\u002BSl8RiAAGDT7V9NnrL7WRzzuSjOkAN1Hfuj/YnuhjTr1pp4rh5z9HgrCPY87WYe\u002BNz1f16v312sTIquPuImtsRAXTz6bQWSVMSYpxCZIcsa0bZCpWatgcbzk0\u002B9\u002BZR6/e5glawRTE8nhW1CKk\u002Bq\u002Be2fkDrH86eceuOiev0f23o/5otXll\u002BIAhUXScJQGYf0PAHwq5ch27S\u002BNwZF641BVPdXMDp598Nb7v7Ga3bVH9OqCgKAgOuq4qgpZQwlMYDiw4eXDXbABrLGmimnXv\u002BeAZr6N9c8gNln9F3R61UQVEWox9f\u002BSkJUk5xvPfug/JvLOEexfgqSouw5hNHANHf47q\u002Bv0IY7xaZ8\u002Bpq5GeHXQPkl3/r7L\u002Bjh0VMBADjv2f3RyFYDE4fUfOZeUGOPceVBGAcgqZdv/UMIyzfx8PG456LqPw6N12bf2Nhr\u002BvAL5HBg/bnD7c7BnUXf\u002Bl3tijEAAcBFy18AuY8CE4Pk1r2GgTd/B/IDqiCbrGrj7QbUe44Dr2UU88H0OEJ4Vy8Qo/A\u002BYn8SKHzeEU3e2nM58MsbHrjgwHhtYmMDQuJqmBik1vKFMqv3OnG1UEdlH/u96EQB9bQb7/1q7dYvOH9MDr1BOjUenFoeJ31LCuk7QN\u002BjGBgs12GYqw12Myu69L56XWpbB3TVzCEEPi6Wrb\u002B1QoSk5zoHfwIoclmxi\u002B1qn\u002BhuYDnjSxsfOq/qmjXbOiAAuPqwJ8C4NK2qdJGl4/Vud97/Z7X1mN3LmHHppvvP\u002B0m9vm7bBgQAVx16OZhujOWKkqyiqqT8AwcBeUdUlILaDVQUAu7bcP95l9fr\u002B9n4AAHAVYd8HRyqShoLkhZHDv0roOiWsWg3cLUQ6NKN9597cr1\u002BLBszeo9pF644Fo7\u002Bp1LXZ4SzshvZgNYrzwDORjQqpx\u002BU/DqqDq4yGu2cUawoipM3PXD\u002BfdpgXDZxQABw0ct7gUYrP6muTLlqkPymdWi\u002BtkIhkQhX8wNJY3X834WAOIzuM7Tgm\u002BP6pXNq2wfI7OKVLwCQZBL9laRH8ENvo/nGC/IlIpJFfeMD1m916xB2DBAz/3bovrNnxfYTtB0DBABnLz8ALVcueveBFMtFB5NefEyWZIl03VrbWecjBLto\u002BwGNDhcz24vOlSnTdtqOAzK7YOV18DgT6A9JjwACmi8the\u002BMyi\u002BGQGUbUxDVOm4/\u002BR4nIOZw69C9Z3\u002BxbLT9tvMAmV28chmYj4KL/yXdFxIADK5cDBd/jqCA7CLrN/VTkJ5DCihwCHhm073/PDs5u8O28wGZXbjya/D4YeUBiiyFRO0RtF55Bj7v1tazEzNANuRFKPafpThj6J5/uim5YqdZn7fZBXbh8nvI0adA1DQ1pZCg7ATWs6C8CyqCLJXUXIydB7KB0NzvwGf\u002B8L0Tjy7vsGvsvQGU2rnLZ2Egm0vE3yPCtDoke6XonwQgYF1wOD\u002BQW4rLZr1YXrHr7f8BKP9WxL5dWpQAAAAASUVORK5CYII="
+        }
+      },
+      "id": 82
+    },
+    {
+      "id": 83,
+      "jsonrpc": "2.0",
+      "method": "addToChannel",
+      "params": {
+        "appId": "Microsoft® Visual Studio®",
+        "channelId": "PCM_OUT_00_V_02_SD2"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_OUT_00_V_02_SD2",
+        "name": "Browser",
+        "type": "Software",
+        "mixes": [
+          {
+            "id": "PCM_IN_01_V_00_SD1",
+            "level": 1,
+            "isMuted": false
+          },
+          {
+            "id": "PCM_IN_01_V_04_SD3",
+            "level": 1,
+            "isMuted": false
+          }
+        ],
+        "level": 1,
+        "isMuted": false,
+        "apps": [
+          {
+            "id": "Microsoft Edge",
+            "name": "Microsoft Edge"
+          },
+          {
+            "id": "Microsoft\u00AE Visual Studio\u00AE",
+            "name": "Microsoft\u00AE Visual Studio\u00AE"
+          }
+        ],
+        "effects": [],
+        "image": {
+          "imgData": "iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAYAAABV7bNHAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAABM7SURBVHhezZt/sF1Vdce/a\u002B9z370vJBAwkhqrFAISyy8hkEQQhLZjpyoOQ9F2BrV1HBkZO\u002BX3D5XKgDAdQGccpuWHQG2rOMqvyI8AEpPwq0hKEEgCgxIiBCgQA8lL8t7LvfecvfrHWmuffc69L3kvPzBr5rxz9j77/Nif\u002B11rr73vu4T32GYtWXOop/woEH\u002BfwNMYDOjGYIDkmHQPMMBFYOKFzOGa7kD3qVXz5m2s33dXGdUrdoUdvviNhaDiBDgeMCCyD2AEbTUWoAAiBuk5AoMogLnYzBTmrzj241\u002BuPW6n2i4DdNjitWd5F34gHQ8Cg4KCsbpyL8cYE5DVUSwHOBdAFOCoABCuXDbnk5fU32NHbacDmv3IOy8hhJmBmEQhWwNUlqsKwpiAgABHAjUF5Fwh8Fy\u002B\u002BcmjPjWl/l7bazsN0FGLN/y3c/wl6yir\u002B9gGMJgKBWJgTEV1QNUYVAJSMCRgbPOuEEhUgFwh51GMvJONTH/h0C9srr/rRGyHAR25ZPTAjPKX0k6XYFQpVK0rwVRVVAJCDUyppNLNgsBAgIuAApzLo6IEWP7W4kM\u002B/4Haa4/bdgjQMQ9vXkXAzLoqpKtFCYSS4z4g5S0CBI0pp3SzOiBzM3OrElAB73It56CkTFn3lF8e9A93V3uwbdsuQEcs4aktGl1fdY/ejveqp1c50sbqzPpBKmORuZijIolBOZwL8NSNgJzL4V0O7wQUuLNhwcFn7J08aJvm6hXbsnmPjJw\u002BSFvW1\u002Bu3btLZ8lhQIrpU/XxSikVKjqtGYBAAUtiSClidqg8B3mPq517\u002B97x\u002B/dZsQgqa8/DIdzzcZaVqyn2pilQtNnLV6mLQTlVV732qotpQT\u002BpiqiDvTDXqUpTD\u002B66Wu3AuR\u002BZyeNeNbtdl3vvu/c/ZUHtoj41bQXMXjdzj4S6r14vVO6fWg1/bEcZQTn2zegKz6CFtXT2ye5t6qhtI3F1gF2j57ri8YFyA5i7p/It3/mTq7XFivZDqSrNaO5OW5c51OEiglHuB1a9V/XrNvklcTEY/UR1RgdNf/y5/dtmlk5Lb9Ng2Ac1b2D7dA5cD1MMgxdUDT4fr8m8/SGV9r4v1N2Z9bo1jpd6UY1MUUxECCAwHTSopxz4zwnB5l17bKqAjlvBUn7mfpJ2vCh3Vt0S/Bul5i1f9gI1tUTG6l4K8VdQVle6lDWJwluAtcUsUlORNlOMrb50/5uR3q4CmoIh\u002BWr5OnYC\u002BfKXT/QCUx3ZFeS5t0x9WhMOmZNNGbJFcnt5LBoHoYol6LOF0jqd89e1znoi3SmxMQMct7q5CP9dR619bt/RFy610p/4wkp7WyoaWyrKeEoDpcxRh4mbpvSxwGzBHxce/8taZByQPBcYCNPehLQcR0cx6PQFR2r1KUhurz4CcrLjAtqwOqjSp5VJQyZAgNZJSpHmQwBA1AQUIhZ6TwD3gsar2mH49BI5fUjDiw8TSkchm5QxGe3gEbz75GNpDG5EPD4OcA8hJTAADzCDOke05Bc1pU7DXnFlwDbufZc\u002Bpqsa2OHxrLJF5l\u002BRB3nXhqIvMd\u002BGog8zn8K6DzHfgqQPvu8hcR9t24OI1kivZSIfQ\u002BcaN0//juvjM6isAxy8ufkyELyL57GwaYJ1Y//oavLr4l6BsQLcM5DKQI4CcRky9OQHgAOIAhBwcOkC3A87b2Ocvj0Rrxl7xKduyXkAypfCuq1OMHJnrwrk2MgXgvUDJXAeZb8O5rrbRa0imI3ZPQuAb3n9z9KweQCcsCRrtegG9\u002BMC9GF3/LqgxCPIZ4D3IecA5UQ4IRAQQ6aiSPoAFEssnxSEHd7aA2yNo7DMJ0/768NhyLCvnYpZBS8c8mTJEHbJJOfMdVVYH3rXlnM/1Gp3568TW7ltwOOumfX90LeqAPrEkrPLATFQ\u002BT8Ybz6/Am8ufg2s0Ad8AZR5wHkRO4NjeiXoEjsWqWhJoauIAcAEUXXC3Dd6yGZMP/VNMPmRGfHJq0WWBZJjWaYUTd/Ikiomu5jrqVrr32ia6mVwvgAS4vG/ADfv\u002BZ3SAaJ9cHEI6bIXAePrntwKNFsh7wGcg8qocp25lkEghpe6lN4udMxUVktlxAYQcFApw3gV3RhBGh/Anf3ccqDZ8GCALus4FuOgiFk86MQYZhMy3FVxXFES5KinXOFSqxxRECGi3Rz/2ow/d9lx8jRMWh7OISLtEWP/W21h25x1Ac0/QwKBAyppAownKWkBjEGg0wY0W0GgBA4NyPmuCtI7i\u002BWZyvV3bAjVaoMYg0BgENQfh9pgKv\u002Bd0vH3XMmz5v6EKoHRWX1aYKiGKBINZRi/Lf5h1ADDVoijrmRGCnLMyB9k3Go2HkQ7zjugHdvz26jV46YmlQHOyQPDScc5aQAopa4EaA0A2APgBcCZtORvQ9k05lzUBvQc19HoD22gBA\u002BUxtfaAnzINQ0\u002B\u002BgtFXN9krAZBch5NYZJusFCgEWJwrVKlSFgAQAEHKCGzNtV5hBQaYpiJ1sROXyGf0hzWvY/VvlgM\u002BExdxTlyKPCjLJPY4dTPygNPArHuyEUzjkDxEJkoWiyQPARCkE8QBXOSgkAOhCy5yoLsFPLIRk4/8ICbtl65xaXBGoS5mMaWti2Rb4F2OzJXB2ZEN8e044pEupkkMMveS6YclmMw8xwPACYvCQiI6IO/meP6xJ0UVzstI5RqAH9BRKwP5BuAbcAbJWcD2OsRr0CaNS6TB2\u002BKUnrN2lbbJSEjOgzKPLa\u002B8hT0O2le\u002BwUhGMMl\u002BJX4IrBxknbUyChAsCJcQCIXO28rEkVimHdF1mREoTHMA4AjHE4Cn7l8EZC0wZYDLwCQw4BpgBWMKYsoA8jpGEdjGdSAec5RNUgYBZOrzYC/Pgt2/Ia4ox4Nwe\u002ByNtb94Vt3JsuMChK4e5yDkEltinIl\u002BA0DdqRZjYtm2JC7ZRgVOcQBARM3ljz8tcLy8LOtLW5lcA6AMoAysn7oA0D0LAFvYYnIAXIwb4sBO66H38AB8UZD7t7XnHEZrz/0YrT1/Nq29aB5x1rqWXbOg5iTQpKl499FX4KijMLpxL1OGPIKTuFNoME7jUD0eBYlFCkzik7xnsDqA6LhF4ZCmo5WPL3hU3Iig7iAJoLmSuIoXAVgyqAqJQzuVmaE0sYIJiarxaO1rH1l3xYkvSaP\u002Bttd3H9l/IN\u002ByOmxejxmnfFBn4OZWMsw76sKTTh/I8huNTdRJUgGJU\u002BU3H934VZFOWMXNIEu8RACdtCh8ednipf/VySXQCgBL/DINvhKMJQkUBci0AiUkZdGvzsCZt7WXPpQP//TMRqQwDpt2yYIOdd9tzPjsdFmiQAGKgASIdF6CsuRFkjFL8E7qdL26GqBTQDKdgQ7z3293GezEJaCxAeQ1ltheXYcZIHEbSUEkD4l5SlInjXTHAIeA0duuxUThAMC6Kz4zUOSZxBzOAVgQtpikwbefO1leZLmSDun1mMPM0c1sc5uGhqfBNwSIcwrERiSvfUwWzUkhGZQapLSuLDPC5o3YMv96jGbND9U7P17jzO/XHeqA0AGhDeIuwF0QdwDOAe4C6CiMAqwgLWOXuCPwmIsYg4LCCQEIHLSd1LmXf/s62CkQGCQnkCIQOYwdBgSSBl/hJTe0uhRcsXkjOot\u002BCjQmt/HI1a\u002BnnZ6Irb/qC2s2voq2QxsOXYGEtgRt7oqqOAe4I3Di1gVzoceFHpvCFFLQwM1QOLJ3mzeOCJAYNJy4lPRNlGOQEqUggSQN9XQNUhjZhHzRz0DZJHCzdWXZ3e2zzavalxI6ohwdzYhzOeYuwFpOYMg7pW6UTC2EBBCPTfnSD8q\u002B/SxLspaORGkAlq0MuIjDUnKYXGPCIwCMfMFNcAOTAZ9h\u002BMFvWyjfIZvz6M2sazcAcQzQBF1Es0RRRzOni2s\u002BSRjj6EWafEITR/tejRhMvNpF9TDKnAbQvKa0UjUolWTnYiM91k\u002BgWHAT3MAkTTAza7XDZgoS17JYpAkjF5ofmXtV3alUi8WZNJCLqZCAIv9HWxsFW/AFSkhQ1\u002BK6a0mrWGeStHYA\u002BPfPgxqTYlZMfsID15gmriXB2bLoMmB3FYrBsZhjwVkCdBl/rE6DtcUfBm49\u002BO7HXBydUrlUINkp/dsPUnlYQnrxf2UmT1mcr\u002B00sziDolSKZc5x0\u002BE\u002BjmiFKkh6b3EJldHWTjNC4NUA4CSnsQCdTgv6X2jHiCx6IYXfLJQ1JNeQVQGn206wOUv\u002B9QoZvTpx1CoVZcpJoNm0Q/OjEpS6VlBgOpKFILnQzz5650xIZlhSBCBfzKUKSS0FEtv3QsK7bwqcOMuXNGLw1Btuqd5w4kbUvVgSvnKiGudgGoMoKqeaNFr8kTe2T90\u002BeAXFQAhFnP6ULgbEiaVxkXslStJzFUi6xbq1r8rimJdvOhCXQxw8ZZ\u002BxB2\u002BPHfXwJYc5BC/BuK4SgSFuF6rn6kE6FEAc6msTVma\u002B/bD5H7FnOmZ\u002BrgRQU0I8Fjp9IaVtmYEVD4MyUU/cbM3H0XR78PZYk7FcgrIqJ0Lq1mJS6VKyRKJuhTIgi2rSfEje/47D76yshjsO\u002BI4VeiCVxfFBAjQw6zceml9JTiTb4N/eMldbTsjmLf7WKMX5lK0tp3MsizVcrY9ulbhXZW/G4Jx7/indwWcrShrbC4nlfFGAvKxGWtyRKUyZfGYOT9ptJ2KOuCVvwRVliFvJJDTCMwVp\u002B3T0SvtQ2fJw6l2z7/pxz3Nx5azfGxOziUPS/ernZFi3zDyuGZVxDiBMPu2Hp2lh3MYyy5ScJ1FDLxwDkyjIQKlqzKXkvowtRX7g/KPnz68/E7rcAQSM7DgkBr3zWqmaBFIJR4wou71SMQ779V9clQE8pOuWusyRQimhlUpRZUeZpHdkFEV46p6j76AHj/nFy\u002BmZ1BwAcAi/gvEZC1IFRn9IKApZeCeSoKxxB7BdCWryabdMeFb/xElXTW274sMI1lt7eKmSan1ZTrqFgsO6fN3G1oK5d85JqvtafGP65kpZY\u002BztSzlBjccaVpIKIsA/cTtcawrgGvqtq6xIgpNZbEI0FOHvh\u002B/62s\u002B1YsJ2zKKzD2kiP5s8Pu0ozCiXY23iKSojFDkR/ypQcd3CY2\u002B7t36frVkVEJIOV85uC5L8yZbeqTN3A\u002BSl8RiAAGDT7V9NnrL7WRzzuSjOkAN1Hfuj/YnuhjTr1pp4rh5z9HgrCPY87WYe\u002BNz1f16v312sTIquPuImtsRAXTz6bQWSVMSYpxCZIcsa0bZCpWatgcbzk0\u002B9\u002BZR6/e5glawRTE8nhW1CKk\u002Bq\u002Be2fkDrH86eceuOiev0f23o/5otXll\u002BIAhUXScJQGYf0PAHwq5ch27S\u002BNwZF641BVPdXMDp598Nb7v7Ga3bVH9OqCgKAgOuq4qgpZQwlMYDiw4eXDXbABrLGmimnXv\u002BeAZr6N9c8gNln9F3R61UQVEWox9f\u002BSkJUk5xvPfug/JvLOEexfgqSouw5hNHANHf47q\u002Bv0IY7xaZ8\u002Bpq5GeHXQPkl3/r7L\u002Bjh0VMBADjv2f3RyFYDE4fUfOZeUGOPceVBGAcgqZdv/UMIyzfx8PG456LqPw6N12bf2Nhr\u002BvAL5HBg/bnD7c7BnUXf\u002Bl3tijEAAcBFy18AuY8CE4Pk1r2GgTd/B/IDqiCbrGrj7QbUe44Dr2UU88H0OEJ4Vy8Qo/A\u002BYn8SKHzeEU3e2nM58MsbHrjgwHhtYmMDQuJqmBik1vKFMqv3OnG1UEdlH/u96EQB9bQb7/1q7dYvOH9MDr1BOjUenFoeJ31LCuk7QN\u002BjGBgs12GYqw12Myu69L56XWpbB3TVzCEEPi6Wrb\u002B1QoSk5zoHfwIoclmxi\u002B1qn\u002BhuYDnjSxsfOq/qmjXbOiAAuPqwJ8C4NK2qdJGl4/Vud97/Z7X1mN3LmHHppvvP\u002B0m9vm7bBgQAVx16OZhujOWKkqyiqqT8AwcBeUdUlILaDVQUAu7bcP95l9fr\u002B9n4AAHAVYd8HRyqShoLkhZHDv0roOiWsWg3cLUQ6NKN9597cr1\u002BLBszeo9pF644Fo7\u002Bp1LXZ4SzshvZgNYrzwDORjQqpx\u002BU/DqqDq4yGu2cUawoipM3PXD\u002BfdpgXDZxQABw0ct7gUYrP6muTLlqkPymdWi\u002BtkIhkQhX8wNJY3X834WAOIzuM7Tgm\u002BP6pXNq2wfI7OKVLwCQZBL9laRH8ENvo/nGC/IlIpJFfeMD1m916xB2DBAz/3bovrNnxfYTtB0DBABnLz8ALVcueveBFMtFB5NefEyWZIl03VrbWecjBLto\u002BwGNDhcz24vOlSnTdtqOAzK7YOV18DgT6A9JjwACmi8the\u002BMyi\u002BGQGUbUxDVOm4/\u002BR4nIOZw69C9Z3\u002BxbLT9tvMAmV28chmYj4KL/yXdFxIADK5cDBd/jqCA7CLrN/VTkJ5DCihwCHhm073/PDs5u8O28wGZXbjya/D4YeUBiiyFRO0RtF55Bj7v1tazEzNANuRFKPafpThj6J5/uim5YqdZn7fZBXbh8nvI0adA1DQ1pZCg7ATWs6C8CyqCLJXUXIydB7KB0NzvwGf\u002B8L0Tjy7vsGvsvQGU2rnLZ2Egm0vE3yPCtDoke6XonwQgYF1wOD\u002BQW4rLZr1YXrHr7f8BKP9WxL5dWpQAAAAASUVORK5CYII="
+        }
+      },
+      "id": 83
+    },
+    {
+      "id": 84,
+      "jsonrpc": "2.0",
+      "method": "setMix",
+      "params": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "level": 0.9,
+        "mixId": "PCM_IN_01_V_00_SD1"
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "mixChanged",
+      "params": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "name": "Personal Mix",
+        "level": 0.9
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "level": 0.9
+      },
+      "id": 84
+    },
+    {
+      "id": 85,
+      "jsonrpc": "2.0",
+      "method": "setMix",
+      "params": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "level": 0.62
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "level": 0.62
+      },
+      "id": 85
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "mixChanged",
+      "params": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "name": "Personal Mix",
+        "level": 0.62
+      }
+    },
+    {
+      "id": 86,
+      "jsonrpc": "2.0",
+      "method": "setMix",
+      "params": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "isMuted": true
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "isMuted": true
+      },
+      "id": 86
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "mixChanged",
+      "params": {
+        "id": "PCM_IN_01_V_00_SD1",
+        "name": "Personal Mix",
+        "isMuted": true
+      }
+    },
+    {
+      "id": 87,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "gain": { "value": 1 }
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "gain": {
+              "value": 1
+            }
+          }
+        ]
+      },
+      "id": 87
+    },
+    {
+      "id": 88,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "gain": { "value": 1 }
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "gain": {
+              "value": 1
+            }
+          }
+        ]
+      },
+      "id": 88
+    },
+    {
+      "id": 89,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": true
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": true
+          }
+        ]
+      },
+      "id": 89
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "inputDeviceChanged",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "name": "SPDIF Interface (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "name": "SPDIF Interface (Sound Blaster G3)",
+            "isMuted": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 90,
+      "jsonrpc": "2.0",
+      "method": "setOutputDevice",
+      "params": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "isMuted": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "setOutputDevice",
+      "params": {
+        "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "isMuted": true
+          }
+        ]
+      },
+      "id": 12,
+      "jsonrpc": "2.0"
+    },
+    {
+      "method": "setOutputDevice",
+      "params": {
+        "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "isMuted": null,
+            "level": 1
+          }
+        ]
+      },
+      "id": 13,
+      "jsonrpc": "2.0"
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "name": "Speakers (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "name": "Speakers (Sound Blaster G3)",
+            "isMuted": true
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "isMuted": true
+            }
+          ]
+        }
+      },
+      "id": 90
+    },
+    {"method":"setOutputDevice","params":{"id":"{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}","outputs":[{"id":"{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}","isMuted":null,"level":1}]},"id":13,"jsonrpc":"2.0"}
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+        "name": "Headset (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+            "name": "Headset (Sound Blaster G3)",
+            "isMuted": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 91,
+      "jsonrpc": "2.0",
+      "method": "setOutputDevice",
+      "params": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "isMuted": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "name": "Speakers (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "name": "Speakers (Sound Blaster G3)",
+            "isMuted": false
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "isMuted": false
+            }
+          ]
+        }
+      },
+      "id": 91
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+        "name": "Headset (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+            "name": "Headset (Sound Blaster G3)",
+            "isMuted": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 92,
+      "jsonrpc": "2.0",
+      "method": "setOutputDevice",
+      "params": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "level": 0.44
+            }
+          ]
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "name": "Speakers (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "name": "Speakers (Sound Blaster G3)",
+            "level": 0.44
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "level": 0.44
+            }
+          ]
+        }
+      },
+      "id": 92
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+        "name": "Headset (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+            "name": "Headset (Sound Blaster G3)",
+            "level": 0.44047865
+          }
+        ]
+      }
+    },
+    {
+      "id": 93,
+      "jsonrpc": "2.0",
+      "method": "setOutputDevice",
+      "params": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "level": 0.49
+            }
+          ]
+        }
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+        "name": "Speakers (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+            "name": "Speakers (Sound Blaster G3)",
+            "level": 0.49
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "outputDevice": {
+          "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+          "outputs": [
+            {
+              "id": "{0.0.0.00000000}.{9e81e019-4e19-419f-a9e8-395ca09c3ed3}",
+              "level": 0.49
+            }
+          ]
+        }
+      },
+      "id": 93
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "outputDeviceChanged",
+      "params": {
+        "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+        "name": "Headset (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "outputs": [
+          {
+            "id": "{0.0.0.00000000}.{5297283a-4ee0-472c-80b9-ed1584170892}",
+            "name": "Headset (Sound Blaster G3)",
+            "level": 0.48974448
+          }
+        ]
+      }
+    },
+    {
+      "id": 94,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "micPcMix": 0.44
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "error": {
+        "code": -32602,
+        "message": "Invalid method parameter(s)."
+      },
+      "id": 94
+    },
+    {
+      "id": 95,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "micPcMix": 0.84
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "error": {
+        "code": -32602,
+        "message": "Invalid method parameter(s)."
+      },
+      "id": 95
+    },
+    {
+      "id": 96,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": false
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": false
+          }
+        ]
+      },
+      "id": 96
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "inputDeviceChanged",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "name": "SPDIF Interface (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "name": "SPDIF Interface (Sound Blaster G3)",
+            "isMuted": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 97,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": true
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": true
+          }
+        ]
+      },
+      "id": 97
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "inputDeviceChanged",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "name": "SPDIF Interface (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "name": "SPDIF Interface (Sound Blaster G3)",
+            "isMuted": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 98,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": false
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "isMuted": false
+          }
+        ]
+      },
+      "id": 98
+    },
+    {
+      "jsonrpc": "2.0",
+      "method": "inputDeviceChanged",
+      "params": {
+        "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+        "name": "SPDIF Interface (Sound Blaster G3)",
+        "isWaveDevice": false,
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{ceb28ad9-8935-4632-8353-043f4f1bbe99}",
+            "name": "SPDIF Interface (Sound Blaster G3)",
+            "isMuted": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 99,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+            "isGainLockOn": true
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+            "isGainLockOn": true
+          }
+        ]
+      },
+      "id": 99
+    },
+    {
+      "id": 100,
+      "jsonrpc": "2.0",
+      "method": "setInputDevice",
+      "params": {
+        "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+            "isGainLockOn": true
+          }
+        ]
+      }
+    },
+    {
+      "jsonrpc": "2.0",
+      "result": {
+        "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+        "inputs": [
+          {
+            "id": "{0.0.1.00000000}.{9fb31928-0661-4265-b7a8-dcc3bed66b5b}",
+            "isGainLockOn": true
+          }
+        ]
+      },
+      "id": 100
+    }
+  ]
+}

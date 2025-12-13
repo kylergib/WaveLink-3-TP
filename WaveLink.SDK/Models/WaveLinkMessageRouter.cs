@@ -13,14 +13,20 @@ public class WaveLinkMessageRouter
     public event EventHandler<WaveLinkResponse<ChannelsResult>>? OnReceivedGetChannels;
     public event EventHandler<WaveLinkResponse<MixesResult>>? OnReceivedGetMixes;
 
+
     // received methods
     public event EventHandler<WaveLinkRecievedMethod<Channel>>? OnReceivedChannelChanged;
     public event EventHandler<WaveLinkRecievedMethod<ChannelsChangedInfo>>? OnReceivedChannelsChanged;
     public event EventHandler<WaveLinkRecievedMethod<App>>? OnReceivedFocusedAppChanged;
+    public event EventHandler<WaveLinkRecievedMethod<InputDevice>>? OnReceivedInputDeviceChanged;
+    public event EventHandler<WaveLinkRecievedMethod<InputDevicesChangedInfo>>? OnReceivedInputDevicesChanged;
     public event EventHandler<WaveLinkRecievedMethod<Mix>>? OnReceivedMixChanged;
     public event EventHandler<WaveLinkRecievedMethod<MixesChangedReceived>>? OnReceivedMixesChanged;
     public event EventHandler<WaveLinkRecievedMethod<OutputDevice>>? OnReceivedOutputDeviceChanged;
     public event EventHandler<WaveLinkRecievedMethod<OutputDevicesChangedInfo>>? OnReceivedOutputDevicesChanged;
+
+    // default result
+    public event EventHandler<string>? OnReceivedResult;
 
     public WaveLinkMessageRouter(ILogger logger)
     {
@@ -57,8 +63,7 @@ public class WaveLinkMessageRouter
                 if (mixes != null) OnReceivedGetMixes?.Invoke(this, mixes);
                 break;
             default:
-                _logger.LogWarning("Received result that is not recognized:");
-                _logger.LogWarning("{message}", message.Minify());
+                OnReceivedResult?.Invoke(this, message);
                 break;
         }
     }
@@ -82,6 +87,16 @@ public class WaveLinkMessageRouter
                 _logger.LogDebug("Received app: {app}", app?.Params);
                 if (app != null) OnReceivedFocusedAppChanged?.Invoke(this, app);
                 break;
+             case ReceivedMethods.inputDeviceChanged:
+                var inputDevice = JsonSerializer.Deserialize<WaveLinkRecievedMethod<OutputDevice>>(message, Statics.JsonSerializerOptionsDefault);
+                _logger.LogDebug("Received inputDevice: {inputDevice}", inputDevice?.Params);
+                if (inputDevice != null) OnReceivedOutputDeviceChanged?.Invoke(this, inputDevice);
+                break;
+            case ReceivedMethods.inputDevicesChanged:
+                var inputDevices = JsonSerializer.Deserialize<WaveLinkRecievedMethod<OutputDevicesChangedInfo>>(message, Statics.JsonSerializerOptionsDefault);
+                _logger.LogDebug("Received inputDevices: {inputDevices}", inputDevices?.Params);
+                if (inputDevices != null) OnReceivedOutputDevicesChanged?.Invoke(this, inputDevices);
+                break;
             case ReceivedMethods.mixChanged:
                 var mix = JsonSerializer.Deserialize<WaveLinkRecievedMethod<Mix>>(message, Statics.JsonSerializerOptionsDefault);
                 _logger.LogDebug("Received mix: {mix}", mix?.Params);
@@ -94,7 +109,7 @@ public class WaveLinkMessageRouter
                 break;
             case ReceivedMethods.outputDeviceChanged:
                 var outputDevice = JsonSerializer.Deserialize<WaveLinkRecievedMethod<OutputDevice>>(message, Statics.JsonSerializerOptionsDefault);
-                _logger.LogDebug("Received outputDevices: {outputDevices}", outputDevice?.Params);
+                _logger.LogDebug("Received outputDevice: {outputDevice}", outputDevice?.Params);
                 if (outputDevice != null) OnReceivedOutputDeviceChanged?.Invoke(this, outputDevice);
                 break;
             case ReceivedMethods.outputDevicesChanged:

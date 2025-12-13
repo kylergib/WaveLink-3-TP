@@ -5,6 +5,7 @@
         Unknown,
         NoWaveDevice,
         WaveXLR,
-        Wave
+        Wave,
+        Wave3
     }
 }

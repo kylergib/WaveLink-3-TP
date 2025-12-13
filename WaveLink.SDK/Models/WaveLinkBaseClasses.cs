@@ -16,6 +16,17 @@ public class WaveLinkRequestMethod : WaveLinkRequest
         Id = (int)waveRequestId;
         Method = waveRequestId.ToString();
     }
+} //WaveLinkSendMethod<T>
+public class WaveLinkSendMethod<T> : WaveLinkRequest
+{
+    public WaveLinkMethod Method { get; set; }
+    public T Params { get; set; }
+    public WaveLinkSendMethod(WaveLinkMethod waveMethod,T objectData)
+    {
+        Id = 11;
+        Method = waveMethod;
+        Params = objectData;
+    }
 }
 public class WaveLinkResponse<T>
 {
@@ -26,6 +37,7 @@ public class WaveLinkResponse<T>
 }
 public class WaveLinkRecievedMethod<T>
 {
+    public int? Id { get; set; }
     [JsonPropertyName("jsonrpc")]
     public string JsonRpc { get; set; } = Statics.JsonRpcVersion;
     public string Method { get; set; } = string.Empty;
