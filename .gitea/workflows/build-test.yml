@@ -71,15 +71,15 @@ jobs:
       # Publish the x64
       - name: Publish win x64
         # if: false
-        run: dotnet publish -c Release -o ./publish/winx64 -r winx64 --self-contained
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/winx64 -r win-x64 --self-contained
 
       - name: Publish mac x64
         # if: false
-        run: dotnet publish -c Release -o ./publish/osx_x64 -r osx-x64 --self-contained
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_x64 -r osx-x64 --self-contained
         
       - name: Publish mac arm
         # if: false
-        run: dotnet publish -c Release -o ./publish/osx_arm64 -r osx-arm64 --self-contained
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_arm64 -r osx-arm64 --self-contained
 
      # generate a tag
       - name: Generate tag
