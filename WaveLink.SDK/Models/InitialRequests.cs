@@ -69,15 +69,15 @@ public class AppInfoResult : IEquatable<AppInfoResult>
 
 public class InputDeviceResult
 {
-    public List<InputDevice> InputDevices { get; set; } = new();
+    public List<InputDevice>? InputDevices { get; set; }
 }
 public class InputDevice : IEquatable<InputDevice>
 {
     public string Id { get; set; } = string.Empty;
-    public string? Name { get; set; } = string.Empty;
-    public WaveDeviceType? Type { get; set; } = WaveDeviceType.Unknown;
-    public List<Input>? Inputs { get; set; } = new();
-    public bool CompareInputs(List<Input> otherInputs)
+    public string? Name { get; set; }
+    public WaveDeviceType? Type { get; set; }
+    public List<Input>? Inputs { get; set; }
+    public bool CompareInputs(List<Input>? otherInputs)
     {
         if (Inputs == null && otherInputs == null) return true;
         if (Inputs == null || otherInputs == null) return false;
@@ -106,13 +106,13 @@ public class InputDevice : IEquatable<InputDevice>
 public class Input : IEquatable<Input>
 {
     public string Id { get; set; } = string.Empty;
-    public string? Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public InputGain? Gain { get; set; }
-    public bool? IsMuted { get; set; } = false;
-    public bool? IsGainLockOn { get; set; } = false;
-    public int? MicPcMixId { get; set; } = -1;
-    public List<InputEffect>? Effects { get; set; } = new();
-    public List<InputEffect>? DspEffects { get; set; } = new();
+    public bool? IsMuted { get; set; }
+    public bool? IsGainLockOn { get; set; }
+    public int? MicPcMixId { get; set; }
+    public List<InputEffect>? Effects { get; set; }
+    public List<InputEffect>? DspEffects { get; set; }
     public bool CompareEffects(List<InputEffect>? otherEffects)
     {
         if (Effects == null && otherEffects == null) return true;
@@ -156,9 +156,9 @@ public class Input : IEquatable<Input>
 }
 public class InputGain : IEquatable<InputGain>
 {
-    public decimal? Value { get; set; } = -1;
-    public decimal? Min { get; set; } = -1;
-    public decimal? Max { get; set; } = -1;
+    public decimal? Value { get; set; }
+    public decimal? Min { get; set; }
+    public decimal? Max { get; set; }
     //public object LookupTable { get; set; } 
     public bool Equals(InputGain? other)
     {
@@ -177,8 +177,8 @@ public class InputGain : IEquatable<InputGain>
 public class InputEffect : IEquatable<InputEffect>
 {
     public string Id { get; set; } = string.Empty;
-    public string? Name { get; set; } = string.Empty;
-    public bool? IsEnabled { get; set; } = false;
+    public string? Name { get; set; }
+    public bool? IsEnabled { get; set; }
     public bool Equals(InputEffect? other)
     {
         if (other is null) return false;
@@ -196,14 +196,14 @@ public class InputEffect : IEquatable<InputEffect>
 
 public class OutputDeviceResult
 {
-    public List<OutputDevice> OutputDevices { get; set; } = new();
+    public List<OutputDevice>? OutputDevices { get; set; }
 }
 public class OutputDevice : IEquatable<OutputDevice>
 {
-    public string Id { get; set; } = string.Empty;
-    public string? Name { get; set; } = string.Empty;
-    public WaveDeviceType? Type { get; set; } = WaveDeviceType.Unknown;
-    public List<Output>? Outputs { get; set; } = new();
+    public string Id { get; set; }
+    public string? Name { get; set; }
+    public WaveDeviceType? Type { get; set; }
+    public List<Output>? Outputs { get; set; }
     public bool CompareOutputs(List<Output> otherOutputs)
     {
         if (Outputs == null && otherOutputs == null) return true;
@@ -233,9 +233,9 @@ public class OutputDevice : IEquatable<OutputDevice>
 public class Output : IEquatable<Output>
 {
     public string Id { get; set; } = string.Empty;
-    public string? Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public decimal? Level { get; set; }
-    public string? MixId { get; set; } = string.Empty;
+    public string? MixId { get; set; }
     public bool? IsMuted { get; set; }
     public bool Equals(Output? other)
     {
@@ -255,7 +255,7 @@ public class Output : IEquatable<Output>
 }
 public class ChannelsResult
 {
-    public List<Channel> Channels { get; set; } = new();
+    public List<Channel>? Channels { get; set; }
 }
 public class Channel : IEquatable<Channel>
 {
@@ -377,15 +377,15 @@ public class ChannelImage : IEquatable<ChannelImage>
 
 public class MixesResult
 {
-    public List<Mix> Mixes { get; set; } = new();
+    public List<Mix>? Mixes { get; set; }
 }
 public class Mix : IEquatable<Mix>
 {
     public string Id { get; set; } = string.Empty;
-    public string? Name { get; set; } = string.Empty;
+    public string? Name { get; set; }
     public decimal? Level { get; set; }
     public bool? IsMuted { get; set; }
-    public MixImage? Image { get; set; } = new MixImage();
+    public MixImage? Image { get; set; }
     public bool Equals(Mix? other)
     {
         if (other is null) return false;

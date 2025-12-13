@@ -1,0 +1,213 @@
+﻿using System.Data.Common;
+using System.Runtime;
+using System.Text.Json;
+using System.Threading.Channels;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using WaveLink.SDK;
+using WaveLink.SDK.Models;
+
+namespace WaveLink.Plugin.Models;
+
+public class WaveLinkHandler
+{
+    private readonly ILogger<WaveLinkHandler> _logger;
+    public WaveLinkClient? Client = null;
+    public bool Retry = true;
+    public event EventHandler? OnConnection;
+    public event EventHandler? OnClose;
+    public bool SubscribeToFocusApp = true;
+    public string _appId = "EWL";
+    public string Host { get; set; }
+    public int Port { get; set; }
+    public ILoggerFactory _loggerFactory { get; set; }
+    public WaveLinkHandler(ILoggerFactory loggerFactory, string host, int port)
+    {
+        _logger = loggerFactory?.CreateLogger<WaveLinkHandler>() ?? throw new ArgumentNullException(nameof(loggerFactory));
+        _loggerFactory = loggerFactory;
+        Host = host;
+        Port = port;
+    }
+    public async Task Start()
+    {
+        _ = Task.Run(() => Start(_loggerFactory, Host, Port));
+    }
+    public async Task Start(ILoggerFactory loggerFactory, string host, int port)
+    {
+        while (Retry)
+        {
+            try
+            {
+                Client = new(host, port, loggerFactory);
+                // on connection, request application info
+                Client.OnConnection += async (s, e) =>
+                {
+                    _logger.LogInformation("Connected to Wave Link on port " + port);
+                    OnConnection?.Invoke(this, EventArgs.Empty);
+                    Client.OnClose += OnClose;
+                    WaveLinkRequestMethod request = new(WaveRequestId.getApplicationInfo);
+                    await Client.SendRequestAsync(request);
+                };
+                // print received application info
+                Client.MessageRouter.OnReceivedAppInfo += async (s, response) =>
+                {
+                    _logger.LogDebug("Received Application Info:");
+                    _logger.LogDebug($"AppID: {response.Result.AppID}");
+                    _logger.LogDebug($"OperatingSystem: {response.Result.OperatingSystem}");
+                    _logger.LogDebug($"Name: {response.Result.Name}");
+                    _logger.LogDebug($"Version: {response.Result.Version}");
+                    _logger.LogDebug($"Build: {response.Result.Build}");
+                    _logger.LogDebug($"InterfaceRevision: {response.Result.InterfaceRevision}");
+
+                    if (response.Result.AppID == _appId)
+                    {
+                        _logger.LogInformation($"Connected to wave link");
+                        WaveLinkRequestMethod request = new(WaveRequestId.getInputDevices);
+                        _ = Client.SendRequestAsync(request);
+                        WaveLinkRequestMethod outputRequest = new(WaveRequestId.getOutputDevices);
+                        _ = Client.SendRequestAsync(outputRequest);
+                        WaveLinkRequestMethod channelRequest = new(WaveRequestId.getChannels);
+                        _ = Client.SendRequestAsync(channelRequest);
+                        WaveLinkRequestMethod mixRequest = new(WaveRequestId.getMixes);
+                        _ = Client.SendRequestAsync(mixRequest);
+
+                        if (SubscribeToFocusApp)
+                        {
+                            WaveLinkSendMethod<MethodSubscriptionInfo> subscribe = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = SubscribeToFocusApp } });
+                            _ = Client?.SendRequestAsync<MethodSubscriptionInfo>(subscribe);
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Connected to an app that was not Wave Link. Closing and retrying...");
+                        port++;
+                        await Client.CloseAsync();
+                    }
+                };
+
+                _logger.LogDebug($"Trying to connect: {host}:{port}");
+                await Client.ConnectAsync();
+
+                await Client.WaitForCloseAsync();
+                _logger.LogWarning("Wave Link closed. Reconnecting...");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug($"Connection failed on port: {port}");
+                port++;
+            }
+            if (port == 1895)
+            {
+                _logger.LogWarning("Retrying...");
+                port = 1884;
+            }
+        }
+    }
+    public void SetInput(string inputName, string? shouldMute = null, decimal? newLevel = null)
+    {
+        var inputDevice = Client?.StateManager.InputDevices.Find(c => c.Name == inputName);
+        if (inputDevice != null)
+        {
+
+            MethodInputInfo inputInfo = new()
+            {
+                Id = inputDevice?.Inputs?[0].Id ?? string.Empty
+            };
+
+            inputInfo.IsMuted = ConvertIsMuted(shouldMute, inputDevice?.Inputs?[0].IsMuted);
+
+            if (newLevel != null)
+            {
+                inputInfo.Gain = new() { Value = ToDecimal((int)newLevel) };
+            }
+
+            if (inputInfo.IsMuted == null && inputInfo.Gain == null) return;
+
+            WaveLinkSendMethod<MethodInputDeviceInfo> setInputDeviceRequest = new(WaveLinkMethod.setInputDevice, new() { Id = inputDevice!.Id, Inputs = [inputInfo] });
+            _ = Client?.SendRequestAsync<MethodInputDeviceInfo>(setInputDeviceRequest);
+        }
+    }
+
+    // mix id will add the output to the mix, if it is empty it will remove, if null it will not change
+    public void SetOutput(string outputName, string? shouldMute = null, decimal? newLevel = null, string? mixId = null)
+    {
+        var outputDevice = Client?.StateManager.OutputDevices.Find(c => c.Name == outputName);
+        if (outputDevice != null)
+        {
+            MethodOutputInfo outputInfo = new()
+            {
+                Id = outputDevice?.Outputs?[0].Id ?? string.Empty,
+                MixId = mixId // adds the output to the mix, does not change the default though
+            };
+
+            outputInfo.IsMuted = ConvertIsMuted(shouldMute, outputDevice?.Outputs?[0].IsMuted);
+            outputInfo.Level = newLevel == null ? null : ToDecimal((int)newLevel);
+
+            MethodOutputDeviceParamInfo deviceParam = new() { Id = outputDevice!.Id, Outputs = [outputInfo] };
+
+            WaveLinkSendMethod<MethodOutputDeviceInfo> setOutputDeviceRequest = new(WaveLinkMethod.setOutputDevice, new() { OutputDevice = deviceParam });
+            _ = Client?.SendRequestAsync<MethodOutputDeviceInfo>(setOutputDeviceRequest);
+        }
+    }
+
+    public void SetChannel(string channelName, string? shouldMute = null, decimal? newLevel = null)
+    {
+        var channel = Client?.StateManager.Channels.Find(c => c.Name == channelName);
+        if (channel != null)
+        {
+            MethodChannelInfo channelInfo = new() { Id = channel.Id };
+
+            channelInfo.IsMuted = ConvertIsMuted(shouldMute, channel.IsMuted);
+            channelInfo.Level = newLevel == null ? null : ToDecimal((int)newLevel);
+
+            WaveLinkSendMethod<MethodChannelInfo> setRequest = new(WaveLinkMethod.setChannel, channelInfo);
+            _ = Client?.SendRequestAsync<MethodChannelInfo>(setRequest);
+        }
+    }
+
+    public void SetMix(string mixName, string? shouldMute = null, decimal? newLevel = null)
+    {
+        var mix = Client?.StateManager.Mixes.Find(mix => mix.Name == mixName);
+        if (mix != null)
+        {
+            MethodMixInfo mixInfo = new() { Id = mix.Id };
+
+            mixInfo.IsMuted = ConvertIsMuted(shouldMute, mix.IsMuted);
+            mixInfo.Level = newLevel == null ? null : ToDecimal((int)newLevel);
+
+            WaveLinkSendMethod<MethodMixInfo> request = new(WaveLinkMethod.setMix, mixInfo);
+            _ = Client?.SendRequestAsync<MethodMixInfo>(request);
+        }
+    }
+
+    public void SetFocusAppSubscription(string subscribe)
+    {
+        WaveLinkSendMethod<MethodSubscriptionInfo> request = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = ConvertIsMuted(subscribe, true) ?? true } });
+        _ = Client?.SendRequestAsync<MethodSubscriptionInfo>(request);
+    }
+
+    public void AddToChannel(string channelName)
+    {
+        var channel = Client?.StateManager.Channels.Find(c => c.Name == channelName);
+        var appToAdd = Client?.StateManager.FocusedApp;
+        if (appToAdd != null && channel != null)
+        {
+            WaveLinkSendMethod<AddAppToChannelInfo> addToChannelRequest = new(WaveLinkMethod.addToChannel, new() { ChannelId = channel.Id, AppId = appToAdd.Id });
+            _ = Client?.SendRequestAsync<AddAppToChannelInfo>(addToChannelRequest);
+        }
+    }
+
+    public decimal ToDecimal(int number)
+    {
+        if (number <= 0) return 0m;
+        if (number >= 100) return 1m;
+        return number / 100m;
+    }
+
+    public bool? ConvertIsMuted(string? value, bool? currentValue)
+    {
+        if (value == "toggle") return !currentValue ?? null;
+        else if (value != null) return value.ToLower() == "true";
+        return null;
+    }
+}
