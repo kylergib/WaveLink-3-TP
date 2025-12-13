@@ -1,0 +1,170 @@
+name: Hello World
+on:
+  push:
+    branches:
+      - setup
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    container:
+      volumes:
+        - /mnt/user/appdata/KamiTasks:/KamiTasks
+    steps:
+      - name: Send Discord Start Notification
+        # if: false
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "Wave Link Build started on Gitea",
+              "embeds": [
+                {
+                  "title": "Wave Link Build Started",
+                  "description": "Wave Link Build process **started** on Gitea",
+                  "color": 3447003,
+                  "fields": [
+                    {
+                      "name": "Repository",
+                      "value": "'${{ github.repository }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Branch",
+                      "value": "'${{ github.ref }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Commit",
+                      "value": "'${{ github.sha }}'",
+                      "inline": true
+                    }
+                  ],
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - uses: actions/checkout@v4
+    
+      # Install .NET 9 SDK
+      - name: Setup .NET 10
+        # if: false
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          
+      # Restore dependencies
+      - name: Restore dependencies
+        # if: false
+        run: dotnet restore
+      
+      # Build the solution
+      - name: Build
+        # if: false
+        run: dotnet build --no-restore
+      
+      # Run tests (optional)
+      # - name: Test
+      #   run: dotnet test --no-build --verbosity normal
+      
+      # Publish the x64
+      - name: Publish win x64
+        # if: false
+        run: dotnet publish -c Release -o ./publish/winx64 -r winx64 --self-contained
+
+      - name: Publish mac x64
+        # if: false
+        run: dotnet publish -c Release -o ./publish/osx_x64 -r osx-x64 --self-contained
+        
+      - name: Publish mac arm
+        # if: false
+        run: dotnet publish -c Release -o ./publish/osx_arm64 -r osx-arm64 --self-contained
+
+     # generate a tag
+      - name: Generate tag
+        id: tag
+        run: |
+          echo "TAG=v$(date +%Y.%m.%d.%H%M)" >> $GITHUB_OUTPUT
+
+      # create the release
+      - name: Create Gitea Release
+        uses: akkuman/gitea-release-action@v1
+        with:
+          tag: ${{ steps.tag.outputs.TAG }}
+          release_name: ${{ steps.tag.outputs.TAG }}
+          body: "Automated release"
+          token: ${{ secrets.GITEA_TOKEN }}
+          files: |
+            ./publish/win_x64/**
+            ./publish/osx_x64/**
+            ./publish/osx_arm64/**
+
+      - name: Handle Build Failure
+        if: failure()
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "Build failed on Gitea",
+              "embeds": [
+                {
+                  "title": "Build failed",
+                  "description": "Build process **failed** on Gitea",
+                  "color": 3447003,
+                  "fields": [
+                    {
+                      "name": "Repository",
+                      "value": "'${{ github.repository }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Branch",
+                      "value": "'${{ github.ref }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Commit",
+                      "value": "'${{ github.sha }}'",
+                      "inline": true
+                    }
+                  ],
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+      - name: Send Discord End Notification
+        if: success()
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "Wave Link Build finished on Gitea",
+              "embeds": [
+                {
+                  "title": "Wave Link Build finished",
+                  "description": "Build process **finished** on Gitea",
+                  "color": 3447003,
+                  "fields": [
+                    {
+                      "name": "Repository",
+                      "value": "'${{ github.repository }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Branch",
+                      "value": "'${{ github.ref }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Commit",
+                      "value": "'${{ github.sha }}'",
+                      "inline": true
+                    }
+                  ],
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
