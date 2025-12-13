@@ -87,6 +87,10 @@ jobs:
           TAG="v${MAJOR}.${MINOR}.${PATCH}"
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
+      - name: Configure git identity
+        run: |
+          git config user.name "Gitea Actions"
+          git config user.email "actions@kamiscloud.com"
 
       - name: Create tag
         run: |
