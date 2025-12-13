@@ -8,7 +8,7 @@
     "colorLight": "#4070F0"
   },
   "plugin_start_cmd_windows": "%TP_PLUGIN_FOLDER%WaveLinkPlugin/WaveLink.Plugin.exe",
-  "plugin_start_cmd_mac": "%TP_PLUGIN_FOLDER%WaveLinkPlugin/WaveLink.Plugin",
+  "plugin_start_cmd_mac": "sh %TP_PLUGIN_FOLDER%WaveLinkPlugin/start_plugin.sh",
   "settings": [
     {
       "name": "IP Address",

@@ -98,10 +98,8 @@ jobs:
           git tag --list
 
       - name: Zip win x64 (named folder)
-        run: |
-          ls -la       
+        run: |    
           cd publish/win_x64
-          ls -la
           zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp WaveLinkPlugin -x "*.pdb"
 
       - name: Zip osx x64
