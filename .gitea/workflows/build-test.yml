@@ -100,7 +100,7 @@ jobs:
       - name: Zip win x64 (named folder)
         run: |
           cd publish/win_x64
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.zip WaveLinkPlugin
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp WaveLinkPlugin
 
       - name: Zip osx x64
         run: |
