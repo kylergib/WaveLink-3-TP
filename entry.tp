@@ -1,0 +1,415 @@
+{
+    "sdk": 10,
+    "version": 100,
+    "name": "Wave Link 3 Plugin",
+    "id": "com.kylergib.wavelink_3",
+    "configuration": {
+        "colorDark": "#203060",
+        "colorLight": "#4070F0"
+    },
+    "plugin_start_cmd": "%TP_PLUGIN_FOLDER%WaveLinkPlugin/WaveLink.Plugin.exe",
+    "settings": [
+        {
+            "name": "IP Address",
+            "type": "text",
+            "default": "localhost",
+            "readOnly": false,
+            "maxLength": 15.0
+        },
+        {
+            "name": "Subscribe To Focused App",
+            "type": "switch",
+            "default": "on",
+            "readOnly": false
+        },
+        {
+            "name": "Log Level",
+            "type": "choice",
+            "default": "warning",
+            "choices": [
+                "warning",
+                "information",
+                "debug"
+            ],
+            "readOnly": false
+        },
+        {
+            "name": "Save Logs To File",
+            "type": "switch",
+            "default": "off",
+            "readOnly": false
+        }
+    ],
+    "categories": [
+        {
+            "id": "com.kylergib.wavelink_3.WaveLink",
+            "name": "Wave Link",
+            "imagepath": "%TP_PLUGIN_FOLDER%WaveLinkPlugin/images/wavesound.png",
+            "actions": [
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteInput",
+                    "name": "Mute Input",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Mute Input {$com.kylergib.wavelink_3.WaveLink.state.inputDeviceList$} : {$com.kylergib.wavelink_3.WaveLink.action.SetMuteInput.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Inputs",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.inputDeviceList"
+                        },
+                        {
+                            "type": "choice",
+                            "label": "value",
+                            "default": "",
+                            "valueChoices": [
+                                "true",
+                                "false",
+                                "toggle"
+                            ],
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteInput.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelInput",
+                    "name": "Set Input Level",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Set Input {$com.kylergib.wavelink_3.WaveLink.state.inputDeviceList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Inputs",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.inputDeviceList"
+                        },
+                        {
+                            "type": "number",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "allowDecimals": false,
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteOutput",
+                    "name": "Mute Output",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Mute Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} : {$com.kylergib.wavelink_3.WaveLink.action.SetMuteOutput.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Outputs",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList"
+                        },
+                        {
+                            "type": "choice",
+                            "label": "value",
+                            "default": "",
+                            "valueChoices": [
+                                "true",
+                                "false",
+                                "toggle"
+                            ],
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteOutput.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput",
+                    "name": "Set Output Level",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Set Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Outputs",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList"
+                        },
+                        {
+                            "type": "number",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "allowDecimals": false,
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel",
+                    "name": "Mute Channel",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Mute Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} : {$com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Channels",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.channelsList"
+                        },
+                        {
+                            "type": "choice",
+                            "label": "value",
+                            "default": "",
+                            "valueChoices": [
+                                "true",
+                                "false",
+                                "toggle"
+                            ],
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel",
+                    "name": "Set Channel Level",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Set Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Channels",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.channelsList"
+                        },
+                        {
+                            "type": "number",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "allowDecimals": false,
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteMix",
+                    "name": "Mute Mix",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Mute Mix {$com.kylergib.wavelink_3.WaveLink.state.mixesList$} : {$com.kylergib.wavelink_3.WaveLink.action.SetMuteMix.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Mixes",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.mixesList"
+                        },
+                        {
+                            "type": "choice",
+                            "label": "value",
+                            "default": "",
+                            "valueChoices": [
+                                "true",
+                                "false",
+                                "toggle"
+                            ],
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteMix.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelMix",
+                    "name": "Set Mix Level",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Set Mix {$com.kylergib.wavelink_3.WaveLink.state.mixesList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.value$}",
+                    "tryInline": true,
+                    "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Mixes",
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.mixesList"
+                        },
+                        {
+                            "type": "number",
+                            "minValue": 0,
+                            "maxValue": 100,
+                            "allowDecimals": false,
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.SetFocusAppNotification",
+                    "name": "Enable focus app state to be updated from Wave Link. If enabled, it can impact performance on some computers.",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Enable focus app state to be updated: {$com.kylergib.wavelink_3.WaveLink.action.SetFocusAppNotification.data.value$}",
+                    "tryInline": true,
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "value",
+                            "default": "",
+                            "valueChoices": [
+                                "true",
+                                "false"
+                            ],
+                            "id": "com.kylergib.wavelink_3.WaveLink.action.SetFocusAppNotification.data.value"
+                        }
+                    ]
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.action.AddToChannel",
+                    "name": "Add the current focused app to a channel. This requires 'Enable focus app state to be updated from Wave Link' to be enabled.",
+                    "prefix": "Plugin",
+                    "type": "communicate",
+                    "format": "Add the current focused app to the channel: {$com.kylergib.wavelink_3.WaveLink.state.channelsList$}",
+                    "tryInline": true,
+                    "hasHoldFunctionality": false,
+                    "data": [
+                        {
+                            "type": "choice",
+                            "label": "choices",
+                            "default": "",
+                            "valueChoices": [],
+                            "id": "com.kylergib.wavelink_3.WaveLink.state.channelsList"
+                        }
+                    ]
+                }
+            ],
+            "connectors": [],
+            "states": [
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList",
+                    "type": "choice",
+                    "desc": "Outputs List",
+                    "default": "",
+                    "valueChoices": []
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.state.inputDeviceList",
+                    "type": "choice",
+                    "desc": "Inputs List",
+                    "default": "",
+                    "valueChoices": []
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.state.channelsList",
+                    "type": "choice",
+                    "desc": "Channels List",
+                    "default": "",
+                    "valueChoices": []
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.state.mixesList",
+                    "type": "choice",
+                    "desc": "Mixes List",
+                    "default": "",
+                    "valueChoices": []
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.state.focusedApp",
+                    "type": "text",
+                    "desc": "The current focused app. Have to have this enabled for it to update.",
+                    "default": ""
+                }
+            ],
+            "events": [],
+            "subCategories": [
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Outputs",
+                    "name": "Outputs",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Outputs.level",
+                    "name": "Outputs Level",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Outputs.muted",
+                    "name": "Outputs Muted",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Inputs",
+                    "name": "Inputs",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Inputs.level",
+                    "name": "Inputs Level",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Inputs.muted",
+                    "name": "Inputs Muted",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Channels",
+                    "name": "Channels",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Channels.level",
+                    "name": "Channels Level",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Channels.muted",
+                    "name": "Channels Muted",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Mixes",
+                    "name": "Mixes",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Mixes.level",
+                    "name": "Mixes Level",
+                    "imagepath": ""
+                },
+                {
+                    "id": "com.kylergib.wavelink_3.WaveLink.Mixes.muted",
+                    "name": "Mixes Muted",
+                    "imagepath": ""
+                }
+            ]
+        }
+    ]
+}
