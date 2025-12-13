@@ -90,8 +90,8 @@ jobs:
 
       - name: Create tag
         run: |
-          git tag ${{ steps.tag.outputs.TAG }}
-          git push origin ${{ steps.tag.outputs.TAG }}
+          git tag -a ${{ steps.tag.outputs.TAG }} -m "Release ${{ steps.tag.outputs.TAG }}"
+          git push origin tag ${{ steps.tag.outputs.TAG }}
 
       - name: Show tag
         run: |
