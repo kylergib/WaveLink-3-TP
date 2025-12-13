@@ -67,15 +67,15 @@ jobs:
       # Publish the x64
       - name: Publish win x64
         # if: false
-        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/win_x64 -r win-x64 --self-contained
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/win_x64/WaveLinkPlugin -r win-x64 --self-contained
 
       - name: Publish mac x64
         # if: false
-        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_x64 -r osx-x64 --self-contained
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_x64/WaveLinkPlugin -r osx-x64 --self-contained
         
       - name: Publish mac arm
         # if: false
-        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_arm64 -r osx-arm64 --self-contained
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_arm64/WaveLinkPlugin -r osx-arm64 --self-contained
       - name: Compute tag from entry
         id: tag
         run: |
@@ -97,14 +97,20 @@ jobs:
           echo "TAG=${{ steps.tag.outputs.TAG }}"
           git tag --list
 
-        # Copy publish files
-      - name: Zip Published Files
-        # if: false
-        # if: success()
+      - name: Zip win x64 (named folder)
         run: |
-          zip -r WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp ./publish/win_x64 && \
-          zip -r WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp ./publish/osx_x64 && \
-          zip -r WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp ./publish/osx_arm64
+          cd publish/win_x64
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.zip WaveLinkPlugin
+
+      - name: Zip osx x64
+        run: |
+          cd publish/osx_arm64
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp WaveLinkPlugin
+
+      - name: Zip osx arm64
+        run: |
+          cd publish/osx_arm64
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp WaveLinkPlugin
 
      
 
