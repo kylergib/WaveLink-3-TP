@@ -99,18 +99,20 @@ jobs:
 
       - name: Zip win x64 (named folder)
         run: |
+          ls -la       
           cd publish/win_x64
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp WaveLinkPlugin
+          ls -la
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp WaveLinkPlugin -x "*.pdb"
 
       - name: Zip osx x64
         run: |
-          cd publish/osx_arm64
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp WaveLinkPlugin
+          cd publish/osx_x64
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp WaveLinkPlugin -x "*.pdb"
 
       - name: Zip osx arm64
         run: |
           cd publish/osx_arm64
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp WaveLinkPlugin
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp WaveLinkPlugin -x "*.pdb"
 
      
 
