@@ -80,8 +80,13 @@ jobs:
         id: tag
         run: |
           VERSION=$(jq -r '.version' WaveLink.Plugin/entry.tp)
-          TAG="v$VERSION"
+          PATCH=$((VERSION % 10))
+          MINOR=$(((VERSION / 10) % 10))
+          MAJOR=$((VERSION / 100))
+
+          TAG="v${MAJOR}.${MINOR}.${PATCH}"
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
 
       - name: Create tag
         run: |
@@ -113,9 +118,9 @@ jobs:
           body: "Automated release"
           token: ${{ secrets.GITEA_TOKEN }}
           files: |
-            WaveLinkPlugin_win_x64.tpp
-            WaveLinkPlugin_osx_x64.tpp
-            WaveLinkPlugin_osx_arm64.tpp
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp
 
       - name: Handle Build Failure
         if: failure()
