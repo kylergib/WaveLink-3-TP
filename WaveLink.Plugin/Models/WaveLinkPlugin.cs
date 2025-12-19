@@ -1,7 +1,12 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime;
+using System.Text.Json;
 using System.Threading.Channels;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Serilog.Core;
 using Serilog.Events;
 using TouchPortalSDK;
@@ -11,11 +16,14 @@ using TouchPortalSDK.Messages.Models;
 using WaveLink.Plugin;
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
+using static System.Net.Mime.MediaTypeNames;
 namespace WaveLink.Plugin.Models;
 
 public class WaveLinkPlugin : ITouchPortalEventHandler
 {
     public string PluginId => Statics.PluginId;
+    public int PluginVersion { get; set; }
+    public string UpdateUrl { get; set; } = string.Empty;
 
     public readonly ITouchPortalClient _client;
     private readonly ILoggerFactory _loggerFactory;
@@ -57,10 +65,23 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public LoggingLevelSwitch? FileLevelSwitch { get; set; }
     public LoggingLevelSwitch? WaveSocketSwitch { get; set; }
 
+    // name to short id list mapping
+    public Dictionary<string, List<string>> InputShortConnectorIds { get; set; } = new();
+    public Dictionary<string, List<string>> OutputShortConnectorIds { get; set; } = new();
+    public Dictionary<string, List<string>> ChannelShortConnectorIds { get; set; } = new();
+    public Dictionary<string, List<string>> MixShortConnectorIds { get; set; } = new();
 
 
     public WaveLinkPlugin(ILoggerFactory logFactory)
     {
+
+        string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        string filePath = Path.Combine(baseDir, "entry.tp");
+        string json = File.ReadAllText(filePath);
+        using JsonDocument doc = JsonDocument.Parse(json);
+        PluginVersion = doc.RootElement.GetProperty("version").GetInt32();
+        //var test = await UpdateAvailable();
+        //var test = Task.Run(() => UpdateAvailable());
         _client = TouchPortalFactory.CreateClient(this);
         _loggerFactory = logFactory;
         _logger = logFactory?.CreateLogger<WaveLinkPlugin>() ?? throw new ArgumentNullException(nameof(logFactory));
@@ -90,11 +111,13 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         {
             LogLevelSwitch?.MinimumLevel = LogEventLevel.Debug;
             WaveSocketSwitch?.MinimumLevel = LogEventLevel.Debug;
-        } else if (LogLevel.ToLower() == "information")
+        }
+        else if (LogLevel.ToLower() == "information")
         {
             LogLevelSwitch?.MinimumLevel = LogEventLevel.Information;
             WaveSocketSwitch?.MinimumLevel = LogEventLevel.Information;
-        } else if (LogLevel.ToLower() == "warning")
+        }
+        else if (LogLevel.ToLower() == "warning")
         {
             LogLevelSwitch?.MinimumLevel = LogEventLevel.Warning;
             WaveSocketSwitch?.MinimumLevel = LogEventLevel.Fatal + 1;
@@ -107,6 +130,24 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         if (SaveToFile)
         {
             FileLevelSwitch?.MinimumLevel = LogEventLevel.Verbose;
+            LogLevelSwitch?.MinimumLevel = LogEventLevel.Verbose;
+            WaveSocketSwitch?.MinimumLevel = LogEventLevel.Verbose;
+        }
+
+
+        //_client.ShowNotification()
+        var updateAvailable = Task.Run(() => UpdateAvailable());
+        updateAvailable.Wait();
+        if (!string.IsNullOrEmpty(updateAvailable.Result) && !string.IsNullOrEmpty(UpdateUrl))
+        {
+            _logger.LogWarning("Update is available: {0}", updateAvailable);
+            _client.ShowNotification(
+               TouchPortalIdHelper.UpdateNotificationId,
+               $"Update available: {{updateAvailable}}",
+               "A new version of the Wave Link Plugin is available.",
+               [new() { Id = "learnMore", Title = "Learn More" }]
+           );
+
         }
 
         ConnectToWaveLink();
@@ -121,6 +162,11 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         {
             InitializeEventHandler();
             SubscribeToEvents();
+            _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId, "true");
+        };
+        WaveLinkHandler?.OnClose += (sender, args) =>
+        {
+            _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId, "false");
         };
     }
     public async Task DisconnectFromWaveLink()
@@ -155,6 +201,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetMuteChannel)):
                 SetMuteChannel(message);
                 break;
+            case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetOuputDevice)):
+                SetOuputDevice(message);
+                break;
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetLevelChannel)):
                 SetLevelChannel(message);
                 break;
@@ -182,7 +231,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     }
     public void OnListChangedEvent(ListChangeEvent message)
     {
-        _logger?.LogInformation($"[OnListChanged] {message.ListId}/{message.ActionId}/{message.InstanceId} '{message.Value}'");
+        _logger?.LogDebug($"[OnListChanged] {message.ListId}/{message.ActionId}/{message.InstanceId} '{message.Value}'");
 
         //switch (message.ListId)
         //{
@@ -220,11 +269,13 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             {
                 LogLevelSwitch?.MinimumLevel = LogEventLevel.Debug;
                 WaveSocketSwitch?.MinimumLevel = LogEventLevel.Debug;
-            } else if (LogLevel.ToLower() == "information")
+            }
+            else if (LogLevel.ToLower() == "information")
             {
                 LogLevelSwitch?.MinimumLevel = LogEventLevel.Information;
                 WaveSocketSwitch?.MinimumLevel = LogEventLevel.Information;
-            } else if (LogLevel.ToLower() == "warning")
+            }
+            else if (LogLevel.ToLower() == "warning")
             {
                 LogLevelSwitch?.MinimumLevel = LogEventLevel.Warning;
                 WaveSocketSwitch?.MinimumLevel = LogEventLevel.Fatal + 1;
@@ -235,6 +286,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         {
             SaveToFile = saveToFile;
             FileLevelSwitch?.MinimumLevel = SaveToFile ? LogEventLevel.Verbose : LogEventLevel.Fatal + 1;
+            LogLevelSwitch?.MinimumLevel = SaveToFile ? LogEventLevel.Verbose : LogLevelSwitch?.MinimumLevel ?? LogEventLevel.Warning;
+            WaveSocketSwitch?.MinimumLevel = SaveToFile ? LogEventLevel.Verbose : WaveSocketSwitch?.MinimumLevel ?? LogEventLevel.Warning;
         }
 
         if (IpAddress != ipAddress)
@@ -254,8 +307,23 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     }
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
     {
+        if (message.NotificationId == TouchPortalIdHelper.UpdateNotificationId && message.OptionId == "learnMore" && !string.IsNullOrEmpty(UpdateUrl))
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = UpdateUrl.Trim(),
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to open URL: {ex}");
+            }
+        }
         _logger?.LogDebug($"[OnNotificationOptionClickedEvent] NotificationId: '{message.NotificationId}', OptionId: '{message.OptionId}'");
-
         //if (message.NotificationId is "TouchPortal.SamplePlugin|update")
         //{
         //    switch (message.OptionId)
@@ -281,17 +349,87 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
     public void OnConnecterChangeEvent(ConnectorChangeEvent message)
     {
-        var dataArray = message.Data
-            .Select(dataItem => $"\"{dataItem.Key}\":\"{dataItem.Value}\"")
-            .ToArray();
-
-        var dataString = string.Join(", ", dataArray);
-        _logger?.LogDebug($"[OnConnecterChangeEvent] ConnectorId: '{message.ConnectorId}', Value: '{message.Value}', Data: '{dataString}'");
+        _logger?.LogDebug($"[OnConnecterChangeEvent] ConnectorId: '{message.ConnectorId}', Value: '{message.Value}'");
+        switch (message.ConnectorId)
+        {
+            case var _ when message.ConnectorId == TouchPortalIdHelper.InputVolumeConnector:
+                SetLevelInput(message);
+                break;
+            case var _ when message.ConnectorId == TouchPortalIdHelper.OutputVolumeConnector:
+                SetLevelOutput(message);
+                break;
+            case var _ when message.ConnectorId == TouchPortalIdHelper.ChannelVolumeConnector:
+                SetLevelChannel(message);
+                break;
+            case var _ when message.ConnectorId == TouchPortalIdHelper.MixVolumeConnector:
+                SetLevelMix(message);
+                break;
+        }
     }
 
     public void OnShortConnectorIdNotificationEvent(ShortConnectorIdNotificationEvent message)
     {
         _logger?.LogDebug($"[OnShortConnectorIdNotificationEvent] ConnectorId: '{message.ConnectorId}', ShortID: '{message.ShortId}'");
+        if (message.ActualConnectorId == TouchPortalIdHelper.InputVolumeConnector)
+        {
+            var value = message.Data[TouchPortalIdHelper.InputListId];
+            if (string.IsNullOrEmpty(value)) return;
+            if (!InputShortConnectorIds.TryGetValue(value, out var shortIdList))
+            {
+                shortIdList = new();
+            }
+            if (!shortIdList.Contains(message.ShortId))
+            {
+                shortIdList.Add(message.ShortId);
+                InputShortConnectorIds.Add(value, shortIdList);
+            }
+        }
+        else if (message.ActualConnectorId == TouchPortalIdHelper.OutputVolumeConnector)
+        {
+            var value = message.Data[TouchPortalIdHelper.OutputListId];
+            if (string.IsNullOrEmpty(value)) return;
+
+            if (!OutputShortConnectorIds.TryGetValue(value, out var shortIdList))
+            {
+                shortIdList = new();
+            }
+            if (!shortIdList.Contains(message.ShortId))
+            {
+                shortIdList.Add(message.ShortId);
+                OutputShortConnectorIds.Add(value, shortIdList);
+            }
+        }
+        else if (message.ActualConnectorId == TouchPortalIdHelper.ChannelVolumeConnector)
+        {
+            var value = message.Data[TouchPortalIdHelper.ChannelListId];
+            if (string.IsNullOrEmpty(value)) return;
+
+            if (!ChannelShortConnectorIds.TryGetValue(value, out var shortIdList))
+            {
+                shortIdList = new();
+            }
+            if (!shortIdList.Contains(message.ShortId))
+            {
+                shortIdList.Add(message.ShortId);
+                ChannelShortConnectorIds.Add(value, shortIdList);
+            }
+
+        }
+        else if (message.ActualConnectorId == TouchPortalIdHelper.MixVolumeConnector)
+        {
+            var value = message.Data[TouchPortalIdHelper.MixListId];
+            if (string.IsNullOrEmpty(value)) return;
+
+            if (!MixShortConnectorIds.TryGetValue(value, out var shortIdList))
+            {
+                shortIdList = new();
+            }
+            if (!shortIdList.Contains(message.ShortId))
+            {
+                shortIdList.Add(message.ShortId);
+                MixShortConnectorIds.Add(value, shortIdList);
+            }
+        }
     }
 
     public void InitializeEventHandler()
@@ -308,6 +446,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 {
                     _client.CreateState(TouchPortalIdHelper.InputMute(input.Name!), $"{input.Name!} muted", input.IsMuted.ToString(), TouchPortalIdHelper.InputMutedCategoryName);
                     _client.CreateState(TouchPortalIdHelper.InputLevel(input.Name!), $"{input.Name!} level", ToInt(input.Gain?.Value ?? 0).ToString(), TouchPortalIdHelper.InputLevelCategoryName);
+                    ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+
                     _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
                 }
             }
@@ -325,6 +465,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 {
                     _client.CreateState(TouchPortalIdHelper.OutputMute(output.Name!), $"{output.Name!} muted", output.IsMuted.ToString(), TouchPortalIdHelper.OutputMutedCategoryName);
                     _client.CreateState(TouchPortalIdHelper.OutputLevel(output.Name!), $"{output.Name!} level", ToInt(output.Level ?? 0).ToString(), TouchPortalIdHelper.OutputLevelCategoryName);
+                    ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+
                     _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 }
             }
@@ -340,6 +482,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             {
                 _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
                 _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
+                ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
 
                 _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
                 foreach (var app in channel.Apps ?? [])
@@ -361,12 +504,14 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         OnReceivedGetMixes = async (s, response) =>
         {
             var mixes = response?.Result?.Mixes ?? [];
-            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).ToArray());
+            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).Concat(new[] { string.Empty }).ToArray());
             _logger.LogDebug("Received Mixes Info:");
             foreach (var mix in mixes!)
             {
                 _client.CreateState(TouchPortalIdHelper.MixMute(mix.Name!), $"{mix.Name!} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.MixMutedCategoryName);
                 _client.CreateState(TouchPortalIdHelper.MixLevel(mix.Name!), $"{mix.Name!} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.MixLevelCategoryName);
+                ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+
                 _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
             }
         };
@@ -379,7 +524,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
             _client.StateUpdate(TouchPortalIdHelper.ChannelMute(channel.Name!), channel.IsMuted.ToString());
             _client.StateUpdate(TouchPortalIdHelper.ChannelLevel(channel.Name!), ToInt(channel.Level ?? 0).ToString());
-
+            ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
 
             foreach (var app in channel.Apps ?? [])
             {
@@ -412,6 +557,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
                 _client.StateUpdate(TouchPortalIdHelper.InputMute(input.Name!), input.IsMuted.ToString());
                 _client.StateUpdate(TouchPortalIdHelper.InputLevel(input.Name!), ToInt(input.Gain?.Value ?? 0).ToString());
+                ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
             }
         };
 
@@ -421,6 +567,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
             _client.StateUpdate(TouchPortalIdHelper.MixMute(mix.Name!), mix.IsMuted.ToString());
             _client.StateUpdate(TouchPortalIdHelper.MixLevel(mix.Name!), ToInt(mix.Level ?? 0).ToString());
+            ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+
         };
 
         OnOutputDeviceUpdated = (sender, outputDevice) =>
@@ -432,6 +580,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 _client.StateUpdate(TouchPortalIdHelper.OutputMute(output.Name!), output.IsMuted.ToString());
                 _client.StateUpdate(TouchPortalIdHelper.OutputLevel(output.Name!), ToInt(output.Level ?? 0).ToString());
+                ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+
             }
         };
 
@@ -444,6 +594,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
             _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
             _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
+            ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
+
 
             foreach (var app in channel.Apps ?? [])
             {
@@ -472,6 +624,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 //Adds a state we can work with:
                 _client.CreateState(TouchPortalIdHelper.InputMute(input.Name!), $"{input.Name!} muted", input.IsMuted.ToString(), TouchPortalIdHelper.InputMutedCategoryName);
                 _client.CreateState(TouchPortalIdHelper.InputLevel(input.Name!), $"{input.Name!} level", ToInt(input.Gain?.Value ?? 0).ToString(), TouchPortalIdHelper.InputLevelCategoryName);
+                ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+
                 _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
             }
         };
@@ -482,10 +636,11 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
 
             var mixes = WaveLinkHandler?.Client?.StateManager.Mixes;
-            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).ToArray());
+            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).Concat(new[] { string.Empty }).ToArray());
 
             _client.CreateState(TouchPortalIdHelper.MixMute(mix.Name!), $"{mix.Name!} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.MixMutedCategoryName);
             _client.CreateState(TouchPortalIdHelper.MixLevel(mix.Name!), $"{mix.Name!} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.MixLevelCategoryName);
+            ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
 
 
         };
@@ -503,6 +658,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 _client.CreateState(TouchPortalIdHelper.OutputMute(output.Name!), $"{output.Name!} muted", output.IsMuted.ToString(), TouchPortalIdHelper.OutputMutedCategoryName);
                 _client.CreateState(TouchPortalIdHelper.OutputLevel(output.Name!), $"{output.Name!} level", ToInt(output.Level ?? 0).ToString(), TouchPortalIdHelper.OutputLevelCategoryName);
+                ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
             }
         };
 
@@ -536,7 +692,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
 
             var mixes = WaveLinkHandler?.Client?.StateManager.Mixes;
-            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).ToArray());
+            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).Concat(new[] { string.Empty }).ToArray());
 
             _client.RemoveState(TouchPortalIdHelper.MixMute(mix.Name!));
             _client.RemoveState(TouchPortalIdHelper.MixLevel(mix.Name!));
@@ -558,10 +714,6 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         {
             _logger.LogDebug("Subscribed to Focused App: {Subscribed}", subscribed);
         };
-
-
-
-
     }
     public void SubscribeToEvents()
     {
@@ -629,6 +781,16 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
     }
 
+    public void SetLevelInput(ConnectorChangeEvent message)
+    {
+        var inputName = message[TouchPortalIdHelper.InputListId] ?? "<null>";
+
+        if (!string.IsNullOrEmpty(inputName))
+        {
+            WaveLinkHandler?.SetInput(inputName, null, message.Value);
+        }
+    }
+
     // output actions
     public void SetMuteOutput(ActionEvent message)
     {
@@ -653,6 +815,28 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
     }
 
+    public void SetLevelOutput(ConnectorChangeEvent message)
+    {
+        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
+
+        if (!string.IsNullOrEmpty(outputName))
+        {
+            WaveLinkHandler?.SetOutput(outputName, null, message.Value);
+        }
+    }
+
+    public void SetOuputDevice(ActionEvent message)
+    {
+        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
+        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
+
+        if (!string.IsNullOrEmpty(outputName) &&
+            mixName != null)
+        {
+            WaveLinkHandler?.SetOutput(outputName, null, null, mixName);
+        }
+    }
+
     // channel actions
     public void SetLevelChannel(ActionEvent message)
     {
@@ -664,6 +848,15 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             decimal.TryParse(levelValue, out decimal newLevel))
         {
             WaveLinkHandler?.SetChannel(channelName, null, newLevel);
+        }
+    }
+    public void SetLevelChannel(ConnectorChangeEvent message)
+    {
+        var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+
+        if (!string.IsNullOrEmpty(channelName))
+        {
+            WaveLinkHandler?.SetChannel(channelName, null, message.Value);
         }
     }
 
@@ -689,6 +882,15 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             decimal.TryParse(levelValue, out decimal newLevel))
         {
             WaveLinkHandler?.SetMix(mixName, null, newLevel);
+        }
+    }
+    public void SetLevelMix(ConnectorChangeEvent message)
+    {
+        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
+
+        if (!string.IsNullOrEmpty(mixName))
+        {
+            WaveLinkHandler?.SetMix(mixName, null, message.Value);
         }
     }
 
@@ -726,6 +928,73 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public int ToInt(decimal value)
     {
         return (int)(value * 100);
+    }
+
+    // helper function to update short connector ids
+    public void ShortConnectorUpdateHelper(string? name, int value, Dictionary<string, List<string>> shortConnectorIds)
+    {
+        if (string.IsNullOrEmpty(name)) return;
+        if (shortConnectorIds.TryGetValue(name, out var list))
+        {
+            foreach (var shortId in list)
+            {
+                _client.ConnectorUpdateShort(shortId, value);
+            }
+        }
+    }
+
+    public async Task<string?> UpdateAvailable()
+    {
+        string repositoryOwner = "kylergib";
+        string repositoryName = "WaveLinkPluginTouchPortal";
+        HttpClient client = new HttpClient();
+        try
+        {
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("C# App"); // GitHub requires UA
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.v3+json");
+
+            string url = $"https://api.github.com/repos/{repositoryOwner}/{repositoryName}/releases";
+            using HttpResponseMessage response = await client.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Failed : HTTP Error code : {(int)response.StatusCode}");
+                return null;
+            }
+
+            string json = await response.Content.ReadAsStringAsync();
+            using JsonDocument doc = JsonDocument.Parse(json);
+
+            var release = doc.RootElement
+               .EnumerateArray()
+               .Where(r => r.GetProperty("prerelease").GetBoolean() && r.GetProperty("tag_name").GetString().StartsWith("3_"))
+               .OrderByDescending(r => DateTime.Parse(r.GetProperty("published_at").GetString()!))
+               .FirstOrDefault();
+            UpdateUrl = release.GetProperty("html_url").GetString() ?? string.Empty;
+            var tag = release.GetProperty("tag_name").GetString();
+
+
+            List<string> versionParts = new List<string>(tag.Replace("3_", "").Split('.'));
+            int newestVersion = 0;
+
+            if (versionParts.Count == 3
+                && int.TryParse(versionParts[0], out int part1)
+                && int.TryParse(versionParts[1], out int part2)
+                && int.TryParse(versionParts[2], out int part3))
+            {
+                newestVersion = (part1 * 100) + (part2 * 10) + part3;
+            }
+
+            _logger.LogInformation($"Newest version available is: {newestVersion}");
+            _logger.LogInformation($"Current version is: {PluginVersion}");
+
+            if (PluginVersion < newestVersion) return tag;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        return null;
     }
 }
 

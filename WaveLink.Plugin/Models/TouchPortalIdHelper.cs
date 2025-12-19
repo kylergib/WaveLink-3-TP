@@ -33,6 +33,7 @@ public static class TouchPortalIdHelper
 
     // states
     public static string FocusedAppId => BaseCategory + ".state.focusedApp";
+    public static string IsConnectedToWaveLinkId => BaseCategory + ".state.isConnectedToWaveLink";
 
 
     // dynamic states
@@ -57,5 +58,15 @@ public static class TouchPortalIdHelper
     public static string SubscribeToFocusedApp => "Subscribe To Focused App";
     public static string LogLevel => "Log Level";
     public static string SaveToFile => "Save Logs To File";
+
+    // connectors
+    public static string ConnectorCategory => BaseCategory + ".connector";
+    public static string InputVolumeConnector => ConnectorCategory + ".inputVolume";
+    public static string OutputVolumeConnector => ConnectorCategory + ".outputVolume";
+    public static string ChannelVolumeConnector => ConnectorCategory + ".channelVolume";
+    public static string MixVolumeConnector => ConnectorCategory + ".mixVolume";
+
+    // notification id
+    public static string UpdateNotificationId => $"{BaseCategory}.notification.updateNotification";
 
 }

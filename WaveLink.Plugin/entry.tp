@@ -1,6 +1,6 @@
 {
   "sdk": 10,
-  "version": 10,
+  "version": 20,
   "name": "Wave Link 3 Plugin",
   "id": "com.kylergib.wavelink_3",
   "configuration": {
@@ -160,6 +160,48 @@
           ]
         },
         {
+          "id": "com.kylergib.wavelink_3.WaveLink.action.SetOuputDevice",
+          "name": "Set Output to Mix",
+          "prefix": "Plugin",
+          "type": "communicate",
+          "format": "Set Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} to Mix: {$com.kylergib.wavelink_3.WaveLink.state.mixesList$}",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} to Mix: {$com.kylergib.wavelink_3.WaveLink.state.mixesList$}"
+                  },
+                  {
+                    "lineFormat": "If mix is empty, then it will remove the output from all mixes."
+                  }
+                ]
+              }
+
+            ]
+          },
+          "tryInline": true,
+          "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Outputs",
+          "hasHoldFunctionality": false,
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.mixesList"
+            }
+          ]
+        },
+        {
           "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel",
           "name": "Mute Channel",
           "prefix": "Plugin",
@@ -311,7 +353,64 @@
           ]
         }
       ],
-      "connectors": [],
+      "connectors": [
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.connector.inputVolume",
+          "name": "Input Volume",
+          "format": "Input: {$com.kylergib.wavelink_3.WaveLink.state.inputDeviceList$}",
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.inputDeviceList"
+            }
+          ]
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.connector.outputVolume",
+          "name": "Output Volume",
+          "format": "Output: {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$}",
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList"
+            }
+          ]
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.connector.channelVolume",
+          "name": "Channel Volume",
+          "format": "Channel: {$com.kylergib.wavelink_3.WaveLink.state.channelsList$}",
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.channelsList"
+            }
+          ]
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.connector.mixVolume",
+          "name": "Mix Volume",
+          "format": "Mix: {$com.kylergib.wavelink_3.WaveLink.state.mixesList$}",
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.mixesList"
+            }
+          ]
+        }
+      ],
       "states": [
         {
           "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList",
@@ -346,6 +445,12 @@
           "type": "text",
           "desc": "The current focused app. Have to have this enabled for it to update.",
           "default": ""
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.state.isConnectedToWaveLink",
+          "type": "text",
+          "desc": "Is 'true' if the plugin is connected to wave link.",
+          "default": "false"
         }
       ],
       "events": [],

@@ -24,24 +24,8 @@ var config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .Build();
 
-//string localhost = config["WaveLink:Host"] ?? Statics.Localhost;
-//string macHost = "192.168.1.8";
-
-
-//int port = int.Parse(config["WaveLink:Port"] ?? Statics.DefaultPort.ToString());
-
-// Clone the default
 var baseTheme = AnsiConsoleTheme.Code;  // looks close to your screenshot
 
-//if (true)
-//{
-//loggerConfig.MinimumLevel.Verbose()
-//.WriteTo.File(
-//    "logs/response-.txt",
-//    rollingInterval: RollingInterval.Day,
-//    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}"
-//);
-//}
 var levelString =
         config["Serilog:MinimumLevel:Default"] ??
         config["Serilog:MinimumLevel"];
@@ -63,11 +47,8 @@ LoggerConfiguration loggerConfig = new LoggerConfiguration()
     )
     .Enrich.WithCaller(true, 1);
 
-
-
 Log.Logger = loggerConfig.CreateLogger();
 
-// Create ILoggerFactory with ONLY Serilog
 ILoggerFactory loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
 {
     builder.ClearProviders();
