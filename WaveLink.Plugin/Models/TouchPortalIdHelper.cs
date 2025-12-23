@@ -26,27 +26,27 @@ public static class TouchPortalIdHelper
     public static string MixMutedCategoryName = "Mixes Muted";
 
     // states - choice lists
-    public static string OutputListId => BaseCategory + ".state.outputDeviceList";
-    public static string InputListId => BaseCategory + ".state.inputDeviceList";
-    public static string ChannelListId => BaseCategory + ".state.channelsList";
-    public static string MixListId => BaseCategory + ".state.mixesList";
+    public static string OutputListId(string waveLinkNum = "") => BaseCategory + $"{WaveLinkNumberPrefix(waveLinkNum)}.state.outputDeviceList";
+    public static string InputListId(string waveLinkNum = "") => BaseCategory + $"{WaveLinkNumberPrefix(waveLinkNum)}.state.inputDeviceList";
+    public static string ChannelListId(string waveLinkNum = "") => BaseCategory + $"{WaveLinkNumberPrefix(waveLinkNum)}.state.channelsList";
+    public static string MixListId(string waveLinkNum = "") => BaseCategory + $"{WaveLinkNumberPrefix(waveLinkNum)}.state.mixesList";
 
     // states
-    public static string FocusedAppId => BaseCategory + ".state.focusedApp";
-    public static string IsConnectedToWaveLinkId => BaseCategory + ".state.isConnectedToWaveLink";
+    public static string FocusedAppId(string waveLinkNum = "") => BaseCategory + $"{WaveLinkNumberPrefix(waveLinkNum)}.state.focusedApp";
+    public static string IsConnectedToWaveLinkId(string waveLinkNum = "") => BaseCategory + $"{WaveLinkNumberPrefix(waveLinkNum)}.state.isConnectedToWaveLink";
 
 
     // dynamic states
-    public static string OutputMute(string outputName) => $"{Statics.PluginId}.state.{outputName}.mute";
-    public static string OutputLevel(string outputName) => $"{Statics.PluginId}.state.{outputName}.level";
-    public static string InputMute(string inputName) => $"{Statics.PluginId}.state.{inputName}.mute";
-    public static string InputLevel(string inputName) => $"{Statics.PluginId}.state.{inputName}.level";
+    public static string OutputMute(string outputName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{outputName}.mute";
+    public static string OutputLevel(string outputName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{outputName}.level";
+    public static string InputMute(string inputName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{inputName}.mute";
+    public static string InputLevel(string inputName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{inputName}.level";
 
-    public static string ChannelLevel(string channelName) => $"{Statics.PluginId}.state.{channelName}.level";
-    public static string ChannelMute(string channelName) => $"{Statics.PluginId}.state.{channelName}.mute";
+    public static string ChannelLevel(string channelName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{channelName}.level";
+    public static string ChannelMute(string channelName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{channelName}.mute";
 
-    public static string MixLevel(string mixName) => $"{Statics.PluginId}.state.{mixName}.level";
-    public static string MixMute(string mixName) => $"{Statics.PluginId}.state.{mixName}.mute";
+    public static string MixLevel(string mixName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{mixName}.level";
+    public static string MixMute(string mixName, string waveLinkNum = "") => $"{Statics.PluginId}{WaveLinkNumberPrefix(waveLinkNum)}.state.{mixName}.mute";
 
     // action data
     public static string ActionId(string actionName) => $"{BaseCategory}.action.{actionName}";
@@ -58,6 +58,7 @@ public static class TouchPortalIdHelper
     public static string SubscribeToFocusedApp => "Subscribe To Focused App";
     public static string LogLevel => "Log Level";
     public static string SaveToFile => "Save Logs To File";
+    public static string AdditionalAddresses => "Additional IP Addresses";
 
     // connectors
     public static string ConnectorCategory => BaseCategory + ".connector";
@@ -68,5 +69,7 @@ public static class TouchPortalIdHelper
 
     // notification id
     public static string UpdateNotificationId => $"{BaseCategory}.notification.updateNotification";
+
+    private static string WaveLinkNumberPrefix(string waveLinkNum) => string.IsNullOrWhiteSpace(waveLinkNum) ? string.Empty : $".{waveLinkNum}";
 
 }

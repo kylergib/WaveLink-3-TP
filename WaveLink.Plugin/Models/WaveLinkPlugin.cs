@@ -4,6 +4,7 @@ using System.Runtime;
 using System.Text.Json;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -29,13 +30,16 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<WaveLinkPlugin> _logger;
     private IReadOnlyCollection<Setting> _settings;
+    //private WaveLinkHandler? WaveLinkHandler = null;
 
-    private WaveLinkHandler? WaveLinkHandler = null;
+    // settings values
     public string LogLevel { get; set; } = "none";
     public bool SaveToFile { get; set; } = false;
     public string IpAddress { get; set; } = WaveLink.SDK.Statics.Localhost;
     public bool SubscribeToFocusedApp { get; set; } = true;
+    public List<string> IpList = new();
 
+    // wave link events
     public EventHandler<SDK.Models.Channel>? OnChannelUpdated;
     public EventHandler<App>? OnFocusedAppUpdated;
     public EventHandler<InputDevice>? OnInputDeviceUpdated;
@@ -71,10 +75,16 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public Dictionary<string, List<string>> ChannelShortConnectorIds { get; set; } = new();
     public Dictionary<string, List<string>> MixShortConnectorIds { get; set; } = new();
 
+    // dictionary for additional wave link instances
+    public Dictionary<string, WaveLinkHandler> AdditionalWaveLinkInstances { get; set; } = new();
+    // key to ip address mapping
+    //public Dictionary<string, string> AdditionalWaveLinkInstancesIpAddress { get; set; } = new();
+
+    //public Dictionary<int, string> WaveLinkNumToIpAddress { get; set; } = new();
+    //public Dictionary<string, int> IpAddressToWaveLinkNum { get; set; } = new();
 
     public WaveLinkPlugin(ILoggerFactory logFactory)
     {
-
         string baseDir = AppDomain.CurrentDomain.BaseDirectory;
         string filePath = Path.Combine(baseDir, "entry.tp");
         string json = File.ReadAllText(filePath);
@@ -134,8 +144,30 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             WaveSocketSwitch?.MinimumLevel = LogEventLevel.Verbose;
         }
 
+        var ipAddresses = _settings.FirstOrDefault(s => s.Name == TouchPortalIdHelper.AdditionalAddresses)?.Value ?? string.Empty;
 
-        //_client.ShowNotification()
+        var dict = string.IsNullOrEmpty(ipAddresses) ? new Dictionary<string, string>() : JsonSerializer.Deserialize<Dictionary<string, string>>(ipAddresses)!;
+
+        _logger.LogDebug("Found additional addresses: {0}", string.Join(", ", dict.Values));
+        if (!AdditionalWaveLinkInstances.TryGetValue("default", out var waveHandler))
+        {
+            AdditionalWaveLinkInstances.Add("default", new(_loggerFactory, IpAddress, WaveLink.SDK.Statics.DefaultPort));
+            IpList.Add(IpAddress);
+        }
+        foreach (var kvp in dict)
+        {
+            Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
+            if (string.IsNullOrEmpty(kvp.Value.Trim()) || kvp.Value.Trim() == WaveLink.SDK.Statics.Localhost) continue;
+            if (IpList.Contains(kvp.Value)) continue;
+
+            IpList.Add(kvp.Key);
+            if (!AdditionalWaveLinkInstances.TryGetValue(kvp.Key, out var handler))
+            {
+                AdditionalWaveLinkInstances.Add(kvp.Key, new WaveLinkHandler(_loggerFactory, kvp.Value.Trim(), WaveLink.SDK.Statics.DefaultPort, kvp.Key));
+                IpList.Add(kvp.Value.Trim());
+            }
+        }
+
         var updateAvailable = Task.Run(() => UpdateAvailable());
         updateAvailable.Wait();
         if (!string.IsNullOrEmpty(updateAvailable.Result) && !string.IsNullOrEmpty(UpdateUrl))
@@ -147,35 +179,60 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                "A new version of the Wave Link Plugin is available.",
                [new() { Id = "learnMore", Title = "Learn More" }]
            );
-
         }
 
         ConnectToWaveLink();
     }
     public void ConnectToWaveLink()
     {
-        _logger?.LogInformation("Trying to connect to Wave Link on: {IpAddress}", IpAddress);
-        WaveLinkHandler = new(_loggerFactory, IpAddress, WaveLink.SDK.Statics.DefaultPort);
-        WaveLinkHandler.SubscribeToFocusApp = SubscribeToFocusedApp;
-        WaveLinkHandler?.Start();
-        WaveLinkHandler?.OnConnection += (sender, args) =>
+
+        //WaveLinkHandler = new(_loggerFactory, IpAddress, WaveLink.SDK.Statics.DefaultPort);
+        //WaveLinkHandler.SubscribeToFocusApp = SubscribeToFocusedApp;
+        //WaveLinkHandler?.Start();
+        //WaveLinkHandler?.OnConnection += (sender, args) =>
+        //{
+        //    InitializeEventHandler("");
+        //    SubscribeToEvents(WaveLinkHandler);
+        //    _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId(), "true");
+        //};
+        //WaveLinkHandler?.OnClose += (sender, args) =>
+        //{
+        //    _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId(), "false");
+        //};
+        foreach (var kvp in AdditionalWaveLinkInstances)
         {
-            InitializeEventHandler();
-            SubscribeToEvents();
-            _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId, "true");
-        };
-        WaveLinkHandler?.OnClose += (sender, args) =>
-        {
-            _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId, "false");
-        };
+            _logger?.LogInformation("Trying to connect to Wave Link on: {IpAddress} for key: {key}", IpAddress, kvp.Key);
+            var kvpHandler = kvp.Value;
+            if (kvpHandler != null)
+            {
+                // TODO:
+            }
+            kvpHandler?.SubscribeToFocusApp = kvp.Key == "default" ? SubscribeToFocusedApp : false;
+            kvpHandler?.Start();
+            kvpHandler?.OnConnection += (sender, args) =>
+            {
+                InitializeEventHandler(kvp.Key);
+                SubscribeToEvents(kvpHandler);
+                if (kvp.Key != "default") _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId(), "true");
+            };
+            kvpHandler?.OnClose += (sender, args) =>
+            {
+                if (kvp.Key != "default") _client.StateUpdate(TouchPortalIdHelper.IsConnectedToWaveLinkId(), "false");
+            };
+        }
     }
     public async Task DisconnectFromWaveLink()
     {
-        if (WaveLinkHandler is null || WaveLinkHandler.Client is null) return;
-        WaveLinkHandler.Retry = false;
-        await WaveLinkHandler!.Client!.CloseAsync();
+        foreach (var kvp in AdditionalWaveLinkInstances)
+        {
+            _logger?.LogInformation("Trying to connect to Wave Link on: {IpAddress} for key: {key}", IpAddress, kvp.Key);
+            var kvpHandler = kvp.Value;
+            if (kvpHandler is null || kvpHandler.Client is null) return;
+            kvpHandler.Retry = false;
+            await kvpHandler!.Client!.CloseAsync();
 
-        WaveLinkHandler = null;
+            kvpHandler = null;
+        }
     }
 
     // Event triggered when one of this plugin's actions, defined in entry.tp, is triggered.
@@ -292,17 +349,65 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
         if (IpAddress != ipAddress)
         {
-            await DisconnectFromWaveLink();
+            //await DisconnectFromWaveLink();
             IpAddress = ipAddress;
-            ConnectToWaveLink();
+            //ConnectToWaveLink();
         }
 
-        if (SubscribeToFocusedApp != subscribeToFocusedApp)
+        //if (SubscribeToFocusedApp != subscribeToFocusedApp)
+        //{
+        //    SubscribeToFocusedApp = subscribeToFocusedApp;
+        //    WaveLinkHandler?.SubscribeToFocusApp = SubscribeToFocusedApp;
+        //    WaveLinkSendMethod<MethodSubscriptionInfo> subscribe = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = SubscribeToFocusedApp } });
+        //    _ = WaveLinkHandler?.Client?.SendRequestAsync<MethodSubscriptionInfo>(subscribe);
+        //}
+
+        var ipAddresses = _settings.FirstOrDefault(s => s.Name == TouchPortalIdHelper.AdditionalAddresses)?.Value ?? string.Empty;
+        var dict = JsonSerializer.Deserialize<Dictionary<string, string>>(ipAddresses)!;
+        //foreach (var kvp in dict)
+        //{
+        //    Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
+        //    if (string.IsNullOrEmpty(kvp.Value.Trim()) || kvp.Value.Trim() == WaveLink.SDK.Statics.Localhost) continue;
+        //    if (IpKeyList.Contains(kvp.Key)) continue;
+
+        //    IpKeyList.Add(kvp.Key);
+        //    if (!AdditionalWaveLinkInstances.TryGetValue(kvp.Key, out var handler))
+        //    {
+        //        AdditionalWaveLinkInstances.Add(kvp.Key, new WaveLinkHandler(_loggerFactory, kvp.Value, WaveLink.SDK.Statics.DefaultPort));
+        //    }
+        //}
+        foreach (var kvp in dict)
         {
-            SubscribeToFocusedApp = subscribeToFocusedApp;
-            WaveLinkHandler?.SubscribeToFocusApp = SubscribeToFocusedApp;
-            WaveLinkSendMethod<MethodSubscriptionInfo> subscribe = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = SubscribeToFocusedApp } });
-            _ = WaveLinkHandler?.Client?.SendRequestAsync<MethodSubscriptionInfo>(subscribe);
+            Console.WriteLine($"Key: {kvp.Key}, Value: {kvp.Value}");
+            if (string.IsNullOrEmpty(kvp.Value.Trim()) || kvp.Value.Trim() == WaveLink.SDK.Statics.Localhost) continue;
+            if (IpList.Contains(kvp.Value.Trim())) continue;
+
+            IpList.Add(kvp.Key);
+            if (!AdditionalWaveLinkInstances.TryGetValue(kvp.Key, out var handler))
+            {
+                AdditionalWaveLinkInstances.Add(kvp.Key, new WaveLinkHandler(_loggerFactory, kvp.Value.Trim(), WaveLink.SDK.Statics.DefaultPort, kvp.Key));
+                IpList.Add(kvp.Value.Trim());
+                continue;
+            }
+            if (handler == null)
+            {
+                AdditionalWaveLinkInstances[kvp.Key] = new WaveLinkHandler(_loggerFactory, kvp.Value.Trim(), WaveLink.SDK.Statics.DefaultPort, kvp.Key);
+            }
+        }
+
+
+        // remove unused 
+        var needRemovedDict = AdditionalWaveLinkInstances
+            .Where(kvp => !dict.ContainsKey(kvp.Key) && kvp.Key != "default")
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        foreach (var kvp in needRemovedDict)
+        {
+            IpList.Remove(kvp.Value.Host);
+            if (AdditionalWaveLinkInstances.TryGetValue(kvp.Key, out var num))
+            {
+                AdditionalWaveLinkInstances.Remove(kvp.Key);
+            }
         }
     }
     public void OnNotificationOptionClickedEvent(NotificationOptionClickedEvent message)
@@ -372,7 +477,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         _logger?.LogDebug($"[OnShortConnectorIdNotificationEvent] ConnectorId: '{message.ConnectorId}', ShortID: '{message.ShortId}'");
         if (message.ActualConnectorId == TouchPortalIdHelper.InputVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.InputListId];
+            var value = message.Data[TouchPortalIdHelper.InputListId()];
             if (string.IsNullOrEmpty(value)) return;
             if (!InputShortConnectorIds.TryGetValue(value, out var shortIdList))
             {
@@ -386,7 +491,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.OutputVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.OutputListId];
+            var value = message.Data[TouchPortalIdHelper.OutputListId()];
             if (string.IsNullOrEmpty(value)) return;
 
             if (!OutputShortConnectorIds.TryGetValue(value, out var shortIdList))
@@ -401,7 +506,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.ChannelVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.ChannelListId];
+            var value = message.Data[TouchPortalIdHelper.ChannelListId()];
             if (string.IsNullOrEmpty(value)) return;
 
             if (!ChannelShortConnectorIds.TryGetValue(value, out var shortIdList))
@@ -417,7 +522,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.MixVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.MixListId];
+            var value = message.Data[TouchPortalIdHelper.MixListId()];
             if (string.IsNullOrEmpty(value)) return;
 
             if (!MixShortConnectorIds.TryGetValue(value, out var shortIdList))
@@ -432,59 +537,90 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
     }
 
-    public void InitializeEventHandler()
+    public void InitializeEventHandler(string? waveKey = null)
     {
-        OnReceivedGetInputDevices = async (s, response) =>
+        OnReceivedGetInputDevices += async (s, response) =>
         {
-            var devices = response?.Result?.InputDevices ?? [];
-            _client.ChoiceUpdate(TouchPortalIdHelper.InputListId, devices?.Select(d => d.Name).ToArray());
+            //var devices = response?.Result?.InputDevices ?? [];
+            List<string> deviceList = new();
+
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var channels = handler?.Client?.StateManager.InputDevices.Select(c => GetWavePrefix(kvp.Key) + c.Name).ToArray();
+
+                deviceList.AddRange(channels ?? []);
+            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.InputListId(), deviceList.ToArray());
+            //_client.ChoiceUpdate(TouchPortalIdHelper.InputListId(), devices?.Select(d => GetWavePrefix(waveKey) + d.Name).ToArray());
             _logger.LogDebug("Received Input Devices Info:");
             foreach (var inputDevice in response?.Result?.InputDevices ?? new())
             {
-                _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
+                _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {GetWavePrefix(waveKey)}{inputDevice.Name}, Type: {inputDevice.Type}");
                 foreach (var input in inputDevice?.Inputs ?? [])
                 {
-                    _client.CreateState(TouchPortalIdHelper.InputMute(input.Name!), $"{input.Name!} muted", input.IsMuted.ToString(), TouchPortalIdHelper.InputMutedCategoryName);
-                    _client.CreateState(TouchPortalIdHelper.InputLevel(input.Name!), $"{input.Name!} level", ToInt(input.Gain?.Value ?? 0).ToString(), TouchPortalIdHelper.InputLevelCategoryName);
-                    ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+                    _client.CreateState(TouchPortalIdHelper.InputMute(GetWavePrefix(waveKey) + input.Name!), $"{GetWavePrefix(waveKey)}{input.Name!} muted", input.IsMuted.ToString(), TouchPortalIdHelper.InputMutedCategoryName);
+                    _client.CreateState(TouchPortalIdHelper.InputLevel(GetWavePrefix(waveKey) + input.Name!), $"{GetWavePrefix(waveKey)}{input.Name!} level", ToInt(input.Gain?.Value ?? 0).ToString(), TouchPortalIdHelper.InputLevelCategoryName);
+                    ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
 
-                    _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
+                    _logger.LogDebug($"Input ID: {input.Id}, Name: {GetWavePrefix(waveKey)}{input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
                 }
             }
         };
 
-        OnReceivedGetOutputDevices = async (s, response) =>
+        OnReceivedGetOutputDevices += async (s, response) =>
         {
-            var devices = response?.Result?.OutputDevices ?? [];
-            _client.ChoiceUpdate(TouchPortalIdHelper.OutputListId, devices?.Select(d => d.Name).ToArray());
+            //var devices = response?.Result?.OutputDevices ?? [];
+            List<string> deviceList = new();
+
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var channels = handler?.Client?.StateManager.OutputDevices.Select(c =>GetWavePrefix(kvp.Key) + c.Name).ToArray();
+
+                deviceList.AddRange(channels ?? []);
+            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.OutputListId(), deviceList.ToArray());
+            //_client.ChoiceUpdate(TouchPortalIdHelper.OutputListId(), devices?.Select(d => GetWavePrefix(waveKey) + d.Name).ToArray());
             _logger.LogDebug("Received Output Devices Info:");
             foreach (var inputDevice in response?.Result?.OutputDevices ?? [])
             {
-                _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
+                _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {GetWavePrefix(waveKey)}{inputDevice.Name}, Type: {inputDevice.Type}");
                 foreach (var output in inputDevice.Outputs ?? [])
                 {
-                    _client.CreateState(TouchPortalIdHelper.OutputMute(output.Name!), $"{output.Name!} muted", output.IsMuted.ToString(), TouchPortalIdHelper.OutputMutedCategoryName);
-                    _client.CreateState(TouchPortalIdHelper.OutputLevel(output.Name!), $"{output.Name!} level", ToInt(output.Level ?? 0).ToString(), TouchPortalIdHelper.OutputLevelCategoryName);
-                    ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+                    _client.CreateState(TouchPortalIdHelper.OutputMute(GetWavePrefix(waveKey) + output.Name!), $"{output.Name!} muted", output.IsMuted.ToString(), TouchPortalIdHelper.OutputMutedCategoryName);
+                    _client.CreateState(TouchPortalIdHelper.OutputLevel(GetWavePrefix(waveKey) + output.Name!), $"{GetWavePrefix(waveKey)}{output.Name!} level", ToInt(output.Level ?? 0).ToString(), TouchPortalIdHelper.OutputLevelCategoryName);
+                    ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
 
-                    _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
+                    _logger.LogDebug($"Input ID: {output.Id}, Name: {GetWavePrefix(waveKey)}{output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 }
             }
             _logger.LogDebug("");
         };
 
-        OnReceivedGetChannels = async (s, response) =>
+        OnReceivedGetChannels += async (s, response) =>
         {
             var channels = response?.Result?.Channels ?? [];
-            _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
+            List<string> channelList = new();
+
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var channelsList = handler?.Client?.StateManager.Channels.Select(c => GetWavePrefix(kvp.Key) + c.Name).ToArray();
+
+                channelList.AddRange(channelsList ?? []);
+            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId(), channelList.ToArray());
+            //_client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId(), channels?.Select(c => GetWavePrefix(waveKey) + c.Name).ToArray());
             _logger.LogDebug("Received Channels Info:");
             foreach (var channel in channels!)
             {
-                _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
-                _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
-                ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
+                _client.CreateState(TouchPortalIdHelper.ChannelMute(GetWavePrefix(waveKey) + channel.Name!), $"{GetWavePrefix(waveKey)}{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
+                _client.CreateState(TouchPortalIdHelper.ChannelLevel(GetWavePrefix(waveKey) + channel.Name!), $"{GetWavePrefix(waveKey)}{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
+                ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
 
-                _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
+                _logger.LogDebug($"Channel ID: {channel.Id}, Name: {GetWavePrefix(waveKey)}{channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}");
+                // can get image data from above
                 foreach (var app in channel.Apps ?? [])
                 {
                     _logger.LogDebug($"App ID: {app.Id}, Name: {app.Name}");
@@ -501,30 +637,40 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug("");
         };
 
-        OnReceivedGetMixes = async (s, response) =>
+        OnReceivedGetMixes += async (s, response) =>
         {
             var mixes = response?.Result?.Mixes ?? [];
-            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).Concat(new[] { string.Empty }).ToArray());
+            List<string> mixList = new();
+
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var tempMixes = handler?.Client?.StateManager.Channels.Select(c => GetWavePrefix(kvp.Key) + c.Name).ToArray();
+
+                mixList.AddRange(tempMixes ?? []);
+            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId(), mixList.ToArray());
+            //_client.ChoiceUpdate(TouchPortalIdHelper.MixListId(), mixes?.Select(m => GetWavePrefix(waveKey) + m.Name).Concat(new[] { string.Empty }).ToArray());
             _logger.LogDebug("Received Mixes Info:");
             foreach (var mix in mixes!)
             {
-                _client.CreateState(TouchPortalIdHelper.MixMute(mix.Name!), $"{mix.Name!} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.MixMutedCategoryName);
-                _client.CreateState(TouchPortalIdHelper.MixLevel(mix.Name!), $"{mix.Name!} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.MixLevelCategoryName);
-                ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+                _client.CreateState(TouchPortalIdHelper.MixMute(GetWavePrefix(waveKey) + mix.Name!), $"{GetWavePrefix(waveKey)}{mix.Name!} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.MixMutedCategoryName);
+                _client.CreateState(TouchPortalIdHelper.MixLevel(GetWavePrefix(waveKey) + mix.Name!), $"{GetWavePrefix(waveKey)}{mix.Name!} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.MixLevelCategoryName);
+                ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
 
-                _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
+                _logger.LogDebug($"Mix ID: {mix.Id}, Name: {GetWavePrefix(waveKey)}{mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}\n");
             }
         };
 
 
-        OnChannelUpdated = (sender, channel) =>
+        OnChannelUpdated += (sender, channel) =>
         {
             _logger.LogDebug("Received Channels update:");
-            _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
+            _logger.LogDebug($"Channel ID: {channel.Id}, Name: {GetWavePrefix(waveKey)}{channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}");
 
-            _client.StateUpdate(TouchPortalIdHelper.ChannelMute(channel.Name!), channel.IsMuted.ToString());
-            _client.StateUpdate(TouchPortalIdHelper.ChannelLevel(channel.Name!), ToInt(channel.Level ?? 0).ToString());
-            ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
+            _client.StateUpdate(TouchPortalIdHelper.ChannelMute(GetWavePrefix(waveKey) + channel.Name!), channel.IsMuted.ToString());
+            _client.StateUpdate(TouchPortalIdHelper.ChannelLevel(GetWavePrefix(waveKey) + channel.Name!), ToInt(channel.Level ?? 0).ToString());
+            ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
 
             foreach (var app in channel.Apps ?? [])
             {
@@ -540,150 +686,198 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             }
         };
 
-        OnFocusedAppUpdated = (sender, app) =>
+        OnFocusedAppUpdated += (sender, app) =>
         {
             _logger.LogDebug("Received Focused App update:");
             _logger.LogDebug("App ID: {app.Id}, Name: {app.Name}", app.Id, app.Name);
-            _client.StateUpdate(TouchPortalIdHelper.FocusedAppId, app.Name);
+            _client.StateUpdate(TouchPortalIdHelper.FocusedAppId(), app.Name);
 
         };
 
-        OnInputDeviceUpdated = (sender, inputDevice) =>
+        OnInputDeviceUpdated += (sender, inputDevice) =>
         {
             _logger.LogDebug("Received Input Devices update:");
-            _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
+            _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {GetWavePrefix(waveKey)}{inputDevice.Name}, Type: {inputDevice.Type}");
             foreach (var input in inputDevice.Inputs ?? [])
             {
                 _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
-                _client.StateUpdate(TouchPortalIdHelper.InputMute(input.Name!), input.IsMuted.ToString());
-                _client.StateUpdate(TouchPortalIdHelper.InputLevel(input.Name!), ToInt(input.Gain?.Value ?? 0).ToString());
-                ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+                _client.StateUpdate(TouchPortalIdHelper.InputMute(GetWavePrefix(waveKey) + input.Name!), input.IsMuted.ToString());
+                _client.StateUpdate(TouchPortalIdHelper.InputLevel(GetWavePrefix(waveKey) + input.Name!), ToInt(input.Gain?.Value ?? 0).ToString());
+                ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
             }
         };
 
-        OnMixUpdated = (sender, mix) =>
+        OnMixUpdated += (sender, mix) =>
         {
             _logger.LogDebug("Received Mixes update:");
-            _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
-            _client.StateUpdate(TouchPortalIdHelper.MixMute(mix.Name!), mix.IsMuted.ToString());
-            _client.StateUpdate(TouchPortalIdHelper.MixLevel(mix.Name!), ToInt(mix.Level ?? 0).ToString());
-            ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+            _logger.LogDebug($"Mix ID: {mix.Id}, Name: {GetWavePrefix(waveKey)}{mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
+            _client.StateUpdate(TouchPortalIdHelper.MixMute(GetWavePrefix(waveKey) + mix.Name!), mix.IsMuted.ToString());
+            _client.StateUpdate(TouchPortalIdHelper.MixLevel(GetWavePrefix(waveKey) + mix.Name!), ToInt(mix.Level ?? 0).ToString());
+            ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
 
         };
 
-        OnOutputDeviceUpdated = (sender, outputDevice) =>
+        OnOutputDeviceUpdated += (sender, outputDevice) =>
         {
             _logger.LogDebug("Received Output Devices update:");
-            _logger.LogDebug($"Device ID: {outputDevice.Id}, Name: {outputDevice.Name}, Type: {outputDevice.Type}");
+            _logger.LogDebug($"Device ID: {outputDevice.Id}, Name: {GetWavePrefix(waveKey)}{outputDevice.Name}, Type: {outputDevice.Type}");
             foreach (var output in outputDevice.Outputs ?? [])
             {
-                _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
-                _client.StateUpdate(TouchPortalIdHelper.OutputMute(output.Name!), output.IsMuted.ToString());
-                _client.StateUpdate(TouchPortalIdHelper.OutputLevel(output.Name!), ToInt(output.Level ?? 0).ToString());
-                ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+                _logger.LogDebug($"Input ID: {output.Id}, Name: {GetWavePrefix(waveKey)}{output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
+                _client.StateUpdate(TouchPortalIdHelper.OutputMute(GetWavePrefix(waveKey) + output.Name!), output.IsMuted.ToString());
+                _client.StateUpdate(TouchPortalIdHelper.OutputLevel(GetWavePrefix(waveKey) + output.Name!), ToInt(output.Level ?? 0).ToString());
+                ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
 
             }
         };
 
-        OnChannelAdded = (sender, channel) =>
+        OnChannelAdded += (sender, channel) =>
         {
             _logger.LogDebug("Received Channels added:");
-            _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
+            _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}");
 
-            var channels = WaveLinkHandler?.Client?.StateManager.Channels;
-            _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
-            _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
-            _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
-            ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
+            List<string> channelList = new();
 
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var channels = handler?.Client?.StateManager.Channels.Select(c => kvp.Key + c.Name).ToArray();
 
-            foreach (var app in channel.Apps ?? [])
-            {
-                _logger.LogDebug($"App ID: {app.Id}, Name: {app.Name}");
+                channelList.AddRange(channels ?? []);
+
+                foreach (var app in channel.Apps ?? [])
+                {
+                    _logger.LogDebug($"App ID: {app.Id}, Name: {app.Name}");
+                }
+                foreach (var mix in channel.Mixes ?? [])
+                {
+                    _logger.LogDebug($"Mix ID: {mix.Id}, Level: {mix.Level}, IsMuted: {mix.IsMuted}");
+                }
+                foreach (var effect in channel.Effects ?? [])
+                {
+                    //_logger.LogDebug($"Effect ID: {effect.Id}, Name: {effect.Name}, Type: {effect.Type}");
+                }
             }
-            foreach (var mix in channel.Mixes ?? [])
-            {
-                _logger.LogDebug($"Mix ID: {mix.Id}, Level: {mix.Level}, IsMuted: {mix.IsMuted}");
-            }
-            foreach (var effect in channel.Effects ?? [])
-            {
-                //_logger.LogDebug($"Effect ID: {effect.Id}, Name: {effect.Name}, Type: {effect.Type}");
-            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId(), channelList.ToArray());
+            _client.CreateState(TouchPortalIdHelper.ChannelMute(GetWavePrefix(waveKey) + channel.Name!), $"{GetWavePrefix(waveKey)}{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
+            _client.CreateState(TouchPortalIdHelper.ChannelLevel(GetWavePrefix(waveKey) + channel.Name!), $"{GetWavePrefix(waveKey)}{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
+            ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
         };
 
-        OnInputDeviceAdded = (sender, inputDevice) =>
+        OnInputDeviceAdded += (sender, inputDevice) =>
         {
             _logger.LogDebug("Received Input Devices added:");
             _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
 
-            var devices = WaveLinkHandler?.Client?.StateManager.InputDevices;
-            _client.ChoiceUpdate(TouchPortalIdHelper.InputListId, devices?.Select(d => d.Name).ToArray());
+            List<string> deviceList = new();
+
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var devices = handler?.Client?.StateManager.InputDevices.Select(d => kvp.Key + d.Name).ToArray();
+                deviceList.AddRange(devices ?? []);
+            }
+
+            _client.ChoiceUpdate(TouchPortalIdHelper.InputListId(), deviceList.ToArray());
 
             foreach (var input in inputDevice.Inputs ?? [])
             {
                 //Adds a state we can work with:
-                _client.CreateState(TouchPortalIdHelper.InputMute(input.Name!), $"{input.Name!} muted", input.IsMuted.ToString(), TouchPortalIdHelper.InputMutedCategoryName);
-                _client.CreateState(TouchPortalIdHelper.InputLevel(input.Name!), $"{input.Name!} level", ToInt(input.Gain?.Value ?? 0).ToString(), TouchPortalIdHelper.InputLevelCategoryName);
-                ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+                _client.CreateState(TouchPortalIdHelper.InputMute(GetWavePrefix(waveKey) + input.Name!), $"{GetWavePrefix(waveKey)}{input.Name!} muted", input.IsMuted.ToString(), TouchPortalIdHelper.InputMutedCategoryName);
+                _client.CreateState(TouchPortalIdHelper.InputLevel(GetWavePrefix(waveKey) + input.Name!), $"{GetWavePrefix(waveKey)}{input.Name!} level", ToInt(input.Gain?.Value ?? 0).ToString(), TouchPortalIdHelper.InputLevelCategoryName);
+                ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
 
-                _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
+                _logger.LogDebug($"Input ID: {input.Id}, Name: {GetWavePrefix(waveKey)}{input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
             }
         };
 
-        OnMixAdded = (sender, mix) =>
+        OnMixAdded += (sender, mix) =>
         {
             _logger.LogDebug("Received Mixes added:");
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
 
-            var mixes = WaveLinkHandler?.Client?.StateManager.Mixes;
-            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).Concat(new[] { string.Empty }).ToArray());
+            List<string> mixList = new();
 
-            _client.CreateState(TouchPortalIdHelper.MixMute(mix.Name!), $"{mix.Name!} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.MixMutedCategoryName);
-            _client.CreateState(TouchPortalIdHelper.MixLevel(mix.Name!), $"{mix.Name!} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.MixLevelCategoryName);
-            ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var mixes = handler?.Client?.StateManager.Mixes.Select(m => kvp.Key + m.Name).ToArray();
+                mixList.AddRange(mixes ?? []);
+            }
 
+            //var mixes = WaveLinkHandler?.Client?.StateManager.Mixes;
+            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId(), mixList.Concat(new[] { string.Empty }).ToArray());
 
+            _client.CreateState(TouchPortalIdHelper.MixMute(GetWavePrefix(waveKey) + mix.Name!), $"{GetWavePrefix(waveKey)}{mix.Name!} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.MixMutedCategoryName);
+            _client.CreateState(TouchPortalIdHelper.MixLevel(GetWavePrefix(waveKey) + mix.Name!), $"{GetWavePrefix(waveKey)}{mix.Name!} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.MixLevelCategoryName);
+            ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
         };
 
-        OnOutputDeviceAdded = (sender, outputDevice) =>
+        OnOutputDeviceAdded += (sender, outputDevice) =>
         {
             _logger.LogDebug("Received Output Devices added:");
             _logger.LogDebug($"Device ID: {outputDevice.Id}, Name: {outputDevice.Name}, Type: {outputDevice.Type}");
 
-            var devices = WaveLinkHandler?.Client?.StateManager.OutputDevices;
-            _client.ChoiceUpdate(TouchPortalIdHelper.OutputListId, devices?.Select(d => d.Name).ToArray());
+            //var devices = WaveLinkHandler?.Client?.StateManager.OutputDevices;
+            List<string> deviceList = new();
+
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var devices = handler?.Client?.StateManager.OutputDevices.Select(d => kvp.Key + d.Name).ToArray();
+                deviceList.AddRange(devices ?? []);
+            }
+
+            _client.ChoiceUpdate(TouchPortalIdHelper.OutputListId(), deviceList.ToArray());
 
             foreach (var output in outputDevice.Outputs ?? [])
             {
                 _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
-                _client.CreateState(TouchPortalIdHelper.OutputMute(output.Name!), $"{output.Name!} muted", output.IsMuted.ToString(), TouchPortalIdHelper.OutputMutedCategoryName);
-                _client.CreateState(TouchPortalIdHelper.OutputLevel(output.Name!), $"{output.Name!} level", ToInt(output.Level ?? 0).ToString(), TouchPortalIdHelper.OutputLevelCategoryName);
-                ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+                _client.CreateState(TouchPortalIdHelper.OutputMute(GetWavePrefix(waveKey) + output.Name!), $"{GetWavePrefix(waveKey)}{output.Name!} muted", output.IsMuted.ToString(), TouchPortalIdHelper.OutputMutedCategoryName);
+                _client.CreateState(TouchPortalIdHelper.OutputLevel(GetWavePrefix(waveKey) + output.Name!), $"{GetWavePrefix(waveKey)}{output.Name!} level", ToInt(output.Level ?? 0).ToString(), TouchPortalIdHelper.OutputLevelCategoryName);
+                ShortConnectorUpdateHelper(GetWavePrefix(waveKey) + output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
             }
         };
 
-        OnChannelRemoved = (sender, channel) =>
+        OnChannelRemoved += (sender, channel) =>
         {
             _logger.LogDebug("Received Channels removed:");
             _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
 
-            var channels = WaveLinkHandler?.Client?.StateManager.Channels;
-            _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
+            //var channels = WaveLinkHandler?.Client?.StateManager.Channels;
+            List<string> channelList = new();
 
-            _client.RemoveState(TouchPortalIdHelper.ChannelMute(channel.Name!));
-            _client.RemoveState(TouchPortalIdHelper.ChannelLevel(channel.Name!));
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var devices = handler?.Client?.StateManager.Channels.Select(c => kvp.Key + c.Name).ToArray();
+                channelList.AddRange(devices ?? []);
+            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId(), channelList.ToArray());
+
+            _client.RemoveState(TouchPortalIdHelper.ChannelMute(GetWavePrefix(waveKey) + channel.Name!));
+            _client.RemoveState(TouchPortalIdHelper.ChannelLevel(GetWavePrefix(waveKey) + channel.Name!));
         };
 
-        OnInputDeviceRemoved = (sender, inputDevice) =>
+        OnInputDeviceRemoved += (sender, inputDevice) =>
         {
             _logger.LogDebug("Received Input Devices removed:");
             _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
 
-            var devices = WaveLinkHandler?.Client?.StateManager.InputDevices;
-            _client.ChoiceUpdate(TouchPortalIdHelper.InputListId, devices?.Select(d => d.Name).ToArray());
+            //var devices = WaveLinkHandler?.Client?.StateManager.InputDevices;
+            List<string> deviceList = new();
 
-            _client.RemoveState(TouchPortalIdHelper.InputMute(inputDevice.Name!));
-            _client.RemoveState(TouchPortalIdHelper.InputLevel(inputDevice.Name!));
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var devices = handler?.Client?.StateManager.InputDevices.Select(d => kvp.Key + d.Name).ToArray();
+                deviceList.AddRange(devices ?? []);
+            }
+
+            _client.ChoiceUpdate(TouchPortalIdHelper.InputListId(), deviceList.ToArray());
+
+            _client.RemoveState(TouchPortalIdHelper.InputMute(GetWavePrefix(waveKey) + inputDevice.Name!));
+            _client.RemoveState(TouchPortalIdHelper.InputLevel(GetWavePrefix(waveKey) + inputDevice.Name!));
         };
 
         OnMixRemoved = (sender, mix) =>
@@ -691,11 +885,19 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug("Received Mixes removed:");
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
 
-            var mixes = WaveLinkHandler?.Client?.StateManager.Mixes;
-            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId, mixes?.Select(m => m.Name).Concat(new[] { string.Empty }).ToArray());
+            //var mixes = WaveLinkHandler?.Client?.StateManager.Mixes;
+            List<string> mixList = new();
 
-            _client.RemoveState(TouchPortalIdHelper.MixMute(mix.Name!));
-            _client.RemoveState(TouchPortalIdHelper.MixLevel(mix.Name!));
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var mixes = handler?.Client?.StateManager.Mixes.Select(m => kvp.Key + m.Name).ToArray();
+                mixList.AddRange(mixes ?? []);
+            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.MixListId(), mixList.Concat(new[] { string.Empty }).ToArray());
+
+            _client.RemoveState(TouchPortalIdHelper.MixMute(GetWavePrefix(waveKey) + mix.Name!));
+            _client.RemoveState(TouchPortalIdHelper.MixLevel(GetWavePrefix(waveKey) + mix.Name!));
         };
 
         OnOutputDeviceRemoved = (sender, outputDevice) =>
@@ -703,205 +905,225 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug("Received Output Devices removed:");
             _logger.LogDebug($"Device ID: {outputDevice.Id}, Name: {outputDevice.Name}, Type: {outputDevice.Type}");
 
-            var outputs = WaveLinkHandler?.Client?.StateManager.OutputDevices;
-            _client.ChoiceUpdate(TouchPortalIdHelper.OutputListId, outputs?.Select(o => o.Name).ToArray());
+            //var outputs = WaveLinkHandler?.Client?.StateManager.OutputDevices;
+            List<string> deviceList = new();
 
-            _client.RemoveState(TouchPortalIdHelper.OutputMute(outputDevice.Name!));
-            _client.RemoveState(TouchPortalIdHelper.OutputLevel(outputDevice.Name!));
+            foreach (var kvp in AdditionalWaveLinkInstances)
+            {
+                var handler = kvp.Value;
+                var devices = handler?.Client?.StateManager.OutputDevices.Select(d => kvp.Key + d.Name).ToArray();
+                deviceList.AddRange(devices ?? []);
+            }
+            _client.ChoiceUpdate(TouchPortalIdHelper.OutputListId(), deviceList.ToArray());
+
+            _client.RemoveState(TouchPortalIdHelper.OutputMute(GetWavePrefix(waveKey) + outputDevice.Name!));
+            _client.RemoveState(TouchPortalIdHelper.OutputLevel(GetWavePrefix(waveKey) + outputDevice.Name!));
         };
 
-        OnSubscribedToFocusAppChanged = (sender, subscribed) =>
+        OnSubscribedToFocusAppChanged += (sender, subscribed) =>
         {
             _logger.LogDebug("Subscribed to Focused App: {Subscribed}", subscribed);
         };
     }
-    public void SubscribeToEvents()
+    public void SubscribeToEvents(WaveLinkHandler handler)
     {
-        WaveLinkHandler?.Client?.StateManager.OnChannelUpdated += OnChannelUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnFocusedAppUpdated += OnFocusedAppUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnInputDeviceUpdated += OnInputDeviceUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnMixUpdated += OnMixUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnOutputDeviceUpdated += OnOutputDeviceUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnChannelAdded += OnChannelAdded;
-        WaveLinkHandler?.Client?.StateManager.OnInputDeviceAdded += OnInputDeviceAdded;
-        WaveLinkHandler?.Client?.StateManager.OnMixAdded += OnMixAdded;
-        WaveLinkHandler?.Client?.StateManager.OnOutputDeviceAdded += OnOutputDeviceAdded;
-        WaveLinkHandler?.Client?.StateManager.OnChannelRemoved += OnChannelRemoved;
-        WaveLinkHandler?.Client?.StateManager.OnInputDeviceRemoved += OnInputDeviceRemoved;
-        WaveLinkHandler?.Client?.StateManager.OnSubscribedToFocusAppChanged += OnSubscribedToFocusAppChanged;
+        handler?.Client?.StateManager.OnChannelUpdated += OnChannelUpdated;
+        handler?.Client?.StateManager.OnFocusedAppUpdated += OnFocusedAppUpdated;
+        handler?.Client?.StateManager.OnInputDeviceUpdated += OnInputDeviceUpdated;
+        handler?.Client?.StateManager.OnMixUpdated += OnMixUpdated;
+        handler?.Client?.StateManager.OnOutputDeviceUpdated += OnOutputDeviceUpdated;
+        handler?.Client?.StateManager.OnChannelAdded += OnChannelAdded;
+        handler?.Client?.StateManager.OnInputDeviceAdded += OnInputDeviceAdded;
+        handler?.Client?.StateManager.OnMixAdded += OnMixAdded;
+        handler?.Client?.StateManager.OnOutputDeviceAdded += OnOutputDeviceAdded;
+        handler?.Client?.StateManager.OnChannelRemoved += OnChannelRemoved;
+        handler?.Client?.StateManager.OnInputDeviceRemoved += OnInputDeviceRemoved;
+        handler?.Client?.StateManager.OnSubscribedToFocusAppChanged += OnSubscribedToFocusAppChanged;
 
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetInputDevices += OnReceivedGetInputDevices;
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetOutputDevices += OnReceivedGetOutputDevices;
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetChannels += OnReceivedGetChannels;
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetMixes += OnReceivedGetMixes;
+        handler?.Client?.MessageRouter.OnReceivedGetInputDevices += OnReceivedGetInputDevices;
+        handler?.Client?.MessageRouter.OnReceivedGetOutputDevices += OnReceivedGetOutputDevices;
+        handler?.Client?.MessageRouter.OnReceivedGetChannels += OnReceivedGetChannels;
+        handler?.Client?.MessageRouter.OnReceivedGetMixes += OnReceivedGetMixes;
     }
 
-    public void ClearEvents()
+    public void ClearEvents(WaveLinkHandler handler)
     {
-        WaveLinkHandler?.Client?.StateManager.OnChannelUpdated -= OnChannelUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnFocusedAppUpdated -= OnFocusedAppUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnInputDeviceUpdated -= OnInputDeviceUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnMixUpdated -= OnMixUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnOutputDeviceUpdated -= OnOutputDeviceUpdated;
-        WaveLinkHandler?.Client?.StateManager.OnChannelAdded -= OnChannelAdded;
-        WaveLinkHandler?.Client?.StateManager.OnInputDeviceAdded -= OnInputDeviceAdded;
-        WaveLinkHandler?.Client?.StateManager.OnMixAdded -= OnMixAdded;
-        WaveLinkHandler?.Client?.StateManager.OnOutputDeviceAdded -= OnOutputDeviceAdded;
-        WaveLinkHandler?.Client?.StateManager.OnChannelRemoved -= OnChannelRemoved;
-        WaveLinkHandler?.Client?.StateManager.OnInputDeviceRemoved -= OnInputDeviceRemoved;
-        WaveLinkHandler?.Client?.StateManager.OnSubscribedToFocusAppChanged -= OnSubscribedToFocusAppChanged;
+        handler?.Client?.StateManager.OnChannelUpdated -= OnChannelUpdated;
+        handler?.Client?.StateManager.OnFocusedAppUpdated -= OnFocusedAppUpdated;
+        handler?.Client?.StateManager.OnInputDeviceUpdated -= OnInputDeviceUpdated;
+        handler?.Client?.StateManager.OnMixUpdated -= OnMixUpdated;
+        handler?.Client?.StateManager.OnOutputDeviceUpdated -= OnOutputDeviceUpdated;
+        handler?.Client?.StateManager.OnChannelAdded -= OnChannelAdded;
+        handler?.Client?.StateManager.OnInputDeviceAdded -= OnInputDeviceAdded;
+        handler?.Client?.StateManager.OnMixAdded -= OnMixAdded;
+        handler?.Client?.StateManager.OnOutputDeviceAdded -= OnOutputDeviceAdded;
+        handler?.Client?.StateManager.OnChannelRemoved -= OnChannelRemoved;
+        handler?.Client?.StateManager.OnInputDeviceRemoved -= OnInputDeviceRemoved;
+        handler?.Client?.StateManager.OnSubscribedToFocusAppChanged -= OnSubscribedToFocusAppChanged;
 
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetInputDevices -= OnReceivedGetInputDevices;
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetOutputDevices -= OnReceivedGetOutputDevices;
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetChannels -= OnReceivedGetChannels;
-        WaveLinkHandler?.Client?.MessageRouter.OnReceivedGetMixes -= OnReceivedGetMixes;
+        handler?.Client?.MessageRouter.OnReceivedGetInputDevices -= OnReceivedGetInputDevices;
+        handler?.Client?.MessageRouter.OnReceivedGetOutputDevices -= OnReceivedGetOutputDevices;
+        handler?.Client?.MessageRouter.OnReceivedGetChannels -= OnReceivedGetChannels;
+        handler?.Client?.MessageRouter.OnReceivedGetMixes -= OnReceivedGetMixes;
     }
 
     // input actions
     public void SetMuteInput(ActionEvent message)
     {
-        var inputName = message[TouchPortalIdHelper.InputListId] ?? "<null>";
+        var inputName = message[TouchPortalIdHelper.InputListId()] ?? "<null>";
         var muteValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetMuteInput))] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref inputName);
 
-        if (!string.IsNullOrEmpty(inputName) && !string.IsNullOrEmpty(muteValue))
+        if (!string.IsNullOrEmpty(inputName) && !string.IsNullOrEmpty(muteValue) && handler != null)
         {
-            WaveLinkHandler?.SetInput(inputName, muteValue);
+            handler?.SetInput(inputName, muteValue);
         }
     }
     public void SetLevelInput(ActionEvent message)
     {
-        var inputName = message[TouchPortalIdHelper.InputListId] ?? "<null>";
+        var inputName = message[TouchPortalIdHelper.InputListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelInput))] ?? "<null>";
-
+        var handler = GetWaveLinkHandler(ref inputName);
         if (!string.IsNullOrEmpty(inputName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            WaveLinkHandler?.SetInput(inputName, null, newLevel);
+            handler?.SetInput(inputName, null, newLevel);
         }
     }
 
     public void SetLevelInput(ConnectorChangeEvent message)
     {
-        var inputName = message[TouchPortalIdHelper.InputListId] ?? "<null>";
+        var inputName = message[TouchPortalIdHelper.InputListId()] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref inputName);
 
         if (!string.IsNullOrEmpty(inputName))
         {
-            WaveLinkHandler?.SetInput(inputName, null, message.Value);
+            handler?.SetInput(inputName, null, message.Value);
         }
     }
 
     // output actions
     public void SetMuteOutput(ActionEvent message)
     {
-        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
+        var outputName = message[TouchPortalIdHelper.OutputListId()] ?? "<null>";
         var muteValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetMuteOutput))] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref outputName);
 
         if (!string.IsNullOrEmpty(outputName) && !string.IsNullOrEmpty(muteValue))
         {
-            WaveLinkHandler?.SetOutput(outputName, muteValue);
+            handler?.SetOutput(outputName, muteValue);
         }
     }
     public void SetLevelOutput(ActionEvent message)
     {
-        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
+        var outputName = message[TouchPortalIdHelper.OutputListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelOutput))] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref outputName);
 
         if (!string.IsNullOrEmpty(outputName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            WaveLinkHandler?.SetOutput(outputName, null, newLevel);
+            handler?.SetOutput(outputName, null, newLevel);
         }
     }
 
     public void SetLevelOutput(ConnectorChangeEvent message)
     {
-        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
+        var outputName = message[TouchPortalIdHelper.OutputListId()] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref outputName);
 
         if (!string.IsNullOrEmpty(outputName))
         {
-            WaveLinkHandler?.SetOutput(outputName, null, message.Value);
+            handler?.SetOutput(outputName, null, message.Value);
         }
     }
 
     public void SetOuputDevice(ActionEvent message)
     {
-        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
-        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
+        var outputName = message[TouchPortalIdHelper.OutputListId()] ?? "<null>";
+        var mixName = message[TouchPortalIdHelper.MixListId()] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref outputName);
 
         if (!string.IsNullOrEmpty(outputName) &&
             mixName != null)
         {
-            WaveLinkHandler?.SetOutput(outputName, null, null, mixName);
+            handler?.SetOutput(outputName, null, null, mixName);
         }
     }
 
     // channel actions
     public void SetLevelChannel(ActionEvent message)
     {
-        var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+        var channelName = message[TouchPortalIdHelper.ChannelListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelChannel))] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref channelName);
 
         if (!string.IsNullOrEmpty(channelName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            WaveLinkHandler?.SetChannel(channelName, null, newLevel);
+            handler?.SetChannel(channelName, null, newLevel);
         }
     }
     public void SetLevelChannel(ConnectorChangeEvent message)
     {
-        var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+        var channelName = message[TouchPortalIdHelper.ChannelListId()] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref channelName);
 
         if (!string.IsNullOrEmpty(channelName))
         {
-            WaveLinkHandler?.SetChannel(channelName, null, message.Value);
+            handler?.SetChannel(channelName, null, message.Value);
         }
     }
 
     public void SetMuteChannel(ActionEvent message)
     {
-        var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+        var channelName = message[TouchPortalIdHelper.ChannelListId()] ?? "<null>";
         var muteValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetMuteChannel))] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref channelName);
 
         if (!string.IsNullOrEmpty(channelName) && !string.IsNullOrEmpty(muteValue))
         {
-            WaveLinkHandler?.SetChannel(channelName, muteValue);
+            handler?.SetChannel(channelName, muteValue);
         }
     }
 
     // mix actions
     public void SetLevelMix(ActionEvent message)
     {
-        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
+        var mixName = message[TouchPortalIdHelper.MixListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelMix))] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref mixName);
 
         if (!string.IsNullOrEmpty(mixName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            WaveLinkHandler?.SetMix(mixName, null, newLevel);
+            handler?.SetMix(mixName, null, newLevel);
         }
     }
     public void SetLevelMix(ConnectorChangeEvent message)
     {
-        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
+        var mixName = message[TouchPortalIdHelper.MixListId()] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref mixName);
 
         if (!string.IsNullOrEmpty(mixName))
         {
-            WaveLinkHandler?.SetMix(mixName, null, message.Value);
+            handler?.SetMix(mixName, null, message.Value);
         }
     }
 
     public void SetMuteMix(ActionEvent message)
     {
-        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
+        var mixName = message[TouchPortalIdHelper.MixListId()] ?? "<null>";
         var muteValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetMuteMix))] ?? "<null>";
+        var handler = GetWaveLinkHandler(ref mixName);
 
         if (!string.IsNullOrEmpty(mixName) && !string.IsNullOrEmpty(muteValue))
         {
-            WaveLinkHandler?.SetMix(mixName, muteValue);
+            handler?.SetMix(mixName, muteValue);
         }
     }
 
@@ -909,20 +1131,26 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public void SetFocusAppNotification(ActionEvent message)
     {
         var subValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetFocusAppNotification))] ?? "<null>";
+        var temp = string.Empty;
+        var handler = GetWaveLinkHandler(ref temp);
 
         if (!string.IsNullOrEmpty(subValue))
         {
-            WaveLinkHandler?.SetFocusAppSubscription(subValue);
+            handler?.SetFocusAppSubscription(subValue);
         }
     }
 
     // add focused app to channel
     public void AddToChannel(ActionEvent message)
     {
-        var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+        var channelName = message[TouchPortalIdHelper.ChannelListId()] ?? "<null>";
+        var temp = string.Empty;
+
+        var handler = GetWaveLinkHandler(ref temp);
+
         if (!string.IsNullOrEmpty(channelName))
         {
-            WaveLinkHandler?.AddToChannel(channelName);
+            handler?.AddToChannel(channelName);
         }
     }
     public int ToInt(decimal value)
@@ -996,5 +1224,41 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
         return null;
     }
+    public string GetWavePrefix(string? waveKey)
+    {
+        return string.IsNullOrEmpty(waveKey) || waveKey.ToLower() == "default" ? string.Empty : waveKey + "_";
+    }
+    public WaveLinkHandler? GetWaveLinkHandler(ref string? name)
+    {
+        if (string.IsNullOrEmpty(name)) return null;
+        var tempName = name;
+        var waveKey = AdditionalWaveLinkInstances.Keys.FirstOrDefault(k => tempName.StartsWith(k + "_"));
+        if (waveKey == null)
+        {
+            if (AdditionalWaveLinkInstances.TryGetValue("default", out var handler))
+            {
+                return handler;
+            }
+        }
+        else if (AdditionalWaveLinkInstances.TryGetValue(waveKey, out var handler))
+        {
+            name = name.ReplaceFirst(waveKey + "_", string.Empty);
+            return handler;
+        }
+        return null;
+    }
 }
-
+public static class StringExtensions
+{
+    public static string ReplaceFirst(
+        this string text,
+        string search,
+        string replacement,
+        StringComparison comparison = StringComparison.Ordinal)
+    {
+        int pos = text.IndexOf(search, comparison);
+        return pos < 0
+            ? text
+            : text[..pos] + replacement + text[(pos + search.Length)..];
+    }
+}

@@ -27,8 +27,7 @@ public class WaveLinkClient : IWaveLinkClient
 
     public string Url => WaveSocket.Url;
     public int Port => WaveSocket.Port;
-    // leave i want to try to add multiple wave link connections
-    public string Uuid { get; init; } = Guid.NewGuid().ToString("N").ToLower();
+    
 
     public bool IsConnected => WaveSocket.IsConnected;
 

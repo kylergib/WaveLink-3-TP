@@ -19,15 +19,17 @@ public class WaveLinkHandler
     public event EventHandler? OnClose;
     public bool SubscribeToFocusApp = true;
     public string _appId = "EWL";
+    public string Key = string.Empty;
     public string Host { get; set; }
     public int Port { get; set; }
     public ILoggerFactory _loggerFactory { get; set; }
-    public WaveLinkHandler(ILoggerFactory loggerFactory, string host, int port)
+    public WaveLinkHandler(ILoggerFactory loggerFactory, string host, int port, string key = "")
     {
         _logger = loggerFactory?.CreateLogger<WaveLinkHandler>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         _loggerFactory = loggerFactory;
         Host = host;
         Port = port;
+        Key = key;
     }
     public async Task Start()
     {

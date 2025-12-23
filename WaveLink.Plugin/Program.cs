@@ -16,9 +16,6 @@ using WaveLink.Plugin.Models;
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
 
-
-
-
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

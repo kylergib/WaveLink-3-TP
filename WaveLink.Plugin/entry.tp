@@ -1,6 +1,6 @@
 {
   "sdk": 10,
-  "version": 20,
+  "version": 21,
   "name": "Wave Link 3 Plugin",
   "id": "com.kylergib.wavelink_3",
   "configuration": {
@@ -38,6 +38,12 @@
       "name": "Save Logs To File",
       "type": "switch",
       "default": "off",
+      "readOnly": false
+    },
+    {
+      "name": "Additional IP Addresses",
+      "type": "text",
+      "default": "",
       "readOnly": false
     }
   ],
