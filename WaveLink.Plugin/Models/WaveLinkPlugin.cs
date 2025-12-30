@@ -36,22 +36,22 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public string IpAddress { get; set; } = WaveLink.SDK.Statics.Localhost;
     public bool SubscribeToFocusedApp { get; set; } = true;
 
-    public EventHandler<SDK.Models.Channel>? OnChannelUpdated;
+    public EventHandler<WaveLinkStateEvent<SDK.Models.Channel>>? OnChannelUpdated;
     public EventHandler<App>? OnFocusedAppUpdated;
-    public EventHandler<InputDevice>? OnInputDeviceUpdated;
-    public EventHandler<Mix>? OnMixUpdated;
-    public EventHandler<OutputDevice>? OnOutputDeviceUpdated;
+    public EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceUpdated;
+    public EventHandler<WaveLinkStateEvent<Mix>>? OnMixUpdated;
+    public EventHandler<WaveLinkStateEvent<OutputDevice>>? OnOutputDeviceUpdated;
 
 
-    public EventHandler<SDK.Models.Channel>? OnChannelAdded;
-    public EventHandler<InputDevice>? OnInputDeviceAdded;
-    public EventHandler<Mix>? OnMixAdded;
-    public EventHandler<OutputDevice>? OnOutputDeviceAdded;
+    public EventHandler<WaveLinkStateEvent<SDK.Models.Channel>>? OnChannelAdded;
+    public EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceAdded;
+    public EventHandler<WaveLinkStateEvent<Mix>>? OnMixAdded;
+    public EventHandler<WaveLinkStateEvent<OutputDevice>>? OnOutputDeviceAdded;
 
-    public EventHandler<SDK.Models.Channel>? OnChannelRemoved;
-    public EventHandler<InputDevice>? OnInputDeviceRemoved;
-    public EventHandler<Mix>? OnMixRemoved;
-    public EventHandler<OutputDevice>? OnOutputDeviceRemoved;
+    public EventHandler<WaveLinkStateEvent<SDK.Models.Channel>>? OnChannelRemoved;
+    public EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceRemoved;
+    public EventHandler<WaveLinkStateEvent<Mix>>? OnMixRemoved;
+    public EventHandler<WaveLinkStateEvent<OutputDevice>>? OnOutputDeviceRemoved;
 
     public EventHandler<bool>? OnSubscribedToFocusAppChanged;
 
@@ -517,8 +517,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         };
 
 
-        OnChannelUpdated = (sender, channel) =>
+        OnChannelUpdated = (sender, result) =>
         {
+            var channel = result.Item;
             _logger.LogDebug("Received Channels update:");
             _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
 
@@ -545,11 +546,11 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug("Received Focused App update:");
             _logger.LogDebug("App ID: {app.Id}, Name: {app.Name}", app.Id, app.Name);
             _client.StateUpdate(TouchPortalIdHelper.FocusedAppId, app.Name);
-
         };
 
-        OnInputDeviceUpdated = (sender, inputDevice) =>
+        OnInputDeviceUpdated = (sender, result) =>
         {
+            var inputDevice = result.Item;
             _logger.LogDebug("Received Input Devices update:");
             _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
             foreach (var input in inputDevice.Inputs ?? [])
@@ -557,22 +558,31 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
                 _client.StateUpdate(TouchPortalIdHelper.InputMute(input.Name!), input.IsMuted.ToString());
                 _client.StateUpdate(TouchPortalIdHelper.InputLevel(input.Name!), ToInt(input.Gain?.Value ?? 0).ToString());
-                ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+                if (!result.IsResult)
+                {
+                    ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+                }
             }
         };
 
-        OnMixUpdated = (sender, mix) =>
+        OnMixUpdated = (sender, result) =>
         {
+            var mix = result.Item;
             _logger.LogDebug("Received Mixes update:");
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
             _client.StateUpdate(TouchPortalIdHelper.MixMute(mix.Name!), mix.IsMuted.ToString());
             _client.StateUpdate(TouchPortalIdHelper.MixLevel(mix.Name!), ToInt(mix.Level ?? 0).ToString());
-            ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+            
+            if (!result.IsResult)
+            {
+                ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+            }
 
         };
 
-        OnOutputDeviceUpdated = (sender, outputDevice) =>
+        OnOutputDeviceUpdated = (sender, result) =>
         {
+            var outputDevice = result.Item;
             _logger.LogDebug("Received Output Devices update:");
             _logger.LogDebug($"Device ID: {outputDevice.Id}, Name: {outputDevice.Name}, Type: {outputDevice.Type}");
             foreach (var output in outputDevice.Outputs ?? [])
@@ -580,13 +590,17 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 _client.StateUpdate(TouchPortalIdHelper.OutputMute(output.Name!), output.IsMuted.ToString());
                 _client.StateUpdate(TouchPortalIdHelper.OutputLevel(output.Name!), ToInt(output.Level ?? 0).ToString());
-                ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
-
+                
+                if (!result.IsResult)
+                {
+                    ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+                }
             }
         };
 
-        OnChannelAdded = (sender, channel) =>
+        OnChannelAdded = (sender, result) =>
         {
+            var channel = result.Item;
             _logger.LogDebug("Received Channels added:");
             _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
 
@@ -594,7 +608,11 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
             _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
             _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
-            ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
+            
+            if (!result.IsResult)
+            {
+                ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
+            }
 
 
             foreach (var app in channel.Apps ?? [])
@@ -611,8 +629,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             }
         };
 
-        OnInputDeviceAdded = (sender, inputDevice) =>
+        OnInputDeviceAdded = (sender, result) =>
         {
+            var inputDevice = result.Item;
             _logger.LogDebug("Received Input Devices added:");
             _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
 
@@ -624,14 +643,19 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 //Adds a state we can work with:
                 _client.CreateState(TouchPortalIdHelper.InputMute(input.Name!), $"{input.Name!} muted", input.IsMuted.ToString(), TouchPortalIdHelper.InputMutedCategoryName);
                 _client.CreateState(TouchPortalIdHelper.InputLevel(input.Name!), $"{input.Name!} level", ToInt(input.Gain?.Value ?? 0).ToString(), TouchPortalIdHelper.InputLevelCategoryName);
-                ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+                
+                if (!result.IsResult)
+                {
+                    ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
+                }
 
                 _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
             }
         };
 
-        OnMixAdded = (sender, mix) =>
+        OnMixAdded = (sender, result) =>
         {
+            var mix = result.Item;
             _logger.LogDebug("Received Mixes added:");
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
 
@@ -640,13 +664,17 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
             _client.CreateState(TouchPortalIdHelper.MixMute(mix.Name!), $"{mix.Name!} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.MixMutedCategoryName);
             _client.CreateState(TouchPortalIdHelper.MixLevel(mix.Name!), $"{mix.Name!} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.MixLevelCategoryName);
-            ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+            if (!result.IsResult)
+            {
+                ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
+            }
 
 
         };
 
-        OnOutputDeviceAdded = (sender, outputDevice) =>
+        OnOutputDeviceAdded = (sender, result) =>
         {
+            var outputDevice = result.Item;
             _logger.LogDebug("Received Output Devices added:");
             _logger.LogDebug($"Device ID: {outputDevice.Id}, Name: {outputDevice.Name}, Type: {outputDevice.Type}");
 
@@ -658,12 +686,17 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 _client.CreateState(TouchPortalIdHelper.OutputMute(output.Name!), $"{output.Name!} muted", output.IsMuted.ToString(), TouchPortalIdHelper.OutputMutedCategoryName);
                 _client.CreateState(TouchPortalIdHelper.OutputLevel(output.Name!), $"{output.Name!} level", ToInt(output.Level ?? 0).ToString(), TouchPortalIdHelper.OutputLevelCategoryName);
-                ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+
+                if (!result.IsResult)
+                {
+                    ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
+                }
             }
         };
 
-        OnChannelRemoved = (sender, channel) =>
+        OnChannelRemoved = (sender, result) =>
         {
+            var channel = result.Item;
             _logger.LogDebug("Received Channels removed:");
             _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
 
@@ -674,8 +707,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _client.RemoveState(TouchPortalIdHelper.ChannelLevel(channel.Name!));
         };
 
-        OnInputDeviceRemoved = (sender, inputDevice) =>
+        OnInputDeviceRemoved = (sender, result) =>
         {
+            var inputDevice = result.Item;
             _logger.LogDebug("Received Input Devices removed:");
             _logger.LogDebug($"Device ID: {inputDevice.Id}, Name: {inputDevice.Name}, Type: {inputDevice.Type}");
 
@@ -686,8 +720,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _client.RemoveState(TouchPortalIdHelper.InputLevel(inputDevice.Name!));
         };
 
-        OnMixRemoved = (sender, mix) =>
+        OnMixRemoved = (sender, result) =>
         {
+            var mix = result.Item;
             _logger.LogDebug("Received Mixes removed:");
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
 
@@ -698,8 +733,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _client.RemoveState(TouchPortalIdHelper.MixLevel(mix.Name!));
         };
 
-        OnOutputDeviceRemoved = (sender, outputDevice) =>
+        OnOutputDeviceRemoved = (sender, result) =>
         {
+            var outputDevice = result.Item;
             _logger.LogDebug("Received Output Devices removed:");
             _logger.LogDebug($"Device ID: {outputDevice.Id}, Name: {outputDevice.Name}, Type: {outputDevice.Type}");
 

@@ -10,32 +10,32 @@ public class WaveLinkStateManager
     private readonly ILogger _logger;
     public AppInfoResult AppInfo { get; private set; } = new();
     public App? FocusedApp { get; private set; }
-    public List<InputDevice> InputDevices { get; private set; } = new();
-    public List<Mix> Mixes { get; private set; } = new();
-    public List<OutputDevice> OutputDevices { get; private set; } = new(); 
-    public List<Channel> Channels { get; private set; } = new();
+    public List<InputDevice> InputDevices { get; private set; } = [];
+    public List<Mix> Mixes { get; private set; } = [];
+    public List<OutputDevice> OutputDevices { get; private set; } = [];
+    public List<Channel> Channels { get; private set; } = [];
     public bool SubscribedToFocusApp { get; set; } = false;
 
-    public event EventHandler<Channel>? OnChannelUpdated;
+    public event EventHandler<WaveLinkStateEvent<Channel>>? OnChannelUpdated;
     public event EventHandler<App>? OnFocusedAppUpdated;
-    public event EventHandler<InputDevice>? OnInputDeviceUpdated;
-    public event EventHandler<Mix>? OnMixUpdated;
-    public event EventHandler<OutputDevice>? OnOutputDeviceUpdated;
+    public event EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceUpdated;
+    public event EventHandler<WaveLinkStateEvent<Mix>>? OnMixUpdated;
+    public event EventHandler<WaveLinkStateEvent<OutputDevice>>? OnOutputDeviceUpdated;
 
 
-    public event EventHandler<Channel>? OnChannelAdded;
-    public event EventHandler<InputDevice>? OnInputDeviceAdded;
-    public event EventHandler<Mix>? OnMixAdded;
-    public event EventHandler<OutputDevice>? OnOutputDeviceAdded;
+    public event EventHandler<WaveLinkStateEvent<Channel>>? OnChannelAdded;
+    public event EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceAdded;
+    public event EventHandler<WaveLinkStateEvent<Mix>>? OnMixAdded;
+    public event EventHandler<WaveLinkStateEvent<OutputDevice>>? OnOutputDeviceAdded;
 
-    public event EventHandler<Channel>? OnChannelRemoved;
-    public event EventHandler<InputDevice>? OnInputDeviceRemoved;
-    public event EventHandler<Mix>? OnMixRemoved;
-    public event EventHandler<OutputDevice>? OnOutputDeviceRemoved;
+    public event EventHandler<WaveLinkStateEvent<Channel>>? OnChannelRemoved;
+    public event EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceRemoved;
+    public event EventHandler<WaveLinkStateEvent<Mix>>? OnMixRemoved;
+    public event EventHandler<WaveLinkStateEvent<OutputDevice>>? OnOutputDeviceRemoved;
 
     public event EventHandler<bool>? OnSubscribedToFocusAppChanged;
 
-    public Dictionary<int, object> SendState { get; private set; } = new();
+    public Dictionary<int, object> SendState { get; private set; } = [];
     public int SendCount { get; set; } = 11;
 
     public WaveLinkStateManager(ILogger logger, WaveLinkMessageRouter messageRouter)
@@ -76,14 +76,14 @@ public class WaveLinkStateManager
         {
             var updatedChannel = e.Params;
             if (updatedChannel == null) return;
-            UpdateChannel(updatedChannel);
+            UpdateChannel(updatedChannel, false);
         };
 
         MessageRouter.OnReceivedChannelsChanged += (s, e) =>
         {
             var updatedChannels = e.Params?.Channels;
             if (updatedChannels == null) return;
-            UpdateChannels(updatedChannels);
+            UpdateChannels(updatedChannels, false);
         };
         MessageRouter.OnReceivedFocusedAppChanged += (s, e) =>
         {
@@ -95,37 +95,37 @@ public class WaveLinkStateManager
         {
             var updatedDevice = e.Params;
             if (updatedDevice == null) return;
-            UpdateInputDevice(updatedDevice);
+            UpdateInputDevice(updatedDevice, false);
         };
         MessageRouter.OnReceivedInputDevicesChanged += (s, e) =>
         {
             var updatedDevices = e.Params?.Inputs;
             if (updatedDevices == null) return;
-            UpdateInputDevices(updatedDevices);
+            UpdateInputDevices(updatedDevices, false);
         };
         MessageRouter.OnReceivedMixChanged += (s, e) =>
         {
             var updatedMix = e.Params;
             if (updatedMix == null) return;
-            UpdateMix(updatedMix);
+            UpdateMix(updatedMix, false);
         };
         MessageRouter.OnReceivedMixesChanged += (s, e) =>
         {
             var updatedMixes = e.Params?.Mixes;
             if (updatedMixes == null) return;
-            UpdateMixes(updatedMixes);
+            UpdateMixes(updatedMixes, false);
         };
         MessageRouter.OnReceivedOutputDeviceChanged += (s, e) =>
         {
             var updatedDevice = e.Params;
             if (updatedDevice == null) return;
-            UpdateOutputDevice(updatedDevice);
+            UpdateOutputDevice(updatedDevice, false);
         };
         MessageRouter.OnReceivedOutputDevicesChanged += (s, e) =>
         {
             var updatedDevices = e.Params?.OutputDevices;
             if (updatedDevices == null) return;
-            UpdateOutputDevices(updatedDevices);
+            UpdateOutputDevices(updatedDevices, false);
         };
 
         MessageRouter.OnReceivedResult += (s, e) =>
@@ -151,19 +151,19 @@ public class WaveLinkStateManager
                 case nameof(AddAppToChannelInfo):
                 case nameof(MethodChannelInfo):
                     var channel = JsonSerializer.Deserialize<Channel>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
-                    if (channel != null) UpdateChannel(channel);
+                    if (channel != null) UpdateChannel(channel, true);
                     break;
                 case nameof(MethodMixInfo):
                     var mix = JsonSerializer.Deserialize<Mix>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
-                    if (mix != null) UpdateMix(mix);
+                    if (mix != null) UpdateMix(mix, true);
                     break;
                 case nameof(MethodInputDeviceInfo):
                     var inputDevice = JsonSerializer.Deserialize<InputDevice>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
-                    if (inputDevice != null) UpdateInputDevice(inputDevice);
+                    if (inputDevice != null) UpdateInputDevice(inputDevice, true);
                     break;
                  case nameof(MethodOutputDeviceInfo):
                     var outputDevice = JsonSerializer.Deserialize<OutputDevice>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
-                    if (outputDevice != null) UpdateOutputDevice(outputDevice);
+                    if (outputDevice != null) UpdateOutputDevice(outputDevice, true);
                     break;
                 case nameof(MethodSubscriptionInfo):
                     var subscriptionInfo = JsonSerializer.Deserialize<MethodSubscriptionInfo>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
@@ -196,7 +196,7 @@ public class WaveLinkStateManager
     //    _logger.LogDebug("Channel updated: {ChannelId} Muted: {IsMuted}", existingDevice.Id, existingDevice.IsMuted);
 
     //}
-    public void UpdateChannel(Channel updatedChannel)
+    public void UpdateChannel(Channel updatedChannel, bool isResult)
     {
         //var index = Channels.FindIndex(c => c.Id == updatedChannel.Id);
         //if (index < 0) return;
@@ -221,10 +221,10 @@ public class WaveLinkStateManager
         existingDevice.Image = updatedChannel.Image ?? existingDevice.Image;
 
         //Channels[index] = updatedChannel;
-        OnChannelUpdated?.Invoke(this, existingDevice);
+        OnChannelUpdated?.Invoke(this, new(existingDevice, isResult));
         _logger.LogDebug("Channel updated: {ChannelId}", existingDevice.Id);
     }
-    public void UpdateChannels(List<Channel> updatedChannels)
+    public void UpdateChannels(List<Channel> updatedChannels, bool isResult)
     {
         var currentChannels = Channels.Where(d => updatedChannels.Any(ud => ud.Id == d.Id)).ToList();
         var missingChannels = updatedChannels.Where(ud => !Channels.Any(d => d.Id == ud.Id)).ToList();
@@ -232,18 +232,18 @@ public class WaveLinkStateManager
 
         foreach (var updatedChannel in currentChannels)
         {
-            UpdateChannel(updatedChannel);
+            UpdateChannel(updatedChannel, isResult);
         }
         foreach (var missingChannel in missingChannels)
         {
             Channels.Add(missingChannel);
-            OnChannelAdded?.Invoke(this, missingChannel);
+            OnChannelAdded?.Invoke(this, new(missingChannel, isResult));
             _logger.LogDebug("Channel added: {ChannelId}", missingChannel.Id);
         }
         foreach (var removedChannel in removedChannels)
         {
             Channels.Remove(removedChannel);
-            OnChannelRemoved?.Invoke(this, removedChannel);
+            OnChannelRemoved?.Invoke(this, new(removedChannel, isResult));
             _logger.LogDebug("Channel removed: {ChannelId}", removedChannel.Id);
         }
     }
@@ -259,7 +259,7 @@ public class WaveLinkStateManager
         OnFocusedAppUpdated?.Invoke(this, updatedApp);
         _logger.LogDebug("Focused App updated: {AppId}", updatedApp.Id);
     }
-    public void UpdateInputDevice(InputDevice updatedDevice)
+    public void UpdateInputDevice(InputDevice updatedDevice, bool isResult)
     {
         var index = InputDevices.FindIndex(d => d.Id == updatedDevice.Id);
         if (index < 0) return;
@@ -296,10 +296,10 @@ public class WaveLinkStateManager
         if (!deviceChanged && !inputsChanged) return;
 
         //InputDevices[index] = updatedDevice;
-        OnInputDeviceUpdated?.Invoke(this, existingDevice);
+        OnInputDeviceUpdated?.Invoke(this, new(existingDevice, isResult));
         _logger.LogDebug("Input Device updated: {DeviceId}", existingDevice.Id);
     }
-    public void UpdateInputDevices(List<InputDevice> updatedDevices)
+    public void UpdateInputDevices(List<InputDevice> updatedDevices, bool isResult)
     {
         var currentDevices = InputDevices.Where(d => updatedDevices.Any(ud => ud.Id == d.Id)).ToList();
         var missingDevices = updatedDevices.Where(ud => !InputDevices.Any(d => d.Id == ud.Id)).ToList();
@@ -307,22 +307,22 @@ public class WaveLinkStateManager
 
         foreach (var updatedDevice in currentDevices)
         {
-            UpdateInputDevice(updatedDevice);
+            UpdateInputDevice(updatedDevice, isResult);
         }
         foreach (var missingDevice in missingDevices)
         {
             InputDevices.Add(missingDevice);
-            OnInputDeviceAdded?.Invoke(this, missingDevice);
+            OnInputDeviceAdded?.Invoke(this, new(missingDevice, isResult));
             _logger.LogDebug("Input Device added: {DeviceId}", missingDevice.Id);
         }
         foreach (var removedDevice in removedDevices)
         {
             InputDevices.Remove(removedDevice);
-            OnInputDeviceRemoved?.Invoke(this, removedDevice);
+            OnInputDeviceRemoved?.Invoke(this, new(removedDevice, isResult));
             _logger.LogDebug("Input Device removed: {DeviceId}", removedDevice.Id);
         }
     }
-    public void UpdateMix(Mix updatedMix)
+    public void UpdateMix(Mix updatedMix, bool isResult)
     {
         var index = Mixes.FindIndex(m => m.Id == updatedMix.Id);
         if (index < 0) return;
@@ -338,10 +338,10 @@ public class WaveLinkStateManager
         existingMix.Image = updatedMix.Image ?? existingMix.Image;
 
         //Mixes[index] = updatedMix;
-        OnMixUpdated?.Invoke(this, existingMix);
+        OnMixUpdated?.Invoke(this, new(existingMix, isResult));
         _logger.LogDebug("Mix updated: {MixId}", existingMix.Id);
     }
-    public void UpdateMixes(List<Mix> updatedMixes)
+    public void UpdateMixes(List<Mix> updatedMixes, bool isResult)
     {
         var currentMixes = Mixes.Where(d => updatedMixes.Any(ud => ud.Id == d.Id)).ToList();
         var missingMixes = updatedMixes.Where(ud => !Mixes.Any(d => d.Id == ud.Id)).ToList();
@@ -349,22 +349,22 @@ public class WaveLinkStateManager
 
         foreach (var updatedMix in currentMixes)
         {
-            UpdateMix(updatedMix);
+            UpdateMix(updatedMix, isResult);
         }
         foreach (var missingMix in missingMixes)
         {
             Mixes.Add(missingMix);
-            OnMixAdded?.Invoke(this, missingMix);
+            OnMixAdded?.Invoke(this, new(missingMix, isResult));
             _logger.LogDebug("Mix added: {MixId}", missingMix.Id);
         }
         foreach (var removedMix in removedMixes)
         {
             Mixes.Remove(removedMix);
-            OnMixRemoved?.Invoke(this, removedMix);
+            OnMixRemoved?.Invoke(this, new(removedMix, isResult));
             _logger.LogDebug("Mix removed: {MixId}", removedMix.Id);
         }
     }
-    public void UpdateOutputDevice(OutputDevice updated)
+    public void UpdateOutputDevice(OutputDevice updated, bool isResult)
     {
         var index = OutputDevices.FindIndex(d => d.Id == updated.Id);
         if (index < 0) return;
@@ -394,10 +394,10 @@ public class WaveLinkStateManager
 
         //OutputDevices[index] = updated;
 
-        OnOutputDeviceUpdated?.Invoke(this, existingDevice);
+        OnOutputDeviceUpdated?.Invoke(this, new(existingDevice, isResult));
         _logger.LogDebug("Output Device existingDevice: {Name} - {DeviceId}", existingDevice.Name, existingDevice.Id);
     }
-    public void UpdateOutputDevices(List<OutputDevice> updatedDevices)
+    public void UpdateOutputDevices(List<OutputDevice> updatedDevices, bool isResult)
     {
         var currentDevices = OutputDevices.Where(d => updatedDevices.Any(ud => ud.Id == d.Id)).ToList();
         var missingDevices = updatedDevices.Where(ud => !OutputDevices.Any(d => d.Id == ud.Id)).ToList();
@@ -405,18 +405,18 @@ public class WaveLinkStateManager
 
         foreach (var updatedDevice in currentDevices)
         {
-            UpdateOutputDevice(updatedDevice);
+            UpdateOutputDevice(updatedDevice, isResult);
         }
         foreach (var missingDevice in missingDevices)
         {
             OutputDevices.Add(missingDevice);
-            OnOutputDeviceAdded?.Invoke(this, missingDevice);
+            OnOutputDeviceAdded?.Invoke(this, new(missingDevice, isResult));
             _logger.LogDebug("Output Device added: {DeviceId}", missingDevice.Id);
         }
         foreach (var removedDevice in removedDevices)
         {
             OutputDevices.Remove(removedDevice);
-            OnOutputDeviceRemoved?.Invoke(this, removedDevice);
+            OnOutputDeviceRemoved?.Invoke(this, new(removedDevice, isResult));
             _logger.LogDebug("Output Device removed: {DeviceId}", removedDevice.Id);
         }
     }
@@ -446,3 +446,5 @@ public enum EventStatus
     Removed,
     Updated
 }
+
+public record WaveLinkStateEvent<T>(T Item, bool IsResult);
