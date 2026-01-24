@@ -52,6 +52,8 @@ public static class TouchPortalIdHelper
     public static string ActionId(string actionName) => $"{BaseCategory}.action.{actionName}";
     public static string ActionDataValue(string actionName, int? valueNum = null) =>
         $"{ActionId(actionName)}.data{valueNum?.ToString() ?? string.Empty}.value";
+     public static string ActionData(string actionName, string dataName) =>
+        $"{ActionId(actionName)}.data.{dataName}";
 
     // setting names
     public static string IPAddress => "IP Address";

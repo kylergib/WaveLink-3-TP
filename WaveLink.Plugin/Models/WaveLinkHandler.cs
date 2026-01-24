@@ -99,7 +99,8 @@ public class WaveLinkHandler
                     _logger.LogDebug($"Connection failed on port: {port}");
                     port++;
                 }
-            } else
+            }
+            else
             {
                 port++;
             }
@@ -110,22 +111,30 @@ public class WaveLinkHandler
             }
         }
     }
-    public void SetInput(string inputName, string? shouldMute = null, decimal? newLevel = null)
+    public void SetInput(string inputName, string? shouldMute = null, decimal? newLevel = null, AdjustmentType? adjustmentType = AdjustmentType.Fixed)
     {
         var inputDevice = Client?.StateManager.InputDevices.Find(c => c.Name == inputName);
-        if (inputDevice != null)
+        var input = inputDevice?.Inputs?[0] ?? null;
+        if (input != null)
         {
 
             MethodInputInfo inputInfo = new()
             {
-                Id = inputDevice?.Inputs?[0].Id ?? string.Empty
+                Id = input.Id ?? string.Empty
             };
 
             inputInfo.IsMuted = ConvertIsMuted(shouldMute, inputDevice?.Inputs?[0].IsMuted);
 
-            if (newLevel != null)
+            decimal? level = newLevel != null ? ToDecimal((int)newLevel) : null;
+            if (level != null && adjustmentType == AdjustmentType.Percent)
             {
-                inputInfo.Gain = new() { Value = ToDecimal((int)newLevel) };
+                var tempGainLevel = input.Gain?.Value == null ? null : input.Gain.Value <= 0m ? 0.010m : input.Gain.Value;
+                var newValue = tempGainLevel != null ? tempGainLevel * (1 + level ?? 0) : level;
+                inputInfo.Gain = new() { Value = newValue };
+            }
+            else if (newLevel != null)
+            {
+                inputInfo.Gain = new() { Value = level };
             }
 
             if (inputInfo.IsMuted == null && inputInfo.Gain == null) return;
@@ -136,20 +145,33 @@ public class WaveLinkHandler
     }
 
     // mix id will add the output to the mix, if it is empty it will remove, if null it will not change
-    public void SetOutput(string outputName, string? shouldMute = null, decimal? newLevel = null, string? mixName = null)
+    public void SetOutput(string outputName, string? shouldMute = null, decimal? newLevel = null, string? mixName = null, AdjustmentType? adjustmentType = AdjustmentType.Fixed)
     {
         var outputDevice = Client?.StateManager.OutputDevices.Find(c => c.Name == outputName);
         var mixId = mixName != null ? Client?.StateManager.Mixes.Find(mix => mix.Name == mixName)?.Id ?? string.Empty : null;
-        if (outputDevice != null)
+        decimal? level = newLevel == null ? null : ToDecimal((int)newLevel);
+
+        var output = outputDevice?.Outputs?[0] ?? null;
+
+        if (output != null)
         {
             MethodOutputInfo outputInfo = new()
             {
-                Id = outputDevice?.Outputs?[0].Id ?? string.Empty,
+                Id = output.Id ?? string.Empty,
                 MixId = mixId // adds the output to the mix, does not change the default though
             };
 
             outputInfo.IsMuted = ConvertIsMuted(shouldMute, outputDevice?.Outputs?[0].IsMuted);
-            outputInfo.Level = newLevel == null ? null : ToDecimal((int)newLevel);
+
+            if (adjustmentType == AdjustmentType.Percent)
+            {
+                var tempOutputLevel = output.Level == null ? null : output.Level <= 0m ? 0.010m : output.Level;
+                outputInfo.Level = tempOutputLevel != null ? tempOutputLevel * (1 + level ?? 0) : level;
+            }
+            else
+            {
+                outputInfo.Level = level;
+            }
 
             MethodOutputDeviceParamInfo deviceParam = new() { Id = outputDevice!.Id, Outputs = [outputInfo] };
 
@@ -158,30 +180,72 @@ public class WaveLinkHandler
         }
     }
 
-    public void SetChannel(string channelName, string? shouldMute = null, decimal? newLevel = null)
+    public void SetChannel(string channelName, string? shouldMute = null, decimal? newLevel = null, AdjustmentType? adjustmentType = AdjustmentType.Fixed, string? mixName = null)
     {
         var channel = Client?.StateManager.Channels.Find(c => c.Name == channelName);
-        if (channel != null)
+        var fullMix = mixName != null ? Client?.StateManager.Mixes.Find(mix => mix.Name == mixName) : null;
+        var mix = fullMix != null ? channel?.Mixes?.Find(mix => mix.Id == fullMix.Id) : null;
+
+        if (channel == null) return;
+
+        MethodChannelInfo channelInfo = new() { Id = channel.Id };
+        decimal? level = newLevel == null ? null : ToDecimal((int)newLevel);
+
+        if (mix != null)
         {
-            MethodChannelInfo channelInfo = new() { Id = channel.Id };
-
-            channelInfo.IsMuted = ConvertIsMuted(shouldMute, channel.IsMuted);
-            channelInfo.Level = newLevel == null ? null : ToDecimal((int)newLevel);
-
-            WaveLinkSendMethod<MethodChannelInfo> setRequest = new(WaveLinkMethod.setChannel, channelInfo);
-            _ = Client?.SendRequestAsync<MethodChannelInfo>(setRequest);
+            MethodMixInfo mixInfo = new() { Id = mix.Id };
+            mixInfo.IsMuted = ConvertIsMuted(shouldMute, mix.IsMuted);
+            // adjust level based on mix level if needed
+            if (adjustmentType == AdjustmentType.Percent)
+            {
+                var tempMixLevel = mix.Level == null ? null : mix.Level <= 0m ? 0.010m : mix.Level;
+                mixInfo.Level = tempMixLevel != null ? tempMixLevel * (1 + level ?? 0) : level;
+            }
+            else
+            {
+                mixInfo.Level = level;
+            }
+            channelInfo.Mixes = new List<MethodMixInfo>() { mixInfo };
         }
+        else
+        {
+            channelInfo.IsMuted = ConvertIsMuted(shouldMute, channel.IsMuted);
+            if (adjustmentType == AdjustmentType.Percent)
+            {
+
+                var tempChannelLevel = channel.Level == null ? null : channel.Level <= 0m ? 0.010m : channel.Level;
+                channelInfo.Level = tempChannelLevel != null ? tempChannelLevel * (1 + level ?? 0) : level;
+            }
+            else
+            {
+                channelInfo.Level = level == null ? null : level <= 0 ? 0 : level;
+            }
+        }
+
+        WaveLinkSendMethod<MethodChannelInfo> setRequest = new(WaveLinkMethod.setChannel, channelInfo);
+        _ = Client?.SendRequestAsync<MethodChannelInfo>(setRequest);
     }
 
-    public void SetMix(string mixName, string? shouldMute = null, decimal? newLevel = null)
+    public void SetMix(string mixName, string? shouldMute = null, decimal? newLevel = null, AdjustmentType? adjustmentType = AdjustmentType.Fixed)
     {
         var mix = Client?.StateManager.Mixes.Find(mix => mix.Name == mixName);
         if (mix != null)
         {
+            decimal? level = newLevel == null ? null : ToDecimal((int)newLevel);
+
             MethodMixInfo mixInfo = new() { Id = mix.Id };
 
             mixInfo.IsMuted = ConvertIsMuted(shouldMute, mix.IsMuted);
-            mixInfo.Level = newLevel == null ? null : ToDecimal((int)newLevel);
+            
+            if (adjustmentType == AdjustmentType.Percent)
+            {
+                var tempMixLevel = mix.Level == null ? null : mix.Level <= 0m ? 0.010m : mix.Level;
+                mixInfo.Level = tempMixLevel != null ? tempMixLevel * (1 + level ?? 0) : level;
+            }
+            else
+            {
+                mixInfo.Level = newLevel == null ? null : ToDecimal((int)newLevel);
+            }
 
             WaveLinkSendMethod<MethodMixInfo> request = new(WaveLinkMethod.setMix, mixInfo);
             _ = Client?.SendRequestAsync<MethodMixInfo>(request);
@@ -207,7 +271,7 @@ public class WaveLinkHandler
 
     public decimal ToDecimal(int number)
     {
-        if (number <= 0) return 0m;
+        if (number <= -100) return -100m;
         if (number >= 100) return 1m;
         return number / 100m;
     }
@@ -238,4 +302,10 @@ public class WaveLinkHandler
             return false;
         }
     }
+}
+
+public enum AdjustmentType
+{
+    Fixed,
+    Percent
 }

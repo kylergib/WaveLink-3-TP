@@ -1,6 +1,6 @@
 {
   "sdk": 10,
-  "version": 20,
+  "version": 30,
   "name": "Wave Link 3 Plugin",
   "id": "com.kylergib.wavelink_3",
   "configuration": {
@@ -96,7 +96,7 @@
             },
             {
               "type": "number",
-              "minValue": 0,
+              "minValue": -100,
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.value"
@@ -162,7 +162,7 @@
             },
             {
               "type": "number",
-              "minValue": 0,
+              "minValue": -100,
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.value"
@@ -226,7 +226,7 @@
           "name": "Mute Channel",
           "prefix": "Plugin",
           "type": "communicate",
-          "format": "Mute Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} : {$com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel.data.value$}",
+          "format": "Mute Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} : {$com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel.data.value$} on Mix: {$com.kylergib.wavelink_3.WaveLink.state.mixesList$}",
           "tryInline": true,
           "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Channels",
           "hasHoldFunctionality": false,
@@ -248,6 +248,13 @@
                 "toggle"
               ],
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel.data.value"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.mixesList"
             }
           ]
         },
@@ -256,7 +263,7 @@
           "name": "Set Channel Level",
           "prefix": "Plugin",
           "type": "communicate",
-          "format": "Set Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value$} as {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.adjustmentType$}",
+          "format": "Set Channel: {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value$} as {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.adjustmentType$} on Mix: {$com.kylergib.wavelink_3.WaveLink.state.mixesList$}",
           "tryInline": true,
           "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Channels",
           "hasHoldFunctionality": false,
@@ -270,7 +277,7 @@
             },
             {
               "type": "number",
-              "minValue": 0,
+              "minValue": -100,
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value"
@@ -284,6 +291,13 @@
                 "Percent"
               ],
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.adjustmentType"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.mixesList"
             }
           ]
         },
@@ -336,7 +350,7 @@
             },
             {
               "type": "number",
-              "minValue": 0,
+              "minValue": -100,
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.value"

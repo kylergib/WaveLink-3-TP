@@ -16,6 +16,7 @@ public class MethodChannelInfo
     public string Id { get; set; } = string.Empty;
     public bool? IsMuted { get; set; }
     public decimal? Level { get; set; } // max is 1, min is 0
+    public List<MethodMixInfo> Mixes { get; set; } = new();
 }
 
 // mix dtos
