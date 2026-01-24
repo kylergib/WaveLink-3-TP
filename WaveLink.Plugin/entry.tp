@@ -82,7 +82,7 @@
           "name": "Set Input Level",
           "prefix": "Plugin",
           "type": "communicate",
-          "format": "Set Input {$com.kylergib.wavelink_3.WaveLink.state.inputDeviceList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.value$}",
+          "format": "Set Input {$com.kylergib.wavelink_3.WaveLink.state.inputDeviceList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.value$} as {$com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.adjustmentType$}",
           "tryInline": true,
           "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Inputs",
           "hasHoldFunctionality": false,
@@ -100,6 +100,16 @@
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.value"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "Fixed",
+              "valueChoices": [
+                "Fixed",
+                "Percent"
+              ],
+              "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelInput.data.adjustmentType"
             }
           ]
         },
@@ -138,7 +148,7 @@
           "name": "Set Output Level",
           "prefix": "Plugin",
           "type": "communicate",
-          "format": "Set Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.value$}",
+          "format": "Set Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.value$} as {$com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.adjustmentType$}",
           "tryInline": true,
           "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Outputs",
           "hasHoldFunctionality": false,
@@ -156,6 +166,16 @@
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.value"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "Fixed",
+              "valueChoices": [
+                "Fixed",
+                "Percent"
+              ],
+              "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelOutput.data.adjustmentType"
             }
           ]
         },
@@ -236,7 +256,7 @@
           "name": "Set Channel Level",
           "prefix": "Plugin",
           "type": "communicate",
-          "format": "Set Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value$}",
+          "format": "Set Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value$} as {$com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.adjustmentType$}",
           "tryInline": true,
           "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Channels",
           "hasHoldFunctionality": false,
@@ -254,6 +274,16 @@
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.value"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "Fixed",
+              "valueChoices": [
+                "Fixed",
+                "Percent"
+              ],
+              "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelChannel.data.adjustmentType"
             }
           ]
         },
@@ -292,7 +322,7 @@
           "name": "Set Mix Level",
           "prefix": "Plugin",
           "type": "communicate",
-          "format": "Set Mix {$com.kylergib.wavelink_3.WaveLink.state.mixesList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.value$}",
+          "format": "Set Mix {$com.kylergib.wavelink_3.WaveLink.state.mixesList$} to {$com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.value$} as {$com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.adjustmentType$}",
           "tryInline": true,
           "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Mixes",
           "hasHoldFunctionality": false,
@@ -310,6 +340,16 @@
               "maxValue": 100,
               "allowDecimals": false,
               "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.value"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "Fixed",
+              "valueChoices": [
+                "Fixed",
+                "Percent"
+              ],
+              "id": "com.kylergib.wavelink_3.WaveLink.action.SetLevelMix.data.adjustmentType"
             }
           ]
         },
