@@ -1029,12 +1029,14 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     {
         var inputName = message[TouchPortalIdHelper.InputListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelInput))] ?? "<null>";
-        var handler = GetWaveLinkHandler(ref inputName);
+        var adjustmentTypeString = message[TouchPortalIdHelper.ActionData(nameof(SetLevelInput), "adjustmentType")] ?? "<null>";
+        var adjustmentType = Enum.Parse<AdjustmentType>(adjustmentTypeString, ignoreCase: true);
+
         if (!string.IsNullOrEmpty(inputName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            handler?.SetInput(inputName, null, newLevel);
+            handler?.SetInput(inputName, null, newLevel, adjustmentType);
         }
     }
 
@@ -1065,13 +1067,15 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     {
         var outputName = message[TouchPortalIdHelper.OutputListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelOutput))] ?? "<null>";
+        var adjustmentTypeString = message[TouchPortalIdHelper.ActionData(nameof(SetLevelOutput), "adjustmentType")] ?? "<null>";
+        var adjustmentType = Enum.Parse<AdjustmentType>(adjustmentTypeString, ignoreCase: true);
         var handler = GetWaveLinkHandler(ref outputName);
 
         if (!string.IsNullOrEmpty(outputName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            handler?.SetOutput(outputName, null, newLevel);
+            handler?.SetOutput(outputName, null, newLevel, null, adjustmentType);
         }
     }
 
@@ -1105,12 +1109,16 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         var channelName = message[TouchPortalIdHelper.ChannelListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelChannel))] ?? "<null>";
         var handler = GetWaveLinkHandler(ref channelName);
+        var adjustmentTypeString = message[TouchPortalIdHelper.ActionData(nameof(SetLevelChannel), "adjustmentType")] ?? "<null>";
+        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
+
+        var adjustmentType = Enum.Parse<AdjustmentType>(adjustmentTypeString, ignoreCase: true);
 
         if (!string.IsNullOrEmpty(channelName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            handler?.SetChannel(channelName, null, newLevel);
+            WaveLinkHandler?.SetChannel(channelName, null, newLevel, adjustmentType, mixName);
         }
     }
     public void SetLevelChannel(ConnectorChangeEvent message)
@@ -1129,10 +1137,11 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         var channelName = message[TouchPortalIdHelper.ChannelListId()] ?? "<null>";
         var muteValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetMuteChannel))] ?? "<null>";
         var handler = GetWaveLinkHandler(ref channelName);
+        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
 
         if (!string.IsNullOrEmpty(channelName) && !string.IsNullOrEmpty(muteValue))
         {
-            handler?.SetChannel(channelName, muteValue);
+            handler?.SetChannel(channelName, muteValue, null, null, mixName);
         }
     }
 
@@ -1141,13 +1150,15 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     {
         var mixName = message[TouchPortalIdHelper.MixListId()] ?? "<null>";
         var levelValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetLevelMix))] ?? "<null>";
+        var adjustmentTypeString = message[TouchPortalIdHelper.ActionData(nameof(SetLevelMix), "adjustmentType")] ?? "<null>";
+        var adjustmentType = Enum.Parse<AdjustmentType>(adjustmentTypeString, ignoreCase: true);
         var handler = GetWaveLinkHandler(ref mixName);
 
         if (!string.IsNullOrEmpty(mixName) &&
             !string.IsNullOrEmpty(levelValue) &&
             decimal.TryParse(levelValue, out decimal newLevel))
         {
-            handler?.SetMix(mixName, null, newLevel);
+            handler?.SetMix(mixName, null, newLevel, adjustmentType);
         }
     }
     public void SetLevelMix(ConnectorChangeEvent message)

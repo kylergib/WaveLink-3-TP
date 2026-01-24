@@ -213,17 +213,25 @@ public class WaveLinkStateManager
 
         existingDevice.Name = updatedChannel.Name ?? existingDevice.Name;
         existingDevice.Type = updatedChannel.Type ?? existingDevice.Type;
-        existingDevice.Mixes = updatedChannel.Mixes ?? existingDevice.Mixes;
+
+        foreach (var updatedMix in updatedChannel.Mixes ?? [])
+        {
+            var mix = existingDevice.Mixes?.FirstOrDefault(m => m.Id == updatedMix.Id);
+            if (mix ==null) continue;
+
+            mix.Level = updatedMix.Level ?? mix.Level;
+            mix.IsMuted = updatedMix.IsMuted ?? mix.IsMuted;
+        }
         existingDevice.Level = updatedChannel.Level ?? existingDevice.Level;
         existingDevice.IsMuted = updatedChannel.IsMuted ?? existingDevice.IsMuted;
         existingDevice.Apps = updatedChannel.Apps ?? existingDevice.Apps;
         existingDevice.Effects = updatedChannel.Effects ?? existingDevice.Effects;
         existingDevice.Image = updatedChannel.Image ?? existingDevice.Image;
 
-        //Channels[index] = updatedChannel;
         OnChannelUpdated?.Invoke(this, new(existingDevice, isResult));
         _logger.LogDebug("Channel updated: {ChannelId}", existingDevice.Id);
     }
+
     public void UpdateChannels(List<Channel> updatedChannels, bool isResult)
     {
         var currentChannels = Channels.Where(d => updatedChannels.Any(ud => ud.Id == d.Id)).ToList();
