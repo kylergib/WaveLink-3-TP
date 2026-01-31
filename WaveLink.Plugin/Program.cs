@@ -55,6 +55,8 @@ ILoggerFactory loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create
     builder.AddSerilog(dispose: true);
 });
 
+WaveLink.Plugin.Statics.PluginId = config["PluginId"]?.Trim() ?? WaveLink.Plugin.Statics.PluginId;
+
 WaveLinkPlugin plugin = new(loggerFactory)
 {
     LogLevelSwitch = levelSwitch,

@@ -100,17 +100,29 @@ jobs:
       - name: Zip win x64 (named folder)
         run: |    
           cd publish/win_x64
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp WaveLinkPlugin -x "*.pdb"
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          mv entry.tp entry1.tp
+          mv entry2.tp entry.tp
+          mv WaveLink.Plugin.exe WaveLink.Plugin-2.exe
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
       - name: Zip osx x64
         run: |
           cd publish/osx_x64
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp WaveLinkPlugin -x "*.pdb"
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          mv entry.tp entry1.tp
+          mv entry2.tp entry.tp
+          mv WaveLink.Plugin WaveLink.Plugin-2
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
       - name: Zip osx arm64
         run: |
           cd publish/osx_arm64
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp WaveLinkPlugin -x "*.pdb"
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          mv entry.tp entry1.tp
+          mv entry2.tp entry.tp
+          mv WaveLink.Plugin WaveLink.Plugin-2
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
      
 
@@ -126,6 +138,9 @@ jobs:
             WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp
             WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp
             WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64_multi.tpp
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64_multi.tpp
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp
 
       - name: Handle Build Failure
         if: failure()

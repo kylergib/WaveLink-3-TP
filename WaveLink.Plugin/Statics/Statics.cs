@@ -2,6 +2,6 @@
 
 public static class Statics
 {
-    public static readonly string PluginId = "com.kylergib.wavelink_3";
+    public static string PluginId = "com.kylergib.wavelink_3";
 }
 

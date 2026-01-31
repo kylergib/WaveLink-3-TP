@@ -401,7 +401,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.ChannelVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.ChannelListId];
+            var channelName = message.Data[TouchPortalIdHelper.ChannelListId];
+            var mixName = message.Data[TouchPortalIdHelper.MixListId];
+            var value = channelName + mixName;
             if (string.IsNullOrEmpty(value)) return;
 
             if (!ChannelShortConnectorIds.TryGetValue(value, out var shortIdList))
@@ -897,10 +899,11 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public void SetLevelChannel(ConnectorChangeEvent message)
     {
         var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+        var mixName = message[TouchPortalIdHelper.MixListId] ?? "<null>";
 
         if (!string.IsNullOrEmpty(channelName))
         {
-            WaveLinkHandler?.SetChannel(channelName, null, message.Value);
+            WaveLinkHandler?.SetChannel(channelName, null, message.Value, AdjustmentType.Fixed, mixName);
         }
     }
 
