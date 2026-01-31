@@ -104,7 +104,7 @@ jobs:
           mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
           mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
-          mv WaveLinkPlugin/appsettings2jsonp WaveLinkPlugin/appsettings.json
+          mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin.exe WaveLinkPlugin/WaveLink.Plugin-2.exe
           zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
@@ -115,7 +115,7 @@ jobs:
           mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
           mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
-          mv WaveLinkPlugin/appsettings2jsonp WaveLinkPlugin/appsettings.json
+          mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
           zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
@@ -126,7 +126,7 @@ jobs:
           mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
           mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
-          mv WaveLinkPlugin/appsettings2jsonp WaveLinkPlugin/appsettings.json
+          mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
           zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
