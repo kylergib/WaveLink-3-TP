@@ -87,6 +87,16 @@ jobs:
           TAG="v${MAJOR}.${MINOR}.${PATCH}"
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
+      - name: Create tag
+        run: |
+          git tag ${{ steps.tag.outputs.TAG }}
+          git push origin tag ${{ steps.tag.outputs.TAG }}
+
+      - name: Show tag
+        run: |
+          echo "TAG=${{ steps.tag.outputs.TAG }}"
+          git tag --list
+
       - name: Zip win x64 (named folder)
         run: |    
           cd publish/win_x64
@@ -120,15 +130,7 @@ jobs:
           mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
           zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
-      - name: Create tag
-        run: |
-          git tag ${{ steps.tag.outputs.TAG }}
-          git push origin tag ${{ steps.tag.outputs.TAG }}
-
-      - name: Show tag
-        run: |
-          echo "TAG=${{ steps.tag.outputs.TAG }}"
-          git tag --list
+     
 
       # create the release
       - name: Create Gitea Release
