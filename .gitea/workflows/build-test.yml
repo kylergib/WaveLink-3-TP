@@ -106,7 +106,8 @@ jobs:
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
           mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin.exe WaveLinkPlugin/WaveLink.Plugin-2.exe
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
+          mv WaveLinkPlugin WaveLinkPlugin2
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64_multi.tpp WaveLinkPlugin2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
       - name: Zip osx x64
         run: |
@@ -117,7 +118,8 @@ jobs:
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
           mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
+          mv WaveLinkPlugin WaveLinkPlugin2
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64_multi.tpp WaveLinkPlugin2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
       - name: Zip osx arm64
         run: |
@@ -128,7 +130,8 @@ jobs:
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
           mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
-          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp WaveLinkPlugin -x "*.pdb" "entry1.tp" "start_plugin.sh"
+          mv WaveLinkPlugin WaveLinkPlugin2
+          zip -r ../../WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp WaveLinkPlugin2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
      
 
