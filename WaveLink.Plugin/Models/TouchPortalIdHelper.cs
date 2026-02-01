@@ -25,6 +25,8 @@ public static class TouchPortalIdHelper
     public static string MixLevelCategoryName = "Mixes Level";
     public static string MixMutedCategoryName = "Mixes Muted";
 
+    public static string ChannelMixCategoryName = "Channel/Mix";
+
     // states - choice lists
     public static string OutputListId => BaseCategory + ".state.outputDeviceList";
     public static string InputListId => BaseCategory + ".state.inputDeviceList";

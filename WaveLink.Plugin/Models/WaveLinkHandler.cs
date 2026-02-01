@@ -65,14 +65,15 @@ public class WaveLinkHandler
                         if (response.Result.AppID == _appId)
                         {
                             _logger.LogInformation($"Connected to wave link");
+                            WaveLinkRequestMethod mixRequest = new(WaveRequestId.getMixes);
+                            _ = Client.SendRequestAsync(mixRequest);
                             WaveLinkRequestMethod request = new(WaveRequestId.getInputDevices);
                             _ = Client.SendRequestAsync(request);
                             WaveLinkRequestMethod outputRequest = new(WaveRequestId.getOutputDevices);
                             _ = Client.SendRequestAsync(outputRequest);
                             WaveLinkRequestMethod channelRequest = new(WaveRequestId.getChannels);
                             _ = Client.SendRequestAsync(channelRequest);
-                            WaveLinkRequestMethod mixRequest = new(WaveRequestId.getMixes);
-                            _ = Client.SendRequestAsync(mixRequest);
+                            
 
                             if (SubscribeToFocusApp)
                             {

@@ -1,6 +1,6 @@
 {
   "sdk": 10,
-  "version": 32,
+  "version": 33,
   "name": "Wave Link 3 Plugin",
   "id": "com.kylergib.wavelink_3",
   "configuration": {
@@ -549,6 +549,11 @@
         {
           "id": "com.kylergib.wavelink_3.WaveLink.Channels",
           "name": "Channels",
+          "imagepath": ""
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.ChannelMix",
+          "name": "Channel/Mix",
           "imagepath": ""
         },
         {

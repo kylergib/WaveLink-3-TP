@@ -478,6 +478,20 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         OnReceivedGetChannels = async (s, response) =>
         {
             var channels = response?.Result?.Channels ?? [];
+            foreach (var channel in channels ?? [])
+            {
+                channel.Mixes?.ForEach(mix =>
+                {
+                    var foundMix = WaveLinkHandler?.Client?.StateManager.Mixes.FirstOrDefault(m => m.Id == mix.Id);
+                    if (mix == null || foundMix == null) return;
+                    var comboName = channel.Name + foundMix.Name;
+                    ShortConnectorUpdateHelper(comboName, ToInt(mix.Level ?? 0), ChannelShortConnectorIds);
+                    _logger.LogDebug($"Mix ID: {foundMix.Id}, Name: {foundMix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {foundMix.Image?.Name}\n");
+                    _client.CreateState(TouchPortalIdHelper.ChannelLevel(comboName), $"Ch: {channel.Name}, Mix: {foundMix.Name} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelMixCategoryName);
+                    _client.CreateState(TouchPortalIdHelper.ChannelMute(comboName), $"Ch: {channel.Name}, Mix: {foundMix.Name} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.ChannelMixCategoryName);
+                });
+            }
+
             _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
             _logger.LogDebug("Received Channels Info:");
             foreach (var channel in channels!)
@@ -518,7 +532,6 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             }
         };
 
-
         OnChannelUpdated = (sender, result) =>
         {
             var channel = result.Item;
@@ -535,7 +548,13 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             }
             foreach (var mix in channel.Mixes ?? [])
             {
-                _logger.LogDebug($"Mix ID: {mix.Id}, Level: {mix.Level}, IsMuted: {mix.IsMuted}");
+                var foundMix = WaveLinkHandler?.Client?.StateManager.Mixes.FirstOrDefault(m => m.Id == mix.Id);
+                if (mix == null || foundMix == null) return;
+                var comboName = channel.Name + foundMix.Name;
+                ShortConnectorUpdateHelper(comboName, ToInt(mix.Level ?? 0), ChannelShortConnectorIds);
+                _logger.LogDebug($"Mix ID: {foundMix.Id}, Name: {foundMix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {foundMix.Image?.Name}\n");
+                 _client.StateUpdate(TouchPortalIdHelper.ChannelMute(comboName), mix.IsMuted.ToString());
+                _client.StateUpdate(TouchPortalIdHelper.ChannelLevel(comboName), ToInt(mix.Level ?? 0).ToString());
             }
             foreach (var effect in channel.Effects ?? [])
             {
