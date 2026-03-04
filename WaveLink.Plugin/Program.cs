@@ -1,6 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
+﻿
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -16,15 +14,12 @@ using WaveLink.Plugin.Models;
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
 
-
-
-
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .Build();
 
-var baseTheme = AnsiConsoleTheme.Code;  // looks close to your screenshot
+var baseTheme = AnsiConsoleTheme.Code;
 
 var levelString =
         config["Serilog:MinimumLevel:Default"] ??

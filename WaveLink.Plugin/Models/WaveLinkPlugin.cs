@@ -123,7 +123,6 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             WaveSocketSwitch?.MinimumLevel = LogEventLevel.Fatal + 1;
         }
 
-
         SaveToFile = saveToFileValue is "1" or "true" or "True" or "on" or "On";
         SubscribeToFocusedApp = subscribeToFocusAppValue is "1" or "true" or "True" or "on" or "On";
 
@@ -134,21 +133,19 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             WaveSocketSwitch?.MinimumLevel = LogEventLevel.Verbose;
         }
 
+        //var updateAvailable = Task.Run(() => UpdateAvailable());
+        //updateAvailable.Wait();
+        //if (!string.IsNullOrEmpty(updateAvailable.Result) && !string.IsNullOrEmpty(UpdateUrl))
+        //{
+        //    _logger.LogWarning("Update is available: {0}", updateAvailable);
+        //    _client.ShowNotification(
+        //       TouchPortalIdHelper.UpdateNotificationId,
+        //       $"Update available: {{updateAvailable}}",
+        //       "A new version of the Wave Link Plugin is available.",
+        //       [new() { Id = "learnMore", Title = "Learn More" }]
+        //   );
 
-        //_client.ShowNotification()
-        var updateAvailable = Task.Run(() => UpdateAvailable());
-        updateAvailable.Wait();
-        if (!string.IsNullOrEmpty(updateAvailable.Result) && !string.IsNullOrEmpty(UpdateUrl))
-        {
-            _logger.LogWarning("Update is available: {0}", updateAvailable);
-            _client.ShowNotification(
-               TouchPortalIdHelper.UpdateNotificationId,
-               $"Update available: {{updateAvailable}}",
-               "A new version of the Wave Link Plugin is available.",
-               [new() { Id = "learnMore", Title = "Learn More" }]
-           );
-
-        }
+        //}
 
         ConnectToWaveLink();
     }

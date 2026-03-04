@@ -1,10 +1,13 @@
-﻿using System.Data.Common;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System.Data.Common;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime;
 using System.Text.Json;
 using System.Threading.Channels;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
 
@@ -22,12 +25,17 @@ public class WaveLinkHandler
     public string Host { get; set; }
     public int Port { get; set; }
     public ILoggerFactory _loggerFactory { get; set; }
+    public List<int> WindowsPorts = new();
     public WaveLinkHandler(ILoggerFactory loggerFactory, string host, int port)
     {
         _logger = loggerFactory?.CreateLogger<WaveLinkHandler>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         _loggerFactory = loggerFactory;
         Host = host;
         Port = port;
+        if (OperatingSystem.IsWindows())
+        {
+            WindowsPorts = FindWaveLinkWebSocketWindows() ?? WindowsPorts;
+        }
     }
     public async Task Start()
     {
@@ -37,63 +45,36 @@ public class WaveLinkHandler
     {
         while (Retry)
         {
-            if (await IsPortOpenAsync(host, port, 100))
+
+            if (OperatingSystem.IsWindows())
+            {
+                foreach (var windowsPort in WindowsPorts)
+                {
+                    port = windowsPort;
+                    try
+                    {
+                        _ = await TryConnect(loggerFactory, host, port);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogDebug($"Connection failed on port: {port}");
+                    }
+                }
+
+                // get updated ports just in case
+                WindowsPorts = FindWaveLinkWebSocketWindows() ?? WindowsPorts;
+                continue;
+            }
+
+            // will be mac here
+            if (await IsPortOpenAsync(host, port, 100) || true)
             {
                 try
                 {
-                    Client = new(host, port, loggerFactory);
-                    // on connection, request application info
-                    Client.OnConnection += async (s, e) =>
+                    if (!await TryConnect(loggerFactory, host, port))
                     {
-                        _logger.LogInformation("Connected to Wave Link on port " + port);
-                        OnConnection?.Invoke(this, EventArgs.Empty);
-                        Client.OnClose += OnClose;
-                        WaveLinkRequestMethod request = new(WaveRequestId.getApplicationInfo);
-                        await Client.SendRequestAsync(request);
-                    };
-                    // print received application info
-                    Client.MessageRouter.OnReceivedAppInfo += async (s, response) =>
-                    {
-                        _logger.LogDebug("Received Application Info:");
-                        _logger.LogDebug($"AppID: {response.Result.AppID}");
-                        _logger.LogDebug($"OperatingSystem: {response.Result.OperatingSystem}");
-                        _logger.LogDebug($"Name: {response.Result.Name}");
-                        _logger.LogDebug($"Version: {response.Result.Version}");
-                        _logger.LogDebug($"Build: {response.Result.Build}");
-                        _logger.LogDebug($"InterfaceRevision: {response.Result.InterfaceRevision}");
-
-                        if (response.Result.AppID == _appId)
-                        {
-                            _logger.LogInformation($"Connected to wave link");
-                            WaveLinkRequestMethod mixRequest = new(WaveRequestId.getMixes);
-                            _ = Client.SendRequestAsync(mixRequest);
-                            WaveLinkRequestMethod request = new(WaveRequestId.getInputDevices);
-                            _ = Client.SendRequestAsync(request);
-                            WaveLinkRequestMethod outputRequest = new(WaveRequestId.getOutputDevices);
-                            _ = Client.SendRequestAsync(outputRequest);
-                            WaveLinkRequestMethod channelRequest = new(WaveRequestId.getChannels);
-                            _ = Client.SendRequestAsync(channelRequest);
-                            
-
-                            if (SubscribeToFocusApp)
-                            {
-                                WaveLinkSendMethod<MethodSubscriptionInfo> subscribe = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = SubscribeToFocusApp } });
-                                _ = Client?.SendRequestAsync<MethodSubscriptionInfo>(subscribe);
-                            }
-                        }
-                        else
-                        {
-                            _logger.LogWarning("Connected to an app that was not Wave Link. Closing and retrying...");
-                            port++;
-                            await Client.CloseAsync();
-                        }
-                    };
-
-                    _logger.LogDebug($"Trying to connect: {host}:{port}");
-                    await Client.ConnectAsync();
-
-                    await Client.WaitForCloseAsync();
-                    _logger.LogWarning("Wave Link closed. Reconnecting...");
+                        port++;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -105,12 +86,81 @@ public class WaveLinkHandler
             {
                 port++;
             }
+
+            // reset port if we get here
             if (port == 1895)
             {
                 _logger.LogDebug("Retrying...");
                 port = 1884;
             }
         }
+    }
+
+    public async Task<bool> TryConnect(ILoggerFactory loggerFactory, string host, int port)
+    {
+        bool portWorked = false;
+        try
+        {
+            Client = new(host, port, loggerFactory);
+            // on connection, request application info
+            Client.OnConnection += async (s, e) =>
+            {
+                _logger.LogInformation("Connected to Wave Link on port " + port);
+                OnConnection?.Invoke(this, EventArgs.Empty);
+                Client.OnClose += OnClose;
+                WaveLinkRequestMethod request = new(WaveRequestId.getApplicationInfo);
+                await Client.SendRequestAsync(request);
+            };
+            // print received application info
+            Client.MessageRouter.OnReceivedAppInfo += async (s, response) =>
+            {
+                _logger.LogDebug("Received Application Info:");
+                _logger.LogDebug($"AppID: {response.Result.AppID}");
+                _logger.LogDebug($"OperatingSystem: {response.Result.OperatingSystem}");
+                _logger.LogDebug($"Name: {response.Result.Name}");
+                _logger.LogDebug($"Version: {response.Result.Version}");
+                _logger.LogDebug($"Build: {response.Result.Build}");
+                _logger.LogDebug($"InterfaceRevision: {response.Result.InterfaceRevision}");
+
+                if (response.Result.AppID == _appId)
+                {
+                    portWorked = true;
+                    _logger.LogInformation($"Connected to wave link");
+                    WaveLinkRequestMethod mixRequest = new(WaveRequestId.getMixes);
+                    _ = Client.SendRequestAsync(mixRequest);
+                    WaveLinkRequestMethod request = new(WaveRequestId.getInputDevices);
+                    _ = Client.SendRequestAsync(request);
+                    WaveLinkRequestMethod outputRequest = new(WaveRequestId.getOutputDevices);
+                    _ = Client.SendRequestAsync(outputRequest);
+                    WaveLinkRequestMethod channelRequest = new(WaveRequestId.getChannels);
+                    _ = Client.SendRequestAsync(channelRequest);
+
+
+                    if (SubscribeToFocusApp)
+                    {
+                        WaveLinkSendMethod<MethodSubscriptionInfo> subscribe = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = SubscribeToFocusApp } });
+                        _ = Client?.SendRequestAsync<MethodSubscriptionInfo>(subscribe);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Connected to an app that was not Wave Link. Closing and retrying...");
+                    await Client.CloseAsync();
+                }
+            };
+
+            _logger.LogDebug($"Trying to connect: {host}:{port}");
+            await Client.ConnectAsync();
+            
+            await Client.WaitForCloseAsync();
+            _logger.LogWarning("Wave Link closed. Reconnecting...");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug($"Connection failed on port: {port}");
+            throw;
+        }
+        return portWorked;
     }
     public void SetInput(string inputName, string? shouldMute = null, decimal? newLevel = null, AdjustmentType? adjustmentType = AdjustmentType.Fixed)
     {
@@ -302,6 +352,17 @@ public class WaveLinkHandler
         {
             return false;
         }
+    }
+    public List<int>? FindWaveLinkWebSocketWindows()
+    {
+        return IPGlobalProperties.GetIPGlobalProperties()
+            .GetActiveTcpListeners()
+            .Where(ep => IPAddress.IsLoopback(ep.Address))
+            .Select(ep => ep.Port)
+            .Where(p => p >= 1024)
+            .Distinct()
+            .OrderByDescending(p => p)
+            .ToList();
     }
 }
 

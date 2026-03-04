@@ -66,7 +66,9 @@ public class WaveSocket : IWaveSocket
         _logger.LogInformation("Trying to connect to: {Url}", Url);
         try
         {
-            await _ws.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+            // TODO: make this better cancellation token
+            using var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await _ws.ConnectAsync(uri, timeoutCts.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {

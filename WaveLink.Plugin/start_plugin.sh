@@ -1,16 +1,21 @@
 ﻿#!/bin/sh
 
-prog=WaveLink.Plugin
+prog="WaveLink.Plugin"
+log="${prog}.log.txt"
 
-chmod +x WaveLink.Plugin
+# ensure executable
+chmod +x "./$prog"
 
-pid=`ps -ef | grep -v grep | grep -i "\./${prog}" | awk '{print $2}'`
+# find running PID(s) of the exact command "./WaveLink.Plugin"
+pids="$(ps -ax -o pid= -o command= | awk -v p="./$prog" '$0 ~ ("^ *[0-9]+ " p "$") {print $1}')"
 
-if [[ "x$pid" != "x" && $pid -gt 0 ]]
-then
-	echo "`date +"%F %T%Z"`: ${prog} already running, killing it to start again"
-        kill -9 $pid
-	sleep 1
+if [ -n "$pids" ]; then
+  echo "$(date +"%F %T%Z"): $prog already running, killing it to start again"
+  for pid in $pids; do
+    kill -9 "$pid" 2>/dev/null
+  done
+  sleep 1
 fi
 
-./$prog > ${prog}log.txt 2>&1 &.sh
+# start in background, redirect stdout/stderr
+"./$prog" > "$log" 2>&1 &
