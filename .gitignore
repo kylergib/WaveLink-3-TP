@@ -54,3 +54,4 @@ TestResult.xml
 nunit-*.xml
 
 .vs
+/publish/osx_arm64/WaveLinkPlugin
