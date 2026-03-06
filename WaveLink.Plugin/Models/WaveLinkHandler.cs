@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using WaveLink.SDK;
 using WaveLink.SDK.Models;
@@ -26,6 +28,7 @@ public class WaveLinkHandler
     public int Port { get; set; }
     public ILoggerFactory _loggerFactory { get; set; }
     public List<int> WindowsPorts = new();
+    public WaveLinkPort? WindowsWaveLinkPort { get; set; }
     public WaveLinkHandler(ILoggerFactory loggerFactory, string host, int port)
     {
         _logger = loggerFactory?.CreateLogger<WaveLinkHandler>() ?? throw new ArgumentNullException(nameof(loggerFactory));
@@ -35,6 +38,7 @@ public class WaveLinkHandler
         if (OperatingSystem.IsWindows())
         {
             WindowsPorts = FindWaveLinkWebSocketWindows() ?? WindowsPorts;
+            WindowsWaveLinkPort = GetNetShInfo();
         }
     }
     public async Task Start()
@@ -45,12 +49,12 @@ public class WaveLinkHandler
     {
         while (Retry)
         {
-
             if (OperatingSystem.IsWindows())
             {
-                foreach (var windowsPort in WindowsPorts)
+                if (WindowsWaveLinkPort != null && WindowsWaveLinkPort.Port != null &&
+                    WindowsPorts.Contains((int)WindowsWaveLinkPort.Port))
                 {
-                    port = windowsPort;
+                    port = (int)WindowsWaveLinkPort.Port;
                     try
                     {
                         _ = await TryConnect(loggerFactory, host, port);
@@ -60,9 +64,11 @@ public class WaveLinkHandler
                         _logger.LogDebug($"Connection failed on port: {port}");
                     }
                 }
+                Thread.Sleep(1000);
 
                 // get updated ports just in case
                 WindowsPorts = FindWaveLinkWebSocketWindows() ?? WindowsPorts;
+                WindowsWaveLinkPort = GetNetShInfo();
                 continue;
             }
 
@@ -90,6 +96,7 @@ public class WaveLinkHandler
             // reset port if we get here
             if (port == 1895)
             {
+                Thread.Sleep(1000);
                 _logger.LogDebug("Retrying...");
                 port = 1884;
             }
@@ -333,6 +340,7 @@ public class WaveLinkHandler
         else if (value != null) return value.ToLower() == "true";
         return null;
     }
+
     public async Task<bool> IsPortOpenAsync(string host, int port, int timeoutMs)
     {
         using var client = new TcpClient();
@@ -364,6 +372,55 @@ public class WaveLinkHandler
             .OrderByDescending(p => p)
             .ToList();
     }
+    public WaveLinkPort? GetNetShInfo()
+    {
+        var netShInfo = new ProcessStartInfo
+        {
+            FileName = "netsh",
+            Arguments = "http show servicestate view=requestq",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        using var p = Process.Start(netShInfo)!;
+        var stdout = p.StandardOutput.ReadToEnd();
+        var stderr = p.StandardError.ReadToEnd();
+        p.WaitForExit();
+
+        var lines = stdout.Split('\n');
+        WaveLinkPort? current = null;
+
+        foreach (var line in lines)
+        {
+            var l = line.Trim();
+
+            if (l.ToLower().Contains("wave") && l.ToLower().Contains("link"))
+            {
+                current = new WaveLinkPort
+                {
+                    IsWaveLink = true
+                };
+            }
+
+            if (l.StartsWith("HTTP://", StringComparison.OrdinalIgnoreCase))
+            {
+                var match = Regex.Match(l, @"HTTP://[^:]+:(\d+)/");
+                if (match.Success && current != null && current.IsWaveLink)
+                {
+                    current.Port = int.Parse(match.Groups[1].Value);
+                    return current;
+                }
+            }
+        }
+        return null;
+    }
+}
+
+public class WaveLinkPort
+{
+    public int? Port { get; set; }
+    public bool IsWaveLink { get; set; } = new();
 }
 
 public enum AdjustmentType
