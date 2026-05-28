@@ -1,9 +1,18 @@
-name: Build Test Plugins
+# Disabled beta build workflow template.
+#
+# To use:
+# 1. Copy or rename this file to: .gitea/workflows/build-beta-branch.yml
+# 2. Change BRANCH_TO_BUILD below to your target branch name.
+# 3. Commit and push the enabled .yml file on that branch.
+#
+# While this file ends in .disabled, Gitea will ignore it.
+
+name: Build Beta Plugins Template
 
 on:
   push:
     branches:
-      - fix/e3081-dedup-touchportal-updates
+      - BRANCH_TO_BUILD
 
 jobs:
   build-test-plugins:
