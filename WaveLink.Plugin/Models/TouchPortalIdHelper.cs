@@ -44,15 +44,11 @@ public static class TouchPortalIdHelper
     public static string InputMute(string inputName) => $"{Statics.PluginId}.state.{inputName}.mute";
     public static string InputLevel(string inputName) => $"{Statics.PluginId}.state.{inputName}.level";
 
-    public static string ChannelLevel(string channelName) => $"{Statics.PluginId}.state.channel.{channelName}.level";
-    public static string ChannelMute(string channelName) => $"{Statics.PluginId}.state.channel.{channelName}.mute";
+    public static string ChannelLevel(string channelName) => $"{Statics.PluginId}.state.{channelName}.level";
+    public static string ChannelMute(string channelName) => $"{Statics.PluginId}.state.{channelName}.mute";
 
-    public static string MixLevel(string mixName) => $"{Statics.PluginId}.state.mix.{mixName}.level";
-    public static string MixMute(string mixName) => $"{Statics.PluginId}.state.mix.{mixName}.mute";
-
-    public static string ChannelMixKey(string channelName, string mixName) => $"{channelName}::{mixName}";
-    public static string ChannelMixLevel(string channelName, string mixName) => $"{Statics.PluginId}.state.channelMix.{ChannelMixKey(channelName, mixName)}.level";
-    public static string ChannelMixMute(string channelName, string mixName) => $"{Statics.PluginId}.state.channelMix.{ChannelMixKey(channelName, mixName)}.mute";
+    public static string MixLevel(string mixName) => $"{Statics.PluginId}.state.{mixName}.level";
+    public static string MixMute(string mixName) => $"{Statics.PluginId}.state.{mixName}.mute";
 
     // action data
     public static string ActionId(string actionName) => $"{BaseCategory}.action.{actionName}";
