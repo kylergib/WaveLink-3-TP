@@ -1,6 +1,6 @@
 {
   "sdk": 10,
-  "version": 101,
+  "version": 102,
   "name": "Wave Link 3 Plugin",
   "id": "com.kylergib.wavelink_3",
   "configuration": {
