@@ -886,6 +886,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             mixName != null)
         {
             WaveLinkHandler?.SetOutput(outputName, null, null, mixName);
+        } else
+        {
+            _logger?.LogWarning($"OutputName is null or empty: '{outputName}', MixName is null: {mixName == null}");
         }
     }
 

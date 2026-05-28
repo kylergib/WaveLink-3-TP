@@ -235,6 +235,9 @@ public class WaveLinkHandler
 
             WaveLinkSendMethod<MethodOutputDeviceInfo> setOutputDeviceRequest = new(WaveLinkMethod.setOutputDevice, new() { OutputDevice = deviceParam });
             _ = Client?.SendRequestAsync<MethodOutputDeviceInfo>(setOutputDeviceRequest);
+        } else
+        {
+            _logger?.LogWarning($"Output is null: '{outputName}'");
         }
     }
 

@@ -12,7 +12,7 @@ name: Build Beta Plugins Template
 on:
   push:
     branches:
-      - BRANCH_TO_BUILD
+      - fix/e3081-dedup-touchportal-updates
 
 jobs:
   build-test-plugins:
