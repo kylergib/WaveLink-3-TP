@@ -244,7 +244,7 @@ public class Output : IEquatable<Output>
             Id == other.Id &&
             Name == other.Name &&
             Level == other.Level &&
-            MixId == other.Id &&
+            MixId == other.MixId &&
             IsMuted == other.IsMuted;
     }
     public override bool Equals(object? obj) => Equals(obj as Output);
