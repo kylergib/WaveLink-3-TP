@@ -68,63 +68,76 @@ jobs:
       - name: Publish mac arm
         run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_arm64/WaveLinkPlugin -r osx-arm64 --self-contained
 
-      - name: Compute test artifact label
+      - name: Compute beta tag
         id: buildmeta
         run: |
+          VERSION=$(jq -r '.version' WaveLink.Plugin/entry.tp)
+          PATCH=$((VERSION % 10))
+          MINOR=$(((VERSION / 10) % 10))
+          MAJOR=$((VERSION / 100))
           SHORT_SHA=$(printf '%s' "${GITHUB_SHA}" | cut -c1-7)
-          echo "LABEL=test-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          TAG="v${MAJOR}.${MINOR}.${PATCH}-beta.${SHORT_SHA}"
+          echo "TAG=$TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Show artifact label
+      - name: Show beta tag
         run: |
-          echo "LABEL=${{ steps.buildmeta.outputs.LABEL }}"
+          echo "TAG=${{ steps.buildmeta.outputs.TAG }}"
 
       - name: Zip win x64 (named folder)
         run: |
           cd publish/win_x64
-          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_win_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
           mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
           mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
           mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin.exe WaveLinkPlugin/WaveLink.Plugin-2.exe
           mv WaveLinkPlugin WaveLinkPlugin-2
-          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_win_x64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
       - name: Zip osx x64
         run: |
           cd publish/osx_x64
-          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
           mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
           mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
           mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
           mv WaveLinkPlugin WaveLinkPlugin-2
-          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_x64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
       - name: Zip osx arm64
         run: |
           cd publish/osx_arm64
-          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_arm64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
           mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
           mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
           mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
           mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
           mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
           mv WaveLinkPlugin WaveLinkPlugin-2
-          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_arm64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
 
-      - name: Upload test plugin artifacts
-        uses: actions/upload-artifact@v4
+      - name: Create beta tag
+        run: |
+          git tag ${{ steps.buildmeta.outputs.TAG }}
+          git push origin tag ${{ steps.buildmeta.outputs.TAG }}
+
+      - name: Create Gitea Beta Release
+        uses: akkuman/gitea-release-action@v1
         with:
-          name: WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}
-          path: |
-            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64.tpp
-            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64.tpp
-            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64.tpp
-            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64_multi.tpp
-            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64_multi.tpp
-            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64_multi.tpp
+          tag_name: ${{ steps.buildmeta.outputs.TAG }}
+          name: Wave Link Plugin ${{ steps.buildmeta.outputs.TAG }}
+          prerelease: true
+          token: ${{ secrets.GITEA_TOKEN }}
+          files: |
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_win_x64.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_x64.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_arm64.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_win_x64_multi.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_x64_multi.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.TAG }}_osx_arm64_multi.tpp
 
       - name: Handle Build Failure
         if: failure()
@@ -171,7 +184,7 @@ jobs:
               "embeds": [
                 {
                   "title": "Wave Link Test Build Finished",
-                  "description": "Test build process **finished** on Gitea. Download the uploaded workflow artifacts for the .tpp files.",
+                  "description": "Test build process **finished** on Gitea. Beta prerelease created for this commit.",
                   "color": 5763719,
                   "fields": [
                     {
