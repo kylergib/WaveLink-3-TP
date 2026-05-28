@@ -1,0 +1,197 @@
+name: Build Test Plugins
+
+on:
+  push:
+    branches:
+      - fix/e3081-dedup-touchportal-updates
+
+jobs:
+  build-test-plugins:
+    runs-on: ubuntu-latest
+    container:
+      volumes:
+        - /mnt/user/appdata/KamiTasks:/KamiTasks
+    steps:
+      - name: Send Discord Start Notification
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "Wave Link test build started on Gitea",
+              "embeds": [
+                {
+                  "title": "Wave Link Test Build Started",
+                  "description": "Test build process **started** on Gitea",
+                  "color": 3447003,
+                  "fields": [
+                    {
+                      "name": "Repository",
+                      "value": "'${{ github.repository }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Branch",
+                      "value": "'${{ github.ref }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Commit",
+                      "value": "'${{ github.sha }}'",
+                      "inline": true
+                    }
+                  ],
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Publish win x64
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/win_x64/WaveLinkPlugin -r win-x64 --self-contained
+
+      - name: Publish mac x64
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_x64/WaveLinkPlugin -r osx-x64 --self-contained
+
+      - name: Publish mac arm
+        run: dotnet publish WaveLink.Plugin/WaveLink.Plugin.csproj -c Release -o ./publish/osx_arm64/WaveLinkPlugin -r osx-arm64 --self-contained
+
+      - name: Compute test artifact label
+        id: buildmeta
+        run: |
+          SHORT_SHA=$(printf '%s' "${GITHUB_SHA}" | cut -c1-7)
+          echo "LABEL=test-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Show artifact label
+        run: |
+          echo "LABEL=${{ steps.buildmeta.outputs.LABEL }}"
+
+      - name: Zip win x64 (named folder)
+        run: |
+          cd publish/win_x64
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
+          mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
+          mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
+          mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
+          mv WaveLinkPlugin/WaveLink.Plugin.exe WaveLinkPlugin/WaveLink.Plugin-2.exe
+          mv WaveLinkPlugin WaveLinkPlugin-2
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
+
+      - name: Zip osx x64
+        run: |
+          cd publish/osx_x64
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
+          mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
+          mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
+          mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
+          mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
+          mv WaveLinkPlugin WaveLinkPlugin-2
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
+
+      - name: Zip osx arm64
+        run: |
+          cd publish/osx_arm64
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64.tpp WaveLinkPlugin -x "*.pdb" "entry2.tp" "start_plugin-2.sh"
+          mv WaveLinkPlugin/entry.tp WaveLinkPlugin/entry1.tp
+          mv WaveLinkPlugin/appsettings.json WaveLinkPlugin/appsettings1.json
+          mv WaveLinkPlugin/entry2.tp WaveLinkPlugin/entry.tp
+          mv WaveLinkPlugin/appsettings2.json WaveLinkPlugin/appsettings.json
+          mv WaveLinkPlugin/WaveLink.Plugin WaveLinkPlugin/WaveLink.Plugin-2
+          mv WaveLinkPlugin WaveLinkPlugin-2
+          zip -r ../../WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64_multi.tpp WaveLinkPlugin-2 -x "*.pdb" "entry1.tp" "start_plugin.sh"
+
+      - name: Upload test plugin artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}
+          path: |
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_win_x64_multi.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_x64_multi.tpp
+            WaveLinkPlugin_${{ steps.buildmeta.outputs.LABEL }}_osx_arm64_multi.tpp
+
+      - name: Handle Build Failure
+        if: failure()
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "Wave Link test build failed on Gitea",
+              "embeds": [
+                {
+                  "title": "Wave Link Test Build Failed",
+                  "description": "Test build process **failed** on Gitea",
+                  "color": 15158332,
+                  "fields": [
+                    {
+                      "name": "Repository",
+                      "value": "'${{ github.repository }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Branch",
+                      "value": "'${{ github.ref }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Commit",
+                      "value": "'${{ github.sha }}'",
+                      "inline": true
+                    }
+                  ],
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Send Discord End Notification
+        if: success()
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{
+              "content": "Wave Link test build finished on Gitea",
+              "embeds": [
+                {
+                  "title": "Wave Link Test Build Finished",
+                  "description": "Test build process **finished** on Gitea. Download the uploaded workflow artifacts for the .tpp files.",
+                  "color": 5763719,
+                  "fields": [
+                    {
+                      "name": "Repository",
+                      "value": "'${{ github.repository }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Branch",
+                      "value": "'${{ github.ref }}'",
+                      "inline": true
+                    },
+                    {
+                      "name": "Commit",
+                      "value": "'${{ github.sha }}'",
+                      "inline": true
+                    }
+                  ],
+                  "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+                }
+              ]
+            }' \
+            ${{ secrets.DISCORD_WEBHOOK_URL }}
