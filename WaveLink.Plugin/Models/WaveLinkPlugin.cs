@@ -579,10 +579,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {input.Id}, Name: {input.Name}, Level: {input?.Gain?.Value}, Min: {input?.Gain?.Min}, Max: {input?.Gain?.Max}\n");
                 StateUpdateIfChanged(TouchPortalIdHelper.InputMute(input.Name!), input.IsMuted.ToString());
                 StateUpdateIfChanged(TouchPortalIdHelper.InputLevel(input.Name!), ToInt(input.Gain?.Value ?? 0).ToString());
-                if (!result.IsResult)
-                {
-                    ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
-                }
+                ShortConnectorUpdateHelper(input.Name, ToInt(input.Gain?.Value ?? 0), InputShortConnectorIds);
             }
         };
 
@@ -593,11 +590,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
             StateUpdateIfChanged(TouchPortalIdHelper.MixMute(mix.Name!), mix.IsMuted.ToString());
             StateUpdateIfChanged(TouchPortalIdHelper.MixLevel(mix.Name!), ToInt(mix.Level ?? 0).ToString());
-            
-            if (!result.IsResult)
-            {
-                ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
-            }
+
+            ShortConnectorUpdateHelper(mix.Name, ToInt(mix.Level ?? 0), MixShortConnectorIds);
 
         };
 
@@ -611,11 +605,8 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 StateUpdateIfChanged(TouchPortalIdHelper.OutputMute(output.Name!), output.IsMuted.ToString());
                 StateUpdateIfChanged(TouchPortalIdHelper.OutputLevel(output.Name!), ToInt(output.Level ?? 0).ToString());
-                
-                if (!result.IsResult)
-                {
-                    ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
-                }
+
+                ShortConnectorUpdateHelper(output.Name, ToInt(output.Level ?? 0), OutputShortConnectorIds);
             }
         };
 
