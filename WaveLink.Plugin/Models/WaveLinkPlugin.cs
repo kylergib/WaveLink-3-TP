@@ -381,7 +381,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             if (!shortIdList.Contains(message.ShortId))
             {
                 shortIdList.Add(message.ShortId);
-                InputShortConnectorIds.Add(value, shortIdList);
+                InputShortConnectorIds[value] = shortIdList;
             }
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.OutputVolumeConnector)
@@ -396,7 +396,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             if (!shortIdList.Contains(message.ShortId))
             {
                 shortIdList.Add(message.ShortId);
-                OutputShortConnectorIds.Add(value, shortIdList);
+                OutputShortConnectorIds[value] = shortIdList;
             }
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.ChannelVolumeConnector)
@@ -414,7 +414,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             if (!shortIdList.Contains(message.ShortId))
             {
                 shortIdList.Add(message.ShortId);
-                ChannelShortConnectorIds.Add(value, shortIdList);
+                ChannelShortConnectorIds[value] = shortIdList;
             }
 
         }
@@ -430,7 +430,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             if (!shortIdList.Contains(message.ShortId))
             {
                 shortIdList.Add(message.ShortId);
-                MixShortConnectorIds.Add(value, shortIdList);
+                MixShortConnectorIds[value] = shortIdList;
             }
         }
     }
