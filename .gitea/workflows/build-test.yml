@@ -1,4 +1,4 @@
-name: Hello World
+name: Build and upload
 on:
   push:
     branches:
@@ -150,6 +150,24 @@ jobs:
             WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64_multi.tpp
             WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64_multi.tpp
             WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp
+      - name: Install GitHub CLI
+        run: |
+            apt-get update
+            apt-get install -y gh
+      - name: Upload to github
+        env:
+            GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+            gh release create "${{ steps.tag.outputs.TAG }}" \
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp \
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64.tpp \
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64.tpp \
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64_multi.tpp \
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_x64_multi.tpp \
+            WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_osx_arm64_multi.tpp \
+             --repo kylergib/WaveLink-3-TP \
+            --title "${{ steps.tag.outputs.TAG }}" \
+            --notes "Automated release"
 
       - name: Handle Build Failure
         if: failure()
