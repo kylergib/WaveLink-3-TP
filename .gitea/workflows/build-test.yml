@@ -141,7 +141,7 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.TAG }}
           name: Wave Link Plugin ${{ steps.tag.outputs.TAG }}
-          prerelease: true
+          prerelease: false
           token: ${{ secrets.GITEA_TOKEN }}
           files: |
             WaveLinkPlugin_${{ steps.tag.outputs.TAG }}_win_x64.tpp
