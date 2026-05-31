@@ -136,19 +136,18 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             WaveSocketSwitch?.MinimumLevel = LogEventLevel.Verbose;
         }
 
-        //var updateAvailable = Task.Run(() => UpdateAvailable());
-        //updateAvailable.Wait();
-        //if (!string.IsNullOrEmpty(updateAvailable.Result) && !string.IsNullOrEmpty(UpdateUrl))
-        //{
-        //    _logger.LogWarning("Update is available: {0}", updateAvailable);
-        //    _client.ShowNotification(
-        //       TouchPortalIdHelper.UpdateNotificationId,
-        //       $"Update available: {{updateAvailable}}",
-        //       "A new version of the Wave Link Plugin is available.",
-        //       [new() { Id = "learnMore", Title = "Learn More" }]
-        //   );
-
-        //}
+        var updateAvailable = Task.Run(() => UpdateAvailable());
+        updateAvailable.Wait();
+        if (!string.IsNullOrEmpty(updateAvailable.Result) && !string.IsNullOrEmpty(UpdateUrl))
+        {
+           _logger.LogWarning("Update is available: {0}", updateAvailable);
+           _client.ShowNotification(
+              TouchPortalIdHelper.UpdateNotificationId,
+              $"Update available: {{updateAvailable}}",
+              "A new version of the Wave Link Plugin is available.",
+              [new() { Id = "learnMore", Title = "Wave Link Update Available" }]
+          );
+        }
 
         ConnectToWaveLink();
     }
@@ -1031,11 +1030,11 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public async Task<string?> UpdateAvailable()
     {
         string repositoryOwner = "kylergib";
-        string repositoryName = "WaveLinkPluginTouchPortal";
+        string repositoryName = "WaveLink-3-TP";
         HttpClient client = new HttpClient();
         try
         {
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("C# App"); // GitHub requires UA
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("C# App");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github.v3+json");
 
             string url = $"https://api.github.com/repos/{repositoryOwner}/{repositoryName}/releases";
@@ -1052,14 +1051,14 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
             var release = doc.RootElement
                .EnumerateArray()
-               .Where(r => r.GetProperty("prerelease").GetBoolean() && r.GetProperty("tag_name").GetString().StartsWith("3_"))
+               .Where(r => !r.GetProperty("prerelease").GetBoolean() && r.GetProperty("tag_name").GetString().StartsWith("v"))
                .OrderByDescending(r => DateTime.Parse(r.GetProperty("published_at").GetString()!))
                .FirstOrDefault();
             UpdateUrl = release.GetProperty("html_url").GetString() ?? string.Empty;
             var tag = release.GetProperty("tag_name").GetString();
 
 
-            List<string> versionParts = new List<string>(tag.Replace("3_", "").Split('.'));
+            List<string> versionParts = new List<string>(tag.Replace("v", "").Split('.'));
             int newestVersion = 0;
 
             if (versionParts.Count == 3
@@ -1072,7 +1071,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
             _logger.LogInformation($"Newest version available is: {newestVersion}");
             _logger.LogInformation($"Current version is: {PluginVersion}");
-
+            
             if (PluginVersion < newestVersion) return tag;
         }
         catch (Exception ex)
