@@ -241,6 +241,31 @@ public class WaveLinkHandler
         }
     }
 
+    public void SetMainOutput(string outputName)
+    {
+        var outputDevice = Client?.StateManager.OutputDevices.Find(c => c.Name == outputName);
+
+        var output = outputDevice?.Outputs?[0] ?? null;
+
+        if (output != null)
+        {
+            MethodMainOutputInfo outputInfo = new()
+            {
+                MainOutput = new MethodMainDeviceParamInfo
+                {
+                    OutputDeviceId = outputDevice?.Id ?? string.Empty,
+                    OutputId = output.Id ?? string.Empty
+                }
+            };
+
+            WaveLinkSendMethod<MethodMainOutputInfo> setOutputDeviceRequest = new(WaveLinkMethod.setOutputDevice, outputInfo);
+            _ = Client?.SendRequestAsync<MethodMainOutputInfo>(setOutputDeviceRequest);
+        } else
+        {
+            _logger?.LogWarning($"Output is null: '{outputName}'");
+        }
+    }
+
     public void SetChannel(string channelName, string? shouldMute = null, decimal? newLevel = null, AdjustmentType? adjustmentType = AdjustmentType.Fixed, string? mixName = null)
     {
         var channel = Client?.StateManager.Channels.Find(c => c.Name == channelName);

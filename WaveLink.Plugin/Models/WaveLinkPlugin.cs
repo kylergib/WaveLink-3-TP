@@ -203,6 +203,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetOuputDevice)):
                 SetOuputDevice(message);
                 break;
+            case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetMainOutputDevice)):
+                SetMainOutputDevice(message);
+                break;
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetLevelChannel)):
                 SetLevelChannel(message);
                 break;
@@ -888,6 +891,19 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         } else
         {
             _logger?.LogWarning($"OutputName is null or empty: '{outputName}', MixName is null: {mixName == null}");
+        }
+    }
+
+    public void SetMainOutputDevice(ActionEvent message)
+    {
+        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
+
+        if (!string.IsNullOrEmpty(outputName))
+        {
+            WaveLinkHandler?.SetMainOutput(outputName);
+        } else
+        {
+            _logger?.LogWarning($"OutputName is null or empty: '{outputName}'");
         }
     }
 

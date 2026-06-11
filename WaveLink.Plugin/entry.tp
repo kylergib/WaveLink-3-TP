@@ -222,6 +222,38 @@
           ]
         },
         {
+          "id": "com.kylergib.wavelink_3.WaveLink.action.SetMainOutputDevice",
+          "name": "Set Main Output",
+          "prefix": "Plugin",
+          "type": "communicate",
+          "format": "Set Main Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} ",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set Main Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$}"
+                  }
+                ]
+              }
+
+            ]
+          },
+          "tryInline": true,
+          "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Outputs",
+          "hasHoldFunctionality": false,
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList"
+            }
+          ]
+        },
+        {
           "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel",
           "name": "Mute Channel",
           "prefix": "Plugin",
