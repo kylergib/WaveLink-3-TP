@@ -579,8 +579,14 @@
         {
           "id": "com.kylergib.wavelink_3.WaveLink.state.isConnectedToWaveLink",
           "type": "text",
-          "desc": "Is 'true' if the plugin is connected to wave link.",
+          "desc": "Plugin is connected to Wave Link.",
           "default": "false"
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.state.mainOutput",
+          "type": "text",
+          "desc": "The main output in Wave Link.",
+          "default": ""
         }
       ],
       "events": [],

@@ -251,7 +251,7 @@ public class WaveLinkHandler
         {
             MethodMainOutputInfo outputInfo = new()
             {
-                MainOutput = new MethodMainDeviceParamInfo
+                MainOutput = new MainOutput
                 {
                     OutputDeviceId = outputDevice?.Id ?? string.Empty,
                     OutputId = output.Id ?? string.Empty

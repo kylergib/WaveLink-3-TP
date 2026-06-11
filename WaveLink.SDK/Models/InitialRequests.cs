@@ -177,6 +177,7 @@ public class InputGain : IEquatable<InputGain>
 
 public class OutputDeviceResult
 {
+    public MainOutput? MainOutput { get; set; }
     public List<OutputDevice>? OutputDevices { get; set; }
 }
 public class OutputDevice : IEquatable<OutputDevice>
@@ -439,5 +440,25 @@ public class MixImage : IEquatable<MixImage>
     public override int GetHashCode()
     {
         return HashCode.Combine(Name);
+    }
+}
+
+public class MainOutput
+{
+    public string OutputDeviceId { get; set; } = string.Empty;
+    public string? Name { get; set; } = string.Empty;
+    public string OutputId { get; set; } = string.Empty;
+    public bool Equals(MainOutput? other)
+    {
+        if (other is null) return false;
+        return
+            OutputDeviceId == other.OutputDeviceId &&
+            Name == other.Name &&
+            OutputId == other.OutputId;
+    }
+    public override bool Equals(object? obj) => Equals(obj as MainOutput);
+    public override int GetHashCode()
+    {        
+        return HashCode.Combine(OutputDeviceId, OutputId);
     }
 }

@@ -9,6 +9,7 @@ public class WaveLinkStateManager
     private readonly WaveLinkMessageRouter MessageRouter;
     private readonly ILogger _logger;
     public AppInfoResult AppInfo { get; private set; } = new();
+    public MainOutput? MainOutputDevice { get; set; }
     public App? FocusedApp { get; private set; }
     public List<InputDevice> InputDevices { get; private set; } = [];
     public List<Mix> Mixes { get; private set; } = [];
@@ -16,6 +17,7 @@ public class WaveLinkStateManager
     public List<Channel> Channels { get; private set; } = [];
     public bool SubscribedToFocusApp { get; set; } = false;
 
+    public event EventHandler<WaveLinkStateEvent<MainOutput>>? OnMainOutputUpdated;
     public event EventHandler<WaveLinkStateEvent<Channel>>? OnChannelUpdated;
     public event EventHandler<App>? OnFocusedAppUpdated;
     public event EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceUpdated;
@@ -59,6 +61,12 @@ public class WaveLinkStateManager
         MessageRouter.OnReceivedGetOutputDevices += (s, e) =>
         {
             OutputDevices = e.Result?.OutputDevices ?? OutputDevices;
+            MainOutputDevice = e.Result?.MainOutput;
+            if (MainOutputDevice != null)
+            {
+                MainOutputDevice.Name = OutputDevices.FirstOrDefault(d => d.Id == MainOutputDevice.OutputDeviceId)?.Name ?? MainOutputDevice.Name;
+                _logger.LogDebug("WaveLink Main Output Device initialized: {MainOutputName} - {MainOutputId}", MainOutputDevice.Name, MainOutputDevice.OutputDeviceId);
+            }
             _logger.LogDebug("WaveLink Output Devices initialized: {OutputDevicesCount} devices", OutputDevices.Count);
         };
         MessageRouter.OnReceivedGetChannels += (s, e) =>
@@ -124,8 +132,16 @@ public class WaveLinkStateManager
         MessageRouter.OnReceivedOutputDevicesChanged += (s, e) =>
         {
             var updatedDevices = e.Params?.OutputDevices;
-            if (updatedDevices == null) return;
-            UpdateOutputDevices(updatedDevices, false);
+            if (updatedDevices != null)
+            {
+                UpdateOutputDevices(updatedDevices, false);
+            }
+            var mainOutput = e.Params?.MainOutput;
+            if (mainOutput != null)
+            {
+                UpdateMainOutputDevice(mainOutput, false);
+            }
+            
         };
 
         MessageRouter.OnReceivedResult += (s, e) =>
@@ -173,11 +189,13 @@ public class WaveLinkStateManager
                     }
                     break;
                 case nameof(MethodChannelEffectInfo):
-                // todo: add states for channel effects and main output changes and handle those results here as well
                     var channelEffectInfo = JsonSerializer.Deserialize<MethodChannelEffectInfo>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
                     if (channelEffectInfo != null) UpdateChannelEffect(channelEffectInfo);
                     break;
-                // todo: add event and state for mainoutput changes and handle that result here as well
+                case nameof(MethodMainOutputInfo):
+                    // var mainOutputInfo = JsonSerializer.Deserialize<MethodMainOutputInfo>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
+                    // if (mainOutputInfo != null) UpdateMainOutputDevice(mainOutputInfo.MainOutput, true);
+                    break;
                 default:
                     _logger.LogWarning("Received result that is not recognized:");
                     _logger.LogWarning("{message}", e.Minify());
@@ -452,6 +470,21 @@ public class WaveLinkStateManager
             OnOutputDeviceRemoved?.Invoke(this, new(removedDevice, isResult));
             _logger.LogDebug("Output Device removed: {DeviceId}", removedDevice.Id);
         }
+    }
+    // this is causing it two update twice?
+    public void UpdateMainOutputDevice(MainOutput mainOutput, bool isResult = false)
+    {
+        if (MainOutputDevice == null)
+        {
+            MainOutputDevice = mainOutput;
+            return;
+        }
+        bool mainOutputChanged = !MainOutputDevice.Equals(mainOutput);
+        if (!mainOutputChanged) return; 
+        MainOutputDevice = mainOutput;
+        MainOutputDevice.Name = OutputDevices.FirstOrDefault(d => d.Id == MainOutputDevice.OutputDeviceId)?.Name ?? MainOutputDevice.Name;
+        OnMainOutputUpdated?.Invoke(this, new(MainOutputDevice, isResult));
+        _logger.LogDebug("Main Output Device updated: {MainOutputName} - {MainOutputId}", MainOutputDevice.Name, MainOutputDevice.OutputDeviceId);
     }
 
     public void Reset()

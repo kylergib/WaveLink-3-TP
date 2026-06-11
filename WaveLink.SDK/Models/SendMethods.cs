@@ -64,13 +64,9 @@ public class MethodOutputInfo
 }
 public class MethodMainOutputInfo
 {
-    public MethodMainDeviceParamInfo MainOutput { get; set; } = new();
+    public MainOutput MainOutput { get; set; } = new();
 }
-public class MethodMainDeviceParamInfo
-{
-    public string OutputDeviceId { get; set; } = string.Empty;
-    public string OutputId { get; set; } = string.Empty;
-}
+
 public class AddAppToChannelInfo
 {
     public string ChannelId { get; set; } = string.Empty;
