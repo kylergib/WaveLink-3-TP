@@ -14,7 +14,6 @@ public enum ReceivedMethods
 }
 public class OutputDevicesChangedInfo
 {
-    public string MainOutput { get; set; } = string.Empty;
     public List<OutputDevice> OutputDevices { get; set; } = new();
 }
 
