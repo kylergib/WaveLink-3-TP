@@ -338,6 +338,32 @@ public class WaveLinkHandler
         }
     }
 
+    public void SetChannelEffect(string channelName, string effectName, string shouldEnable)
+    {
+        var channel = Client?.StateManager.Channels.Find(c => c.Name == channelName);
+        var effect = channel?.Effects?.Find(e => e.Name == effectName);
+        if (channel == null && effect == null)
+        {
+            _logger.LogWarning($"Channel or effect is null: '{channelName}' - '{effectName}'");
+            return;
+        }
+
+        MethodChannelEffectInfo channelEffectInfo = new()
+        {
+            Id = channel?.Id ?? string.Empty,
+            Effects = new List<MethodEffectInfo>
+            {
+                new MethodEffectInfo
+                {
+                    Id = effect?.Id ?? string.Empty,
+                    IsEnabled = ConvertIsMuted(shouldEnable, effect?.IsEnabled) ?? true
+                }
+            }
+        };
+        WaveLinkSendMethod<MethodChannelEffectInfo> request = new(WaveLinkMethod.setChannel, channelEffectInfo);
+        _ = Client?.SendRequestAsync<MethodChannelEffectInfo>(request);
+    }
+
     public void SetFocusAppSubscription(string subscribe)
     {
         WaveLinkSendMethod<MethodSubscriptionInfo> request = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = ConvertIsMuted(subscribe, true) ?? true } });
@@ -365,7 +391,7 @@ public class WaveLinkHandler
     public bool? ConvertIsMuted(string? value, bool? currentValue)
     {
         if (value == "toggle") return !currentValue ?? null;
-        else if (value != null) return value.ToLower() == "true";
+        else if (value != null) return value.ToLower() == "true" || value.ToLower() == "enable";
         return null;
     }
 

@@ -221,6 +221,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(AddToChannel)):
                 SetMuteInput(message);
                 break;
+            case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetChannelEffect)):
+                SetChannelEffect(message);
+                break;
             default:
                 _logger.LogWarning("Action not implemented");
                 break;
@@ -234,15 +237,21 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public void OnListChangedEvent(ListChangeEvent message)
     {
         _logger?.LogDebug($"[OnListChanged] {message.ListId}/{message.ActionId}/{message.InstanceId} '{message.Value}'");
+        _logger?.LogInformation($"[OnListChanged] {message.ListId}/{message.ActionId}/{message.InstanceId} '{message.Value}'");
 
-        //switch (message.ListId)
-        //{
-        //    //Dynamically updates the dropdown of data3 based on value chosen from data2 dropdown:
-        //    case "category1.action1.data2" when message.InstanceId is not null:
-        //        var prefix = message.Value;
-        //        _client.ChoiceUpdate("category1.action1.data3", new[] { $"{prefix} second 1", $"{prefix} second 2", $"{prefix} second 3" }, message.InstanceId);
-        //        break;
-        //}
+        switch (message.ListId)
+        {
+           //Dynamically updates the dropdown of data3 based on value chosen from data2 dropdown:
+           case var _ when message.ListId == TouchPortalIdHelper.ChannelListId && message.InstanceId is not null:
+                var channelName = message.Value;
+                // find the channel with the name of prefix
+                var channel = WaveLinkHandler?.Client?.StateManager.Channels.Find(c => c.Name == channelName);
+                if (channel != null)
+                {
+                    _client.ChoiceUpdate(TouchPortalIdHelper.EffectListId, channel.Effects?.Select(e => e.Name).ToArray(), message.InstanceId);
+                }
+               break;
+        }
     }
     public void OnBroadcastEvent(BroadcastEvent message)
     {
@@ -326,27 +335,6 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             }
         }
         _logger?.LogDebug($"[OnNotificationOptionClickedEvent] NotificationId: '{message.NotificationId}', OptionId: '{message.OptionId}'");
-        //if (message.NotificationId is "TouchPortal.SamplePlugin|update")
-        //{
-        //    switch (message.OptionId)
-        //    {
-        //        //Example for opening a web browser (windows):
-        //        case "update":
-        //            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        //            {
-        //                UseShellExecute = true,
-        //                FileName = "https://www.nuget.org/packages/TouchPortalSDK/"
-        //            });
-        //            break;
-        //        case "readMore":
-        //            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        //            {
-        //                UseShellExecute = true,
-        //                FileName = "https://github.com/oddbear/TouchPortalSDK/"
-        //            });
-        //            break;
-        //    }
-        //}
     }
 
     public void OnConnecterChangeEvent(ConnectorChangeEvent message)
@@ -983,6 +971,19 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
     }
 
+    public void SetChannelEffect(ActionEvent message)
+    {
+        var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+        var enableValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetChannelEffect))] ?? "<null>";
+        var effectName = message[TouchPortalIdHelper.EffectListId] ?? "<null>";
+        // _client.
+        if (!string.IsNullOrEmpty(channelName) &&
+            !string.IsNullOrEmpty(enableValue) &&
+            !string.IsNullOrEmpty(effectName))
+        {
+            WaveLinkHandler?.SetChannelEffect(channelName, effectName, enableValue);
+        }
+    }
     // subscribe to focus app changes
     public void SetFocusAppNotification(ActionEvent message)
     {

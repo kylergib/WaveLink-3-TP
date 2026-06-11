@@ -32,6 +32,7 @@ public static class TouchPortalIdHelper
     public static string InputListId => BaseCategory + ".state.inputDeviceList";
     public static string ChannelListId => BaseCategory + ".state.channelsList";
     public static string MixListId => BaseCategory + ".state.mixesList";
+    public static string EffectListId => BaseCategory + ".state.effectsList";
 
     // states
     public static string FocusedAppId => BaseCategory + ".state.focusedApp";

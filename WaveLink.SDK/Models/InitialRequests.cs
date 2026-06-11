@@ -111,9 +111,9 @@ public class Input : IEquatable<Input>
     public bool? IsMuted { get; set; }
     public bool? IsGainLockOn { get; set; }
     public int? MicPcMixId { get; set; }
-    public List<InputEffect>? Effects { get; set; }
-    public List<InputEffect>? DspEffects { get; set; }
-    public bool CompareEffects(List<InputEffect>? otherEffects)
+    public List<WaveEffect>? Effects { get; set; }
+    public List<WaveEffect>? DspEffects { get; set; }
+    public bool CompareEffects(List<WaveEffect>? otherEffects)
     {
         if (Effects == null && otherEffects == null) return true;
         if (Effects == null || otherEffects == null) return false;
@@ -125,7 +125,7 @@ public class Input : IEquatable<Input>
         }
         return true;
     }
-    public bool CompareDspEffects(List<InputEffect>? otherDspEffects)
+    public bool CompareDspEffects(List<WaveEffect>? otherDspEffects)
     {
         if (DspEffects == null && otherDspEffects == null) return true;
         if (DspEffects == null || otherDspEffects == null) return false;
@@ -172,25 +172,6 @@ public class InputGain : IEquatable<InputGain>
     public override int GetHashCode()
     {
         return HashCode.Combine(Value, Min, Max);
-    }
-}
-public class InputEffect : IEquatable<InputEffect>
-{
-    public string Id { get; set; } = string.Empty;
-    public string? Name { get; set; }
-    public bool? IsEnabled { get; set; }
-    public bool Equals(InputEffect? other)
-    {
-        if (other is null) return false;
-        return
-            Id == other.Id &&
-            Name == other.Name &&
-            IsEnabled == other.IsEnabled; 
-    }
-    public override bool Equals(object? obj) => Equals(obj as InputEffect);
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Id, Name, IsEnabled);
     }
 }
 
@@ -266,7 +247,7 @@ public class Channel : IEquatable<Channel>
     public decimal? Level { get; set; }
     public bool? IsMuted { get; set; }
     public List<App>? Apps { get; set; }
-    public List<ChannelEffect>? Effects { get; set; }
+    public List<WaveEffect>? Effects { get; set; }
     public ChannelImage? Image { get; set; }
     public bool CompareMixes(List<ChannelMix>? otherMixes)
     {
@@ -293,13 +274,32 @@ public class Channel : IEquatable<Channel>
         }
         return true;
     }
-    public bool CompareEffects(List<ChannelEffect>? otherEffects)
+    public bool CompareEffects(List<WaveEffect>? otherEffects)
     {
         if (Effects == null && otherEffects == null) return true;
         if (Effects == null || otherEffects == null) return false;
 
         if (Effects.Count != otherEffects.Count) return false;
-        return true;
+        var valid = true;
+        otherEffects.ForEach(oe =>
+        {
+            if (!Effects.Any(e => e.Equals(oe))) valid = false;
+        });
+        return valid;
+    }
+
+    public bool CompareEffects(List<MethodEffectInfo>? otherEffects)
+    {
+        if (Effects == null && otherEffects == null) return true;
+        if (Effects == null || otherEffects == null) return false;
+
+        if (Effects.Count != otherEffects.Count) return false;
+        var valid = true;
+        otherEffects.ForEach(oe =>
+        {
+            if (!Effects.Any(e => e.Equals(oe, true))) valid = false;
+        });
+        return valid;
     }
     public bool Equals(Channel? other)
     {
@@ -355,9 +355,33 @@ public class App : IEquatable<App>
         return HashCode.Combine(Id, Name);
     }
 }
-public class ChannelEffect
+public class WaveEffect : IEquatable<WaveEffect>
 {
-    
+    public string Id { get; set; } = string.Empty;
+    public string? Name { get; set; }
+    public bool? IsEnabled { get; set; }
+    public bool Equals(WaveEffect? other)
+    {
+        if (other is null) return false;
+        return
+            Id == other.Id &&
+            Name == other.Name &&
+            IsEnabled == other.IsEnabled;
+    }
+     public bool Equals(WaveEffect? other, bool skipNameComparison)
+    {
+        if (other is null) return false;
+        return
+            Id == other.Id &&
+            (skipNameComparison || Name == other.Name) &&
+            IsEnabled == other.IsEnabled;
+    }
+    public override bool Equals(object? obj) => Equals(obj as WaveEffect);
+    public bool Equals(object? obj, bool skipNameComparison) => Equals(obj as WaveEffect, skipNameComparison);
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Id, Name, IsEnabled);
+    }
 }
 public class ChannelImage : IEquatable<ChannelImage>
 {

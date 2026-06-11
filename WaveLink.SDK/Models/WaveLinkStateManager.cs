@@ -172,6 +172,12 @@ public class WaveLinkStateManager
                         OnSubscribedToFocusAppChanged?.Invoke(this, SubscribedToFocusApp);
                     }
                     break;
+                case nameof(MethodChannelEffectInfo):
+                // todo: add states for channel effects and main output changes and handle those results here as well
+                    var channelEffectInfo = JsonSerializer.Deserialize<MethodChannelEffectInfo>(root.GetProperty("result").GetRawText(), Statics.JsonSerializerOptionsDefault);
+                    if (channelEffectInfo != null) UpdateChannelEffect(channelEffectInfo);
+                    break;
+                // todo: add event and state for mainoutput changes and handle that result here as well
                 default:
                     _logger.LogWarning("Received result that is not recognized:");
                     _logger.LogWarning("{message}", e.Minify());
@@ -232,6 +238,25 @@ public class WaveLinkStateManager
         _logger.LogDebug("Channel updated: {ChannelId}", existingDevice.Id);
     }
 
+    public void UpdateChannelEffect(MethodChannelEffectInfo channelEffectInfo)
+    {
+        var existingChannel = FindChannel(channelEffectInfo.Id);
+        if (existingChannel == null) return;
+
+        bool effectsChanged = !existingChannel.CompareEffects(channelEffectInfo.Effects);
+
+        if (!effectsChanged) return;
+        foreach (var updatedEffect in channelEffectInfo.Effects)
+        {
+            var effect = existingChannel.Effects?.FirstOrDefault(e => e.Id == updatedEffect.Id);
+            if (effect == null) continue;
+
+            effect.IsEnabled = updatedEffect.IsEnabled;
+        }
+        OnChannelUpdated?.Invoke(this, new(existingChannel, true));
+        _logger.LogDebug("Channel updated: {ChannelId}", existingChannel.Id);
+        
+    }
     public void UpdateChannels(List<Channel> updatedChannels, bool isResult)
     {
         var currentChannels = Channels.Where(d => updatedChannels.Any(ud => ud.Id == d.Id)).ToList();
