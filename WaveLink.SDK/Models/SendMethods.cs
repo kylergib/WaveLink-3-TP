@@ -62,11 +62,26 @@ public class MethodOutputInfo
     public decimal? Level { get; set; }
     public string? MixId { get; set; }
 }
+public class MethodMainOutputInfo
+{
+    public MainOutput MainOutput { get; set; } = new();
+}
+
 public class AddAppToChannelInfo
 {
     public string ChannelId { get; set; } = string.Empty;
     public string AppId { get; set; } = string.Empty;
 
+}
+public class MethodChannelEffectInfo
+{
+    public string Id { get; set; } = string.Empty; // channel id
+    public List<MethodEffectInfo> Effects { get; set; } = new();
+}
+public class MethodEffectInfo
+{
+    public string Id { get; set; } = string.Empty; // effect id
+    public bool IsEnabled { get; set; }
 }
 public class MethodSubscriptionInfo
 {

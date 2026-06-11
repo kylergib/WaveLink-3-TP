@@ -222,6 +222,75 @@
           ]
         },
         {
+          "id": "com.kylergib.wavelink_3.WaveLink.action.SetMainOutputDevice",
+          "name": "Set Main Output",
+          "prefix": "Plugin",
+          "type": "communicate",
+          "format": "Set Main Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$} ",
+          "lines": {
+            "action": [
+              {
+                "language": "default",
+                "data": [
+                  {
+                    "lineFormat": "Set Main Output {$com.kylergib.wavelink_3.WaveLink.state.outputDeviceList$}"
+                  }
+                ]
+              }
+
+            ]
+          },
+          "tryInline": true,
+          "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Outputs",
+          "hasHoldFunctionality": false,
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.outputDeviceList"
+            }
+          ]
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.action.SetChannelEffect",
+          "name": "Set Effect",
+          "prefix": "Plugin",
+          "type": "communicate",
+          "format": "Set Channel {$com.kylergib.wavelink_3.WaveLink.state.channelsList$} : {$com.kylergib.wavelink_3.WaveLink.action.SetChannelEffect.data.value$} for Effect: {$com.kylergib.wavelink_3.WaveLink.state.effectsList$}",
+          "tryInline": true,
+          "subCategoryId": "com.kylergib.wavelink_3.WaveLink.Channels",
+          "hasHoldFunctionality": false,
+          "data": [
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.channelsList"
+            },
+            {
+              "type": "choice",
+              "label": "value",
+              "default": "",
+              "valueChoices": [
+                "enable",
+                "disable",
+                "toggle"
+              ],
+              "id": "com.kylergib.wavelink_3.WaveLink.action.SetChannelEffect.data.value"
+            },
+            {
+              "type": "choice",
+              "label": "choices",
+              "default": "",
+              "valueChoices": [],
+              "id": "com.kylergib.wavelink_3.WaveLink.state.effectsList"
+            }
+          ]
+        },
+        {
           "id": "com.kylergib.wavelink_3.WaveLink.action.SetMuteChannel",
           "name": "Mute Channel",
           "prefix": "Plugin",
@@ -510,8 +579,14 @@
         {
           "id": "com.kylergib.wavelink_3.WaveLink.state.isConnectedToWaveLink",
           "type": "text",
-          "desc": "Is 'true' if the plugin is connected to wave link.",
+          "desc": "Plugin is connected to Wave Link.",
           "default": "false"
+        },
+        {
+          "id": "com.kylergib.wavelink_3.WaveLink.state.mainOutput",
+          "type": "text",
+          "desc": "The main output in Wave Link.",
+          "default": ""
         }
       ],
       "events": [],

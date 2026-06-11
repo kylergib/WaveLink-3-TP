@@ -36,6 +36,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public string IpAddress { get; set; } = WaveLink.SDK.Statics.Localhost;
     public bool SubscribeToFocusedApp { get; set; } = true;
 
+    public EventHandler<WaveLinkStateEvent<MainOutput>>? OnMainOutputUpdated;
     public EventHandler<WaveLinkStateEvent<SDK.Models.Channel>>? OnChannelUpdated;
     public EventHandler<App>? OnFocusedAppUpdated;
     public EventHandler<WaveLinkStateEvent<InputDevice>>? OnInputDeviceUpdated;
@@ -203,6 +204,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetOuputDevice)):
                 SetOuputDevice(message);
                 break;
+            case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetMainOutputDevice)):
+                SetMainOutputDevice(message);
+                break;
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetLevelChannel)):
                 SetLevelChannel(message);
                 break;
@@ -218,6 +222,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(AddToChannel)):
                 SetMuteInput(message);
                 break;
+            case var _ when message.ActionId == TouchPortalIdHelper.ActionId(nameof(SetChannelEffect)):
+                SetChannelEffect(message);
+                break;
             default:
                 _logger.LogWarning("Action not implemented");
                 break;
@@ -231,15 +238,21 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     public void OnListChangedEvent(ListChangeEvent message)
     {
         _logger?.LogDebug($"[OnListChanged] {message.ListId}/{message.ActionId}/{message.InstanceId} '{message.Value}'");
+        _logger?.LogInformation($"[OnListChanged] {message.ListId}/{message.ActionId}/{message.InstanceId} '{message.Value}'");
 
-        //switch (message.ListId)
-        //{
-        //    //Dynamically updates the dropdown of data3 based on value chosen from data2 dropdown:
-        //    case "category1.action1.data2" when message.InstanceId is not null:
-        //        var prefix = message.Value;
-        //        _client.ChoiceUpdate("category1.action1.data3", new[] { $"{prefix} second 1", $"{prefix} second 2", $"{prefix} second 3" }, message.InstanceId);
-        //        break;
-        //}
+        switch (message.ListId)
+        {
+           //Dynamically updates the dropdown of data3 based on value chosen from data2 dropdown:
+           case var _ when message.ListId == TouchPortalIdHelper.ChannelListId && message.InstanceId is not null:
+                var channelName = message.Value;
+                // find the channel with the name of prefix
+                var channel = WaveLinkHandler?.Client?.StateManager.Channels.Find(c => c.Name == channelName);
+                if (channel != null)
+                {
+                    _client.ChoiceUpdate(TouchPortalIdHelper.EffectListId, channel.Effects?.Select(e => e.Name).ToArray(), message.InstanceId);
+                }
+               break;
+        }
     }
     public void OnBroadcastEvent(BroadcastEvent message)
     {
@@ -323,27 +336,6 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             }
         }
         _logger?.LogDebug($"[OnNotificationOptionClickedEvent] NotificationId: '{message.NotificationId}', OptionId: '{message.OptionId}'");
-        //if (message.NotificationId is "TouchPortal.SamplePlugin|update")
-        //{
-        //    switch (message.OptionId)
-        //    {
-        //        //Example for opening a web browser (windows):
-        //        case "update":
-        //            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        //            {
-        //                UseShellExecute = true,
-        //                FileName = "https://www.nuget.org/packages/TouchPortalSDK/"
-        //            });
-        //            break;
-        //        case "readMore":
-        //            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-        //            {
-        //                UseShellExecute = true,
-        //                FileName = "https://github.com/oddbear/TouchPortalSDK/"
-        //            });
-        //            break;
-        //    }
-        //}
     }
 
     public void OnConnecterChangeEvent(ConnectorChangeEvent message)
@@ -471,6 +463,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                     _logger.LogDebug($"Input ID: {output.Id}, Name: {output.Name}, Level: {output.Level}, IsMuted: {output.IsMuted}");
                 }
             }
+            StateUpdateIfChanged(TouchPortalIdHelper.MainOutputId, response?.Result?.MainOutput?.Name?.ToString());
             _logger.LogDebug("");
         };
 
@@ -479,6 +472,10 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             var channels = response?.Result?.Channels ?? [];
             foreach (var channel in channels ?? [])
             {
+                _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
+                _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
+                ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
+
                 channel.Mixes?.ForEach(mix =>
                 {
                     var foundMix = WaveLinkHandler?.Client?.StateManager.Mixes.FirstOrDefault(m => m.Id == mix.Id);
@@ -489,30 +486,17 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                     _client.CreateState(TouchPortalIdHelper.ChannelLevel(comboName), $"Ch: {channel.Name}, Mix: {foundMix.Name} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelMixCategoryName);
                     _client.CreateState(TouchPortalIdHelper.ChannelMute(comboName), $"Ch: {channel.Name}, Mix: {foundMix.Name} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.ChannelMixCategoryName);
                 });
+
+                channel.Effects?.ForEach(effect =>
+                {
+                    _logger.LogDebug($"Effect ID: {effect.Id}, Name: {effect.Name}, Type: {effect.IsEnabled}, Channel: {channel.Name}");
+                    var comboName = channel.Name + effect.Name;
+                    _client.CreateState(TouchPortalIdHelper.ChannelEffect(comboName), $"Ch: {channel.Name}, Effect: {effect.Name}", effect.IsEnabled ?? false ? "enabled" : "disabled", TouchPortalIdHelper.ChannelEffectCategoryName);
+                });
             }
 
             _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
             _logger.LogDebug("Received Channels Info:");
-            foreach (var channel in channels!)
-            {
-                _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
-                _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
-                ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
-
-                _logger.LogDebug($"Channel ID: {channel.Id}, Name: {channel.Name}, Level: {channel.Level}, IsMuted: {channel.IsMuted}, Type: {channel.Type}, ImageNull: {string.IsNullOrEmpty(channel.Image?.ImgData)}");
-                foreach (var app in channel.Apps ?? [])
-                {
-                    _logger.LogDebug($"App ID: {app.Id}, Name: {app.Name}");
-                }
-                foreach (var mix in channel.Mixes ?? [])
-                {
-                    _logger.LogDebug($"Mix ID: {mix.Id}, Level: {mix.Level}, IsMuted: {mix.IsMuted}");
-                }
-                foreach (var effect in channel.Effects ?? [])
-                {
-                    //_logger.LogDebug($"Effect ID: {effect.Id}, Name: {effect.Name}, Type: {effect.Type}");
-                }
-            }
             _logger.LogDebug("");
         };
 
@@ -529,6 +513,14 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
                 _logger.LogDebug($"Mix ID: {mix.Id}, Name: {mix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {mix.Image?.Name}\n");
             }
+        };
+
+        OnMainOutputUpdated = (sender, result) =>
+        {
+            var mainOutput = result.Item;
+            _logger.LogDebug("Received Main Output update:");
+            _logger.LogDebug($"Main Output ID: {mainOutput.OutputDeviceId}, Name: {mainOutput.Name}\n");
+            StateUpdateIfChanged(TouchPortalIdHelper.MainOutputId, mainOutput.Name?.ToString());
         };
 
         OnChannelUpdated = (sender, result) =>
@@ -552,12 +544,13 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 var comboName = channel.Name + foundMix.Name;
                 ShortConnectorUpdateHelper(comboName, ToInt(mix.Level ?? 0), ChannelShortConnectorIds);
                 _logger.LogDebug($"Mix ID: {foundMix.Id}, Name: {foundMix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {foundMix.Image?.Name}\n");
-                 StateUpdateIfChanged(TouchPortalIdHelper.ChannelMute(comboName), mix.IsMuted.ToString());
+                StateUpdateIfChanged(TouchPortalIdHelper.ChannelMute(comboName), mix.IsMuted.ToString());
                 StateUpdateIfChanged(TouchPortalIdHelper.ChannelLevel(comboName), ToInt(mix.Level ?? 0).ToString());
             }
             foreach (var effect in channel.Effects ?? [])
             {
-                //_logger.LogDebug($"Effect ID: {effect.Id}, Name: {effect.Name}, Type: {effect.Type}");
+                var comboName = channel.Name + effect.Name;
+                StateUpdateIfChanged(TouchPortalIdHelper.ChannelEffect(comboName), effect.IsEnabled ?? false ? "enabled" : "disabled");
             }
         };
 
@@ -764,6 +757,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     }
     public void SubscribeToEvents()
     {
+        WaveLinkHandler?.Client?.StateManager.OnMainOutputUpdated += OnMainOutputUpdated;
         WaveLinkHandler?.Client?.StateManager.OnChannelUpdated += OnChannelUpdated;
         WaveLinkHandler?.Client?.StateManager.OnFocusedAppUpdated += OnFocusedAppUpdated;
         WaveLinkHandler?.Client?.StateManager.OnInputDeviceUpdated += OnInputDeviceUpdated;
@@ -785,6 +779,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
     public void ClearEvents()
     {
+        WaveLinkHandler?.Client?.StateManager.OnMainOutputUpdated -= OnMainOutputUpdated;
         WaveLinkHandler?.Client?.StateManager.OnChannelUpdated -= OnChannelUpdated;
         WaveLinkHandler?.Client?.StateManager.OnFocusedAppUpdated -= OnFocusedAppUpdated;
         WaveLinkHandler?.Client?.StateManager.OnInputDeviceUpdated -= OnInputDeviceUpdated;
@@ -891,6 +886,19 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
     }
 
+    public void SetMainOutputDevice(ActionEvent message)
+    {
+        var outputName = message[TouchPortalIdHelper.OutputListId] ?? "<null>";
+
+        if (!string.IsNullOrEmpty(outputName))
+        {
+            WaveLinkHandler?.SetMainOutput(outputName);
+        } else
+        {
+            _logger?.LogWarning($"OutputName is null or empty: '{outputName}'");
+        }
+    }
+
     // channel actions
     public void SetLevelChannel(ActionEvent message)
     {
@@ -967,6 +975,19 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
     }
 
+    public void SetChannelEffect(ActionEvent message)
+    {
+        var channelName = message[TouchPortalIdHelper.ChannelListId] ?? "<null>";
+        var enableValue = message[TouchPortalIdHelper.ActionDataValue(nameof(SetChannelEffect))] ?? "<null>";
+        var effectName = message[TouchPortalIdHelper.EffectListId] ?? "<null>";
+        // _client.
+        if (!string.IsNullOrEmpty(channelName) &&
+            !string.IsNullOrEmpty(enableValue) &&
+            !string.IsNullOrEmpty(effectName))
+        {
+            WaveLinkHandler?.SetChannelEffect(channelName, effectName, enableValue);
+        }
+    }
     // subscribe to focus app changes
     public void SetFocusAppNotification(ActionEvent message)
     {

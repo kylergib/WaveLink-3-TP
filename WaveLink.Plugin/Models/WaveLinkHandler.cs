@@ -241,6 +241,31 @@ public class WaveLinkHandler
         }
     }
 
+    public void SetMainOutput(string outputName)
+    {
+        var outputDevice = Client?.StateManager.OutputDevices.Find(c => c.Name == outputName);
+
+        var output = outputDevice?.Outputs?[0] ?? null;
+
+        if (output != null)
+        {
+            MethodMainOutputInfo outputInfo = new()
+            {
+                MainOutput = new MainOutput
+                {
+                    OutputDeviceId = outputDevice?.Id ?? string.Empty,
+                    OutputId = output.Id ?? string.Empty
+                }
+            };
+
+            WaveLinkSendMethod<MethodMainOutputInfo> setOutputDeviceRequest = new(WaveLinkMethod.setOutputDevice, outputInfo);
+            _ = Client?.SendRequestAsync<MethodMainOutputInfo>(setOutputDeviceRequest);
+        } else
+        {
+            _logger?.LogWarning($"Output is null: '{outputName}'");
+        }
+    }
+
     public void SetChannel(string channelName, string? shouldMute = null, decimal? newLevel = null, AdjustmentType? adjustmentType = AdjustmentType.Fixed, string? mixName = null)
     {
         var channel = Client?.StateManager.Channels.Find(c => c.Name == channelName);
@@ -313,6 +338,32 @@ public class WaveLinkHandler
         }
     }
 
+    public void SetChannelEffect(string channelName, string effectName, string shouldEnable)
+    {
+        var channel = Client?.StateManager.Channels.Find(c => c.Name == channelName);
+        var effect = channel?.Effects?.Find(e => e.Name == effectName);
+        if (channel == null && effect == null)
+        {
+            _logger.LogWarning($"Channel or effect is null: '{channelName}' - '{effectName}'");
+            return;
+        }
+
+        MethodChannelEffectInfo channelEffectInfo = new()
+        {
+            Id = channel?.Id ?? string.Empty,
+            Effects = new List<MethodEffectInfo>
+            {
+                new MethodEffectInfo
+                {
+                    Id = effect?.Id ?? string.Empty,
+                    IsEnabled = ConvertIsMuted(shouldEnable, effect?.IsEnabled) ?? true
+                }
+            }
+        };
+        WaveLinkSendMethod<MethodChannelEffectInfo> request = new(WaveLinkMethod.setChannel, channelEffectInfo);
+        _ = Client?.SendRequestAsync<MethodChannelEffectInfo>(request);
+    }
+
     public void SetFocusAppSubscription(string subscribe)
     {
         WaveLinkSendMethod<MethodSubscriptionInfo> request = new(WaveLinkMethod.setSubscription, new() { FocusedAppChanged = new() { IsEnabled = ConvertIsMuted(subscribe, true) ?? true } });
@@ -340,7 +391,7 @@ public class WaveLinkHandler
     public bool? ConvertIsMuted(string? value, bool? currentValue)
     {
         if (value == "toggle") return !currentValue ?? null;
-        else if (value != null) return value.ToLower() == "true";
+        else if (value != null) return value.ToLower() == "true" || value.ToLower() == "enable";
         return null;
     }
 

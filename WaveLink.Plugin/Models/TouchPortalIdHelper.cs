@@ -26,15 +26,18 @@ public static class TouchPortalIdHelper
     public static string MixMutedCategoryName = "Mixes Muted";
 
     public static string ChannelMixCategoryName = "Channel/Mix";
+    public static string ChannelEffectCategoryName = "Channel/Effect";
 
     // states - choice lists
     public static string OutputListId => BaseCategory + ".state.outputDeviceList";
     public static string InputListId => BaseCategory + ".state.inputDeviceList";
     public static string ChannelListId => BaseCategory + ".state.channelsList";
     public static string MixListId => BaseCategory + ".state.mixesList";
+    public static string EffectListId => BaseCategory + ".state.effectsList";
 
     // states
     public static string FocusedAppId => BaseCategory + ".state.focusedApp";
+    public static string MainOutputId => BaseCategory + ".state.mainOutput";
     public static string IsConnectedToWaveLinkId => BaseCategory + ".state.isConnectedToWaveLink";
 
 
@@ -46,6 +49,7 @@ public static class TouchPortalIdHelper
 
     public static string ChannelLevel(string channelName) => $"{Statics.PluginId}.state.{channelName}.level";
     public static string ChannelMute(string channelName) => $"{Statics.PluginId}.state.{channelName}.mute";
+    public static string ChannelEffect(string comboName) => $"{Statics.PluginId}.state.{comboName}.effect";
 
     public static string MixLevel(string mixName) => $"{Statics.PluginId}.state.{mixName}.level";
     public static string MixMute(string mixName) => $"{Statics.PluginId}.state.{mixName}.mute";
