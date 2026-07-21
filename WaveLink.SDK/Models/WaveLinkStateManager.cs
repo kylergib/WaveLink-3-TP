@@ -415,7 +415,7 @@ public class WaveLinkStateManager
             _logger.LogDebug("Mix removed: {MixId}", removedMix.Id);
         }
     }
-    public void UpdateOutputDevice(OutputDevice updated, bool isResult)
+    public void UpdateOutputDevice(OutputDevice updated, bool isResult, bool isFullDeviceSnapshot = false)
     {
         var index = OutputDevices.FindIndex(d => d.Id == updated.Id);
         if (index < 0) return;
@@ -425,7 +425,12 @@ public class WaveLinkStateManager
         bool deviceChanged = !existingDevice.Equals(updated);
         bool outputsChanged = false;
 
-        existingDevice.Name = updated.Name ?? existingDevice.Name;
+        // outputDeviceChanged reports the endpoint name for commonWave devices, not the configured device name.
+        // Keep the canonical device name from getOutputDevices/outputDevicesChanged for Touch Portal lookups.
+        if (isFullDeviceSnapshot)
+        {
+            existingDevice.Name = updated.Name ?? existingDevice.Name;
+        }
         existingDevice.Type = updated.Type ?? existingDevice.Type;
 
         foreach (var oldOutput in existingDevice.Outputs ?? [])
@@ -450,13 +455,13 @@ public class WaveLinkStateManager
     }
     public void UpdateOutputDevices(List<OutputDevice> updatedDevices, bool isResult)
     {
-        var currentDevices = OutputDevices.Where(d => updatedDevices.Any(ud => ud.Id == d.Id)).ToList();
+        var currentDevices = updatedDevices.Where(updatedDevice => OutputDevices.Any(device => device.Id == updatedDevice.Id)).ToList();
         var missingDevices = updatedDevices.Where(ud => !OutputDevices.Any(d => d.Id == ud.Id)).ToList();
         var removedDevices = OutputDevices.Where(d => !updatedDevices.Any(ud => ud.Id == d.Id)).ToList();
 
         foreach (var updatedDevice in currentDevices)
         {
-            UpdateOutputDevice(updatedDevice, isResult);
+            UpdateOutputDevice(updatedDevice, isResult, isFullDeviceSnapshot: true);
         }
         foreach (var missingDevice in missingDevices)
         {
