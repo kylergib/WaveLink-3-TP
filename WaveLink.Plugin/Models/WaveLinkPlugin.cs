@@ -344,16 +344,16 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         _logger?.LogDebug($"[OnConnecterChangeEvent] ConnectorId: '{message.ConnectorId}', Value: '{message.Value}'");
         switch (message.ConnectorId)
         {
-            case var _ when message.ConnectorId == TouchPortalIdHelper.InputVolumeConnector:
+            case var _ when ConnectorIdMatches(message.ConnectorId, TouchPortalIdHelper.InputVolumeConnector):
                 SetLevelInput(message);
                 break;
-            case var _ when message.ConnectorId == TouchPortalIdHelper.OutputVolumeConnector:
+            case var _ when ConnectorIdMatches(message.ConnectorId, TouchPortalIdHelper.OutputVolumeConnector):
                 SetLevelOutput(message);
                 break;
-            case var _ when message.ConnectorId == TouchPortalIdHelper.ChannelVolumeConnector:
+            case var _ when ConnectorIdMatches(message.ConnectorId, TouchPortalIdHelper.ChannelVolumeConnector):
                 SetLevelChannel(message);
                 break;
-            case var _ when message.ConnectorId == TouchPortalIdHelper.MixVolumeConnector:
+            case var _ when ConnectorIdMatches(message.ConnectorId, TouchPortalIdHelper.MixVolumeConnector):
                 SetLevelMix(message);
                 break;
         }
@@ -369,26 +369,26 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         string? mixName = null;
         Dictionary<string, List<string>>? shortConnectorIds = null;
 
-        if (message.ActualConnectorId == TouchPortalIdHelper.InputVolumeConnector)
+        if (ConnectorIdMatches(message.ActualConnectorId, TouchPortalIdHelper.InputVolumeConnector))
         {
-            message.Data.TryGetValue(TouchPortalIdHelper.InputListId, out selectionName);
+            TryGetConnectorDataValue(message.Data, TouchPortalIdHelper.InputListId, out selectionName);
             shortConnectorIds = InputShortConnectorIds;
         }
-        else if (message.ActualConnectorId == TouchPortalIdHelper.OutputVolumeConnector)
+        else if (ConnectorIdMatches(message.ActualConnectorId, TouchPortalIdHelper.OutputVolumeConnector))
         {
-            message.Data.TryGetValue(TouchPortalIdHelper.OutputListId, out selectionName);
+            TryGetConnectorDataValue(message.Data, TouchPortalIdHelper.OutputListId, out selectionName);
             shortConnectorIds = OutputShortConnectorIds;
         }
-        else if (message.ActualConnectorId == TouchPortalIdHelper.ChannelVolumeConnector)
+        else if (ConnectorIdMatches(message.ActualConnectorId, TouchPortalIdHelper.ChannelVolumeConnector))
         {
-            message.Data.TryGetValue(TouchPortalIdHelper.ChannelListId, out channelName);
-            message.Data.TryGetValue(TouchPortalIdHelper.MixListId, out mixName);
+            TryGetConnectorDataValue(message.Data, TouchPortalIdHelper.ChannelListId, out channelName);
+            TryGetConnectorDataValue(message.Data, TouchPortalIdHelper.MixListId, out mixName);
             selectionName = channelName + mixName;
             shortConnectorIds = ChannelShortConnectorIds;
         }
-        else if (message.ActualConnectorId == TouchPortalIdHelper.MixVolumeConnector)
+        else if (ConnectorIdMatches(message.ActualConnectorId, TouchPortalIdHelper.MixVolumeConnector))
         {
-            message.Data.TryGetValue(TouchPortalIdHelper.MixListId, out selectionName);
+            TryGetConnectorDataValue(message.Data, TouchPortalIdHelper.MixListId, out selectionName);
             shortConnectorIds = MixShortConnectorIds;
         }
 
@@ -434,6 +434,43 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         }
     }
 
+    private bool ConnectorIdMatches(string? actualConnectorId, string expectedConnectorId)
+    {
+        if (actualConnectorId == expectedConnectorId) return true;
+
+        const string connectorMarker = ".WaveLink.connector.";
+        var connectorMarkerIndex = expectedConnectorId.IndexOf(connectorMarker, StringComparison.Ordinal);
+        if (string.IsNullOrEmpty(actualConnectorId) || connectorMarkerIndex < 0) return false;
+
+        var connectorSuffix = expectedConnectorId[connectorMarkerIndex..];
+        return actualConnectorId.EndsWith(connectorSuffix, StringComparison.Ordinal);
+    }
+
+    private bool TryGetConnectorDataValue(Dictionary<string, string> data, string expectedStateId, out string? value)
+    {
+        if (data.TryGetValue(expectedStateId, out value)) return true;
+
+        const string stateMarker = ".WaveLink.state.";
+        var stateMarkerIndex = expectedStateId.IndexOf(stateMarker, StringComparison.Ordinal);
+        if (stateMarkerIndex >= 0)
+        {
+            var stateSuffix = expectedStateId[stateMarkerIndex..];
+            var match = data.FirstOrDefault(item => item.Key.EndsWith(stateSuffix, StringComparison.Ordinal));
+            if (!string.IsNullOrEmpty(match.Key))
+            {
+                value = match.Value;
+                _logger?.LogDebug("Matched connector selector data key '{ActualStateId}' to expected state '{ExpectedStateId}'.",
+                    match.Key, expectedStateId);
+                return true;
+            }
+        }
+
+        value = null;
+        _logger?.LogDebug("Connector selector data for expected state '{ExpectedStateId}' was not present. Available keys: {DataKeys}.",
+            expectedStateId, string.Join(", ", data.Keys));
+        return false;
+    }
+
     private bool TryGetCurrentSliderValue(string connectorId, string selectionName, string? channelName, string? mixName, out int value)
     {
         value = 0;
@@ -444,7 +481,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             return false;
         }
 
-        if (connectorId == TouchPortalIdHelper.InputVolumeConnector)
+        if (ConnectorIdMatches(connectorId, TouchPortalIdHelper.InputVolumeConnector))
         {
             var input = stateManager.InputDevices.SelectMany(device => device.Inputs ?? [])
                 .FirstOrDefault(item => item.Name == selectionName);
@@ -454,7 +491,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 return true;
             }
         }
-        else if (connectorId == TouchPortalIdHelper.OutputVolumeConnector)
+        else if (ConnectorIdMatches(connectorId, TouchPortalIdHelper.OutputVolumeConnector))
         {
             var output = stateManager.OutputDevices.SelectMany(device => device.Outputs ?? [])
                 .FirstOrDefault(item => item.Name == selectionName);
@@ -464,7 +501,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 return true;
             }
         }
-        else if (connectorId == TouchPortalIdHelper.ChannelVolumeConnector)
+        else if (ConnectorIdMatches(connectorId, TouchPortalIdHelper.ChannelVolumeConnector))
         {
             var channel = stateManager.Channels.FirstOrDefault(item => item.Name == channelName);
             if (channel == null) return false;
@@ -488,7 +525,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 }
             }
         }
-        else if (connectorId == TouchPortalIdHelper.MixVolumeConnector)
+        else if (ConnectorIdMatches(connectorId, TouchPortalIdHelper.MixVolumeConnector))
         {
             var mix = stateManager.Mixes.FirstOrDefault(item => item.Name == selectionName);
             if (mix?.Level is decimal level)
@@ -1125,9 +1162,18 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
             return;
         }
 
-        _lastShortConnectorValues[shortId] = value;
         _logger?.LogDebug("Sending short connector update for '{ShortId}' with value {Value}.", shortId, value);
-        _client.ConnectorUpdateShort(shortId, value);
+        var sent = _client.ConnectorUpdateShort(shortId, value);
+        if (sent)
+        {
+            _lastShortConnectorValues[shortId] = value;
+            _logger?.LogDebug("Touch Portal SDK accepted short connector update for '{ShortId}' with value {Value}.", shortId, value);
+        }
+        else
+        {
+            _logger?.LogWarning("Touch Portal SDK failed to send short connector update for '{ShortId}' with value {Value}; the value was not cached and can be retried.",
+                shortId, value);
+        }
     }
 
     // helper function to update short connector ids
@@ -1192,7 +1238,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
             _logger.LogInformation($"Newest version available is: {newestVersion}");
             _logger.LogInformation($"Current version is: {PluginVersion}");
-            _logger.LogInformation($"This is a beta.");
+            _logger.LogInformation($"BETA 2");
             
             if (PluginVersion < newestVersion) return tag;
         }
