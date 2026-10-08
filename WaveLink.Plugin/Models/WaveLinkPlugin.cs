@@ -1192,6 +1192,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
             _logger.LogInformation($"Newest version available is: {newestVersion}");
             _logger.LogInformation($"Current version is: {PluginVersion}");
+            _logger.LogInformation($"This is a beta.");
             
             if (PluginVersion < newestVersion) return tag;
         }
