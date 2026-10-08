@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime;
 using System.Text.Json;
@@ -157,9 +157,9 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         _logger?.LogInformation("Trying to connect to Wave Link on: {IpAddress}", IpAddress);
         WaveLinkHandler = new(_loggerFactory, IpAddress, WaveLink.SDK.Statics.DefaultPort);
         WaveLinkHandler.SubscribeToFocusApp = SubscribeToFocusedApp;
-        WaveLinkHandler?.Start();
         WaveLinkHandler?.OnConnection += (sender, args) =>
         {
+            _logger?.LogDebug("Wave Link connection callback received; initializing plugin event handlers and subscriptions.");
             InitializeEventHandler();
             SubscribeToEvents();
             StateUpdateIfChanged(TouchPortalIdHelper.IsConnectedToWaveLinkId, "true");
@@ -168,6 +168,7 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         {
             StateUpdateIfChanged(TouchPortalIdHelper.IsConnectedToWaveLinkId, "false");
         };
+        WaveLinkHandler?.Start();
     }
     public async Task DisconnectFromWaveLink()
     {
@@ -360,69 +361,145 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
 
     public void OnShortConnectorIdNotificationEvent(ShortConnectorIdNotificationEvent message)
     {
-        _logger?.LogDebug($"[OnShortConnectorIdNotificationEvent] ConnectorId: '{message.ConnectorId}', ShortID: '{message.ShortId}'");
+        _logger?.LogDebug("[OnShortConnectorIdNotificationEvent] ConnectorId: '{ConnectorId}', ActualConnectorId: '{ActualConnectorId}', ShortID: '{ShortId}'",
+            message.ConnectorId, message.ActualConnectorId, message.ShortId);
+
+        string? selectionName = null;
+        string? channelName = null;
+        string? mixName = null;
+        Dictionary<string, List<string>>? shortConnectorIds = null;
+
         if (message.ActualConnectorId == TouchPortalIdHelper.InputVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.InputListId];
-            if (string.IsNullOrEmpty(value)) return;
-            if (!InputShortConnectorIds.TryGetValue(value, out var shortIdList))
-            {
-                shortIdList = new();
-            }
-            if (!shortIdList.Contains(message.ShortId))
-            {
-                shortIdList.Add(message.ShortId);
-                InputShortConnectorIds[value] = shortIdList;
-            }
+            message.Data.TryGetValue(TouchPortalIdHelper.InputListId, out selectionName);
+            shortConnectorIds = InputShortConnectorIds;
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.OutputVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.OutputListId];
-            if (string.IsNullOrEmpty(value)) return;
-
-            if (!OutputShortConnectorIds.TryGetValue(value, out var shortIdList))
-            {
-                shortIdList = new();
-            }
-            if (!shortIdList.Contains(message.ShortId))
-            {
-                shortIdList.Add(message.ShortId);
-                OutputShortConnectorIds[value] = shortIdList;
-            }
+            message.Data.TryGetValue(TouchPortalIdHelper.OutputListId, out selectionName);
+            shortConnectorIds = OutputShortConnectorIds;
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.ChannelVolumeConnector)
         {
-            var channelName = message.Data[TouchPortalIdHelper.ChannelListId];
-            var mixName = message.Data[TouchPortalIdHelper.MixListId];
-            var value = channelName + mixName;
-            if (string.IsNullOrEmpty(value)) return;
-
-            if (!ChannelShortConnectorIds.TryGetValue(value, out var shortIdList))
-            {
-                shortIdList = new();
-            }
-            if (!shortIdList.Contains(message.ShortId))
-            {
-                shortIdList.Add(message.ShortId);
-                ChannelShortConnectorIds[value] = shortIdList;
-            }
-
+            message.Data.TryGetValue(TouchPortalIdHelper.ChannelListId, out channelName);
+            message.Data.TryGetValue(TouchPortalIdHelper.MixListId, out mixName);
+            selectionName = channelName + mixName;
+            shortConnectorIds = ChannelShortConnectorIds;
         }
         else if (message.ActualConnectorId == TouchPortalIdHelper.MixVolumeConnector)
         {
-            var value = message.Data[TouchPortalIdHelper.MixListId];
-            if (string.IsNullOrEmpty(value)) return;
+            message.Data.TryGetValue(TouchPortalIdHelper.MixListId, out selectionName);
+            shortConnectorIds = MixShortConnectorIds;
+        }
 
-            if (!MixShortConnectorIds.TryGetValue(value, out var shortIdList))
+        if (shortConnectorIds == null)
+        {
+            _logger?.LogDebug("Ignoring short connector notification for unsupported connector '{ActualConnectorId}'.", message.ActualConnectorId);
+            return;
+        }
+
+        if (string.IsNullOrEmpty(selectionName) || (shortConnectorIds == ChannelShortConnectorIds && string.IsNullOrEmpty(channelName)))
+        {
+            _logger?.LogDebug("Cannot initialize short connector '{ShortId}': selection values were empty or missing (selection '{SelectionName}', channel '{ChannelName}', mix '{MixName}').",
+                message.ShortId, selectionName, channelName, mixName);
+            return;
+        }
+
+        if (!shortConnectorIds.TryGetValue(selectionName, out var shortIdList))
+        {
+            shortIdList = new();
+            shortConnectorIds[selectionName] = shortIdList;
+        }
+
+        if (!shortIdList.Contains(message.ShortId))
+        {
+            shortIdList.Add(message.ShortId);
+            _logger?.LogDebug("Registered short connector '{ShortId}' for selection '{SelectionName}'.", message.ShortId, selectionName);
+        }
+        else
+        {
+            _logger?.LogDebug("Short connector '{ShortId}' is already registered for selection '{SelectionName}'.", message.ShortId, selectionName);
+        }
+
+        if (TryGetCurrentSliderValue(message.ActualConnectorId, selectionName, channelName, mixName, out var currentValue))
+        {
+            _logger?.LogDebug("Backfilling short connector '{ShortId}' for selection '{SelectionName}' with current slider value {Value}.",
+                message.ShortId, selectionName, currentValue);
+            ConnectorUpdateShortIfChanged(message.ShortId, currentValue);
+        }
+        else
+        {
+            _logger?.LogDebug("Current slider value unavailable for short connector '{ShortId}' (connector '{ActualConnectorId}', selection '{SelectionName}'); a later Wave Link update can initialize it.",
+                message.ShortId, message.ActualConnectorId, selectionName);
+        }
+    }
+
+    private bool TryGetCurrentSliderValue(string connectorId, string selectionName, string? channelName, string? mixName, out int value)
+    {
+        value = 0;
+        var stateManager = WaveLinkHandler?.Client?.StateManager;
+        if (stateManager == null)
+        {
+            _logger?.LogDebug("Cannot resolve slider value for '{SelectionName}': Wave Link state manager is not available yet.", selectionName);
+            return false;
+        }
+
+        if (connectorId == TouchPortalIdHelper.InputVolumeConnector)
+        {
+            var input = stateManager.InputDevices.SelectMany(device => device.Inputs ?? [])
+                .FirstOrDefault(item => item.Name == selectionName);
+            if (input?.Gain?.Value is decimal level)
             {
-                shortIdList = new();
-            }
-            if (!shortIdList.Contains(message.ShortId))
-            {
-                shortIdList.Add(message.ShortId);
-                MixShortConnectorIds[value] = shortIdList;
+                value = ToInt(level);
+                return true;
             }
         }
+        else if (connectorId == TouchPortalIdHelper.OutputVolumeConnector)
+        {
+            var output = stateManager.OutputDevices.SelectMany(device => device.Outputs ?? [])
+                .FirstOrDefault(item => item.Name == selectionName);
+            if (output?.Level is decimal level)
+            {
+                value = ToInt(level);
+                return true;
+            }
+        }
+        else if (connectorId == TouchPortalIdHelper.ChannelVolumeConnector)
+        {
+            var channel = stateManager.Channels.FirstOrDefault(item => item.Name == channelName);
+            if (channel == null) return false;
+
+            if (string.IsNullOrEmpty(mixName))
+            {
+                if (channel.Level is decimal level)
+                {
+                    value = ToInt(level);
+                    return true;
+                }
+            }
+            else
+            {
+                var mix = stateManager.Mixes.FirstOrDefault(item => item.Name == mixName);
+                var channelMix = channel.Mixes?.FirstOrDefault(item => item.Id == mix?.Id);
+                if (channelMix?.Level is decimal level)
+                {
+                    value = ToInt(level);
+                    return true;
+                }
+            }
+        }
+        else if (connectorId == TouchPortalIdHelper.MixVolumeConnector)
+        {
+            var mix = stateManager.Mixes.FirstOrDefault(item => item.Name == selectionName);
+            if (mix?.Level is decimal level)
+            {
+                value = ToInt(level);
+                return true;
+            }
+        }
+
+        _logger?.LogDebug("No current Wave Link level found for connector '{ConnectorId}' and selection '{SelectionName}'.", connectorId, selectionName);
+        return false;
     }
 
     public void InitializeEventHandler()
@@ -470,8 +547,15 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         OnReceivedGetChannels = async (s, response) =>
         {
             var channels = response?.Result?.Channels ?? [];
+            var channelCount = channels?.Count ?? 0;
+            _logger.LogDebug("Received getChannels response with request ID {RequestId}; result is {ResultStatus} and contains {ChannelCount} channel(s).",
+                response?.Id, response?.Result == null ? "null" : "present", channelCount);
+
             foreach (var channel in channels ?? [])
             {
+                _logger.LogDebug("Processing channel result: ID '{ChannelId}', name '{ChannelName}', level {Level} ({LevelPercent}%), muted {IsMuted}, {MixCount} mix(es), {EffectCount} effect(s).",
+                    channel.Id, channel.Name, channel.Level, ToInt(channel.Level ?? 0), channel.IsMuted, channel.Mixes?.Count ?? 0, channel.Effects?.Count ?? 0);
+                _logger.LogDebug("Creating mute and level states for channel '{ChannelName}'.", channel.Name);
                 _client.CreateState(TouchPortalIdHelper.ChannelMute(channel.Name!), $"{channel.Name!} muted", channel.IsMuted.ToString(), TouchPortalIdHelper.ChannelMutedCategoryName);
                 _client.CreateState(TouchPortalIdHelper.ChannelLevel(channel.Name!), $"{channel.Name!} level", ToInt(channel.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelLevelCategoryName);
                 ShortConnectorUpdateHelper(channel.Name, ToInt(channel.Level ?? 0), ChannelShortConnectorIds);
@@ -479,25 +563,34 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
                 channel.Mixes?.ForEach(mix =>
                 {
                     var foundMix = WaveLinkHandler?.Client?.StateManager.Mixes.FirstOrDefault(m => m.Id == mix.Id);
-                    if (mix == null || foundMix == null) return;
+                    if (foundMix == null)
+                    {
+                        _logger.LogDebug("Could not match channel mix ID '{MixId}' for channel '{ChannelName}' to a mix in the Wave Link state manager; skipping its dynamic states.",
+                            mix.Id, channel.Name);
+                        return;
+                    }
+
                     var comboName = channel.Name + foundMix.Name;
+                    _logger.LogDebug("Processing channel mix: channel '{ChannelName}', mix '{MixName}' (ID '{MixId}'), level {Level} ({LevelPercent}%), muted {IsMuted}.",
+                        channel.Name, foundMix.Name, foundMix.Id, mix.Level, ToInt(mix.Level ?? 0), mix.IsMuted);
                     ShortConnectorUpdateHelper(comboName, ToInt(mix.Level ?? 0), ChannelShortConnectorIds);
-                    _logger.LogDebug($"Mix ID: {foundMix.Id}, Name: {foundMix.Name}, Level: {mix.Level}, IsMuted: {mix.IsMuted}, ImageName: {foundMix.Image?.Name}\n");
+                    _logger.LogDebug("Creating channel-mix mute and level states for selection '{SelectionName}'.", comboName);
                     _client.CreateState(TouchPortalIdHelper.ChannelLevel(comboName), $"Ch: {channel.Name}, Mix: {foundMix.Name} level", ToInt(mix.Level ?? 0).ToString(), TouchPortalIdHelper.ChannelMixCategoryName);
                     _client.CreateState(TouchPortalIdHelper.ChannelMute(comboName), $"Ch: {channel.Name}, Mix: {foundMix.Name} muted", mix.IsMuted.ToString(), TouchPortalIdHelper.ChannelMixCategoryName);
                 });
 
                 channel.Effects?.ForEach(effect =>
                 {
-                    _logger.LogDebug($"Effect ID: {effect.Id}, Name: {effect.Name}, Type: {effect.IsEnabled}, Channel: {channel.Name}");
                     var comboName = channel.Name + effect.Name;
+                    _logger.LogDebug("Creating effect state for channel '{ChannelName}', effect '{EffectName}' (ID '{EffectId}'), enabled {IsEnabled}.",
+                        channel.Name, effect.Name, effect.Id, effect.IsEnabled ?? false);
                     _client.CreateState(TouchPortalIdHelper.ChannelEffect(comboName), $"Ch: {channel.Name}, Effect: {effect.Name}", effect.IsEnabled ?? false ? "enabled" : "disabled", TouchPortalIdHelper.ChannelEffectCategoryName);
                 });
             }
 
             _client.ChoiceUpdate(TouchPortalIdHelper.ChannelListId, channels?.Select(c => c.Name).ToArray());
-            _logger.LogDebug("Received Channels Info:");
-            _logger.LogDebug("");
+            _logger.LogDebug("Published {ChannelCount} channel choice(s) to Touch Portal; completed processing getChannels response {RequestId}.",
+                channelCount, response?.Id);
         };
 
         OnReceivedGetMixes = async (s, response) =>
@@ -1028,10 +1121,12 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
     {
         if (_lastShortConnectorValues.TryGetValue(shortId, out var currentValue) && currentValue == value)
         {
+            _logger?.LogDebug("Skipping short connector update for '{ShortId}': value {Value} is unchanged.", shortId, value);
             return;
         }
 
         _lastShortConnectorValues[shortId] = value;
+        _logger?.LogDebug("Sending short connector update for '{ShortId}' with value {Value}.", shortId, value);
         _client.ConnectorUpdateShort(shortId, value);
     }
 
@@ -1041,10 +1136,15 @@ public class WaveLinkPlugin : ITouchPortalEventHandler
         if (string.IsNullOrEmpty(name)) return;
         if (shortConnectorIds.TryGetValue(name, out var list))
         {
+            _logger?.LogDebug("Updating {Count} short connector(s) for '{Name}' with current value {Value}.", list.Count, name, value);
             foreach (var shortId in list)
             {
                 ConnectorUpdateShortIfChanged(shortId, value);
             }
+        }
+        else
+        {
+            _logger?.LogDebug("No short connector IDs registered yet for '{Name}'; current value {Value} will be sent if Touch Portal registers one.", name, value);
         }
     }
 
